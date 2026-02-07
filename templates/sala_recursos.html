@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sala de Recursos – Gestão</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    :root{
+      --primary:#6366f1;
+      --primary-dark:#4f46e5;
+      --bg:#f8f9fc;
+      --card:#ffffff;
+      --text:#1e293b;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --shadow: 0 10px 15px -3px rgba(0,0,0,.08);
+      --shadow2: 0 4px 6px -1px rgba(0,0,0,.06);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .container{max-width:1100px;margin:24px auto;padding:0 16px}
+    .topbar{
+      background:linear-gradient(135deg,var(--primary),#8b5cf6);
+      color:#fff;border-radius:var(--radius);
+      padding:18px 18px; box-shadow:var(--shadow);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .topbar h1{font-size:20px;font-weight:800;display:flex;gap:10px;align-items:center}
+    .topbar a{color:#fff;text-decoration:none;font-weight:600;opacity:.95}
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow2);
+      padding:16px;
+    }
+    .card h2{font-size:16px;margin-bottom:10px}
+    .muted{color:var(--muted);font-size:13px}
+    .row{display:grid;grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width: 680px){ .row{grid-template-columns:1fr} }
+
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:600}
+    select, input[type="text"]{
+      width:100%; border:1px solid var(--border); border-radius:12px;
+      padding:10px 12px; background:#fff; outline:none;
+    }
+    select:focus, input[type="text"]:focus{border-color:rgba(99,102,241,.7); box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .btn{
+      border:none; cursor:pointer; border-radius:12px; padding:10px 14px;
+      font-weight:700; display:inline-flex; gap:8px; align-items:center;
+    }
+    .btn-primary{background:var(--primary); color:#fff}
+    .btn-primary:hover{background:var(--primary-dark)}
+    .btn-ghost{background:#eef2ff; color:#3730a3}
+    .btn-ghost:hover{filter:brightness(.98)}
+
+    .list{
+      border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-top:10px
+    }
+    .list-header{padding:10px 12px;background:#f1f5f9;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .list-body{max-height:420px; overflow:auto}
+    .item{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border)}
+    .item:last-child{border-bottom:none}
+    .item input{width:18px;height:18px}
+    .badge{font-size:12px;padding:4px 10px;border-radius:999px;background:#e2e8f0;color:#334155;font-weight:700}
+
+    .flash{margin-top:12px}
+    .flash .msg{
+      background:#fff; border:1px solid var(--border); border-left:6px solid var(--primary);
+      padding:10px 12px; border-radius:12px; margin-bottom:8px;
+    }
+    .empty{padding:14px;border:1px dashed var(--border);border-radius:14px;background:#fff;color:var(--muted);text-align:center}
+    .small-note{font-size:12px;color:var(--muted);margin-top:8px}
+
+    /* Abas */
+    .tabs{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin:16px 0 0 0;
+    }
+    .tabbtn{
+      border:1px solid var(--border);
+      background:#fff;
+      color:#334155;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 2px 6px rgba(0,0,0,.04);
+    }
+    .tabbtn.active{
+      border-color:rgba(99,102,241,.55);
+      background:#eef2ff;
+      color:#3730a3;
+    }
+    .panel{margin-top:14px}
+    .hidden{display:none !important}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1><i class="fa-solid fa-universal-access"></i> Sala de Recursos (AEE)</h1>
+      <a href="{{ url_for('dashboard_moderador') }}"><i class="fa-solid fa-arrow-left"></i> Voltar ao Painel</a>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for msg in messages %}
+            <div class="msg">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Abas -->
+    <div class="tabs">
+      <button class="tabbtn" id="tabCadastro" onclick="setTab('cadastro')">
+        <i class="fa-solid fa-pen-to-square"></i> Cadastro / Atualização
+      </button>
+      <button class="tabbtn" id="tabVisualizar" onclick="setTab('visualizar')">
+        <i class="fa-solid fa-magnifying-glass"></i> Visualizar cadastrados
+      </button>
+    </div>
+
+    <!-- PAINEL: CADASTRO -->
+    <div class="panel" id="panelCadastro">
+      <div class="card">
+        <h2>Cadastro / Atualização</h2>
+        <p class="muted">1) Selecione o <b>turno</b> • 2) Selecione a <b>turma</b> • 3) Marque os alunos atendidos na Sala de Recursos e salve.</p>
+
+        <form method="POST" action="{{ url_for('sala_recursos') }}">
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label>Turno</label>
+              <select name="turno" id="turno" onchange="onTurnoChange()">
+                <option value="">Selecione…</option>
+                {% for t in turnos %}
+                  <option value="{{ t }}" {% if t == turno_sel %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label>Turma</label>
+              <select name="turma_id" id="turma_id" onchange="onTurmaChange()" {% if not turma_sel_id %}disabled{% endif %}>
+                {% if turmas_turno and turno_sel %}
+                  {% for turma in turmas_turno %}
+                    <option value="{{ turma.id }}" {% if turma.id == turma_sel_id %}selected{% endif %}>{{ turma.nome }}</option>
+                  {% endfor %}
+                {% else %}
+                  <option value="">Selecione o turno primeiro…</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn btn-ghost" onclick="toggleAll(true)">
+              <i class="fa-solid fa-check-double"></i> Marcar todos
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="toggleAll(false)">
+              <i class="fa-solid fa-eraser"></i> Desmarcar todos
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar
+            </button>
+          </div>
+
+          <div class="list" aria-label="Lista de alunos" style="margin-top:12px">
+            <div class="list-header">
+              <span style="font-weight:800">Alunos da turma</span>
+              <span class="badge">{{ alunos_turma|length }} alunos</span>
+            </div>
+
+            <div class="list-body">
+              {% if turma_sel_id and alunos_turma %}
+                {% for a in alunos_turma %}
+                  <label class="item">
+                    <input type="checkbox" name="alunos_ids" value="{{ a.id }}" {% if a.id in alunos_marcados %}checked{% endif %}>
+                    <span>{{ a.nome }}</span>
+                  </label>
+                {% endfor %}
+              {% else %}
+                <div class="empty">Selecione um turno e uma turma para listar os alunos.</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="small-note">
+            <i class="fa-solid fa-circle-info"></i>
+            Dica: ao salvar, a lista dessa turma é atualizada (remove os antigos e grava os selecionados).
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- PAINEL: VISUALIZAR -->
+    <div class="panel hidden" id="panelVisualizar">
+      <div class="card">
+        <h2>Visualizar cadastrados</h2>
+        <p class="muted">Aqui você só consulta os alunos já cadastrados na Sala de Recursos. Selecione o turno e a turma para filtrar.</p>
+
+        <div class="row" style="margin-top:12px">
+          <div>
+            <label>Turno</label>
+            <!-- usamos o mesmo turno_sel/turmas_turno do backend; só muda o comportamento -->
+            <select id="turno_view" onchange="onTurnoViewChange()">
+              <option value="">Selecione…</option>
+              {% for t in turnos %}
+                <option value="{{ t }}" {% if t == turno_sel %}selected{% endif %}>{{ t }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div>
+            <label>Turma</label>
+            <select id="turma_id_view" onchange="onTurmaViewChange()" {% if not turma_sel_id %}disabled{% endif %}>
+              {% if turmas_turno and turno_sel %}
+                {% for turma in turmas_turno %}
+                  <option value="{{ turma.id }}" {% if turma.id == turma_sel_id %}selected{% endif %}>{{ turma.nome }}</option>
+                {% endfor %}
+              {% else %}
+                <option value="">Selecione o turno primeiro…</option>
+              {% endif %}
+            </select>
+          </div>
+        </div>
+
+        <div class="list" style="margin-top:12px">
+          <div class="list-header">
+            <span style="font-weight:800">Alunos na Sala de Recursos</span>
+            <span class="badge">{{ alunos_sala|length }}</span>
+          </div>
+
+          <div class="list-body">
+            {% if turma_sel_id %}
+              {% if alunos_sala %}
+                {% for a in alunos_sala %}
+                  <div class="item">
+                    <i class="fa-solid fa-star" style="color:#f59e0b"></i>
+                    <span>{{ a.nome }}</span>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="empty">Nenhum aluno cadastrado para esta turma.</div>
+              {% endif %}
+            {% else %}
+              <div class="empty">Selecione um turno e uma turma para visualizar.</div>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- Abas (guarda em localStorage para manter ao recarregar)
+    function setTab(tab){
+      localStorage.setItem("sr_tab", tab);
+
+      const cadastro = document.getElementById('panelCadastro');
+      const visualizar = document.getElementById('panelVisualizar');
+      const btnCad = document.getElementById('tabCadastro');
+      const btnVis = document.getElementById('tabVisualizar');
+
+      if(tab === 'visualizar'){
+        cadastro.classList.add('hidden');
+        visualizar.classList.remove('hidden');
+        btnCad.classList.remove('active');
+        btnVis.classList.add('active');
+      }else{
+        visualizar.classList.add('hidden');
+        cadastro.classList.remove('hidden');
+        btnVis.classList.remove('active');
+        btnCad.classList.add('active');
+      }
+    }
+
+    // Seleciona aba inicial:
+    // - se veio ?view=1, abre visualizar
+    // - senão, usa o localStorage
+    (function initTab(){
+      const url = new URL(window.location.href);
+      const view = url.searchParams.get('view');
+      const saved = localStorage.getItem("sr_tab") || "cadastro";
+      if(view === "1") setTab("visualizar");
+      else setTab(saved);
+    })();
+
+    // --- Lógica já existente (Cadastro): recarrega com querystring
+    function onTurnoChange(){
+      const t = document.getElementById('turno').value;
+      if(!t){ window.location = "{{ url_for('sala_recursos') }}"; return; }
+      const url = new URL(window.location.href);
+      url.searchParams.set('turno', t);
+      url.searchParams.delete('turma_id');
+      url.searchParams.delete('view'); // garante voltar padrão se quiser
+      window.location = url.toString();
+    }
+    function onTurmaChange(){
+      const t = document.getElementById('turno').value;
+      const turma = document.getElementById('turma_id').value;
+      if(!t || !turma) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set('turno', t);
+      url.searchParams.set('turma_id', turma);
+      url.searchParams.delete('view');
+      window.location = url.toString();
+    }
+
+    // --- Visualizar: também recarrega, mas mantendo view=1 para voltar na aba correta
+    function onTurnoViewChange(){
+      const t = document.getElementById('turno_view').value;
+      if(!t){
+        const base = "{{ url_for('sala_recursos') }}";
+        window.location = base + "?view=1";
+        return;
+      }
+      const url = new URL(window.location.href);
+      url.searchParams.set('turno', t);
+      url.searchParams.delete('turma_id');
+      url.searchParams.set('view','1');
+      window.location = url.toString();
+    }
+    function onTurmaViewChange(){
+      const t = document.getElementById('turno_view').value;
+      const turma = document.getElementById('turma_id_view').value;
+      if(!t || !turma) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set('turno', t);
+      url.searchParams.set('turma_id', turma);
+      url.searchParams.set('view','1');
+      window.location = url.toString();
+    }
+
+    function toggleAll(flag){
+      document.querySelectorAll('input[type="checkbox"][name="alunos_ids"]').forEach(cb => cb.checked = flag);
+    }
+  </script>
+</body>
+</html>

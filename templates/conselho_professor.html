@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Conselho Coletivo – Professor</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg-1:#020617;
+      --bg-2:#020617;
+
+      --card:rgba(255,255,255,.08);
+      --card-2:rgba(255,255,255,.06);
+      --border:rgba(148,163,184,.22);
+
+      --text:#e5e7eb;
+      --muted:#a7b3c6;
+
+      --primary:#38bdf8;
+      --primary-soft:rgba(56,189,248,.18);
+
+      --success:#22c55e;
+      --success-soft:rgba(34,197,94,.16);
+
+      --danger:#ef4444;
+
+      --shadow:0 20px 40px rgba(0,0,0,.35);
+      --shadow-soft:0 14px 28px rgba(0,0,0,.18);
+      --radius:22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+
+    body{
+      margin:0;
+      padding:16px;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      background:
+        radial-gradient(900px 420px at 10% 10%, rgba(56,189,248,.14), transparent 55%),
+        radial-gradient(900px 420px at 92% 20%, rgba(99,102,241,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    }
+
+    .wrap{
+      width:100%;
+      max-width:1100px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    /* TOPBAR */
+    .top{
+      background: linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.80));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:14px 16px;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      backdrop-filter: blur(10px);
+    }
+
+    .title{
+      margin:0;
+      font-size:18px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      letter-spacing:.2px;
+    }
+    .title i{ color: var(--primary); }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:11px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color: #dbeafe;
+      border:1px solid rgba(56,189,248,.25);
+      background: rgba(56,189,248,.10);
+      padding:6px 10px;
+      border-radius:999px;
+      margin-left:10px;
+    }
+
+    .hello{
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .hello b{ color:#e2e8f0; }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background:rgba(255,255,255,.06);
+      font-size:11px;
+      color:#dbeafe;
+      margin-left:6px;
+      white-space:nowrap;
+    }
+
+    /* BUTTONS */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      text-decoration:none;
+      font-size:12px;
+      cursor:pointer;
+      transition: transform .12s ease, background .18s ease, border-color .18s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{
+      background:rgba(255,255,255,.14);
+      transform: translateY(-1px);
+    }
+    .btn-primary{
+      background: var(--primary-soft);
+      border-color: rgba(56,189,248,.40);
+      color:#e0f2fe;
+    }
+    .btn-primary:hover{
+      background: rgba(56,189,248,.28);
+    }
+
+    /* CARD */
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:14px 16px;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+    }
+
+    /* GRID SELECTS */
+    .row{
+      display:grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap:10px;
+    }
+
+    label{
+      font-size:12px;
+      color:var(--muted);
+      display:block;
+      margin-bottom:6px;
+    }
+
+    /* aparência no tema escuro */
+    select, input{
+      width:100%;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.25);
+      background: rgba(2,6,23,.55);
+      color: var(--text);
+      outline:none;
+      transition: box-shadow .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    /* opções do dropdown */
+    select option{
+      background:#0b1220;
+      color:#e5e7eb;
+    }
+
+    select:focus, input:focus{
+      border-color: rgba(56,189,248,.55);
+      box-shadow: 0 0 0 3px rgba(56,189,248,.16);
+      background: rgba(2,6,23,.70);
+    }
+
+    select:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    /* ITENS */
+    .grid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:10px;
+    }
+
+    .item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 12px;
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,.18);
+      background: rgba(2,6,23,.35);
+    }
+
+    .item b{ font-size:13px; }
+    .item small{ color: var(--muted); }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(255,255,255,.06);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      min-width: 78px;
+      justify-content:center;
+      transition: transform .12s ease, background .18s ease, border-color .18s ease;
+    }
+    .chip:hover{ transform: translateY(-1px); }
+
+    .chip.on{
+      background: var(--success-soft);
+      border-color: rgba(34,197,94,.40);
+    }
+    .chip.on i{ color: var(--success); }
+    .chip.off i{ color: rgba(255,255,255,.55); }
+
+    /* SAVE BAR */
+    .savebar{
+      margin-top:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .btn-save{
+      font-weight:800;
+      background: linear-gradient(135deg, rgba(56,189,248,.22), rgba(99,102,241,.20));
+      border-color: rgba(56,189,248,.38);
+    }
+    .btn-save:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none !important;
+    }
+
+    /* FLASH */
+    .flash{
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(148,163,184,.18);
+      background: rgba(255,255,255,.06);
+      font-size:12px;
+      box-shadow: var(--shadow-soft);
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .flash i{ color: var(--primary); margin-top:2px; }
+
+    @media (max-width:980px){
+      .row{ grid-template-columns: 1fr 1fr; }
+      .grid{ grid-template-columns: 1fr; }
+    }
+    @media (max-width:520px){
+      body{ padding:12px; }
+      .btn{ width:100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="top">
+      <div>
+        <h1 class="title">
+          <i class="fa-solid fa-clipboard-check"></i>
+          Conselho de Classe Coletivo
+          <span class="badge"><i class="fa-solid fa-user"></i> Professor</span>
+        </h1>
+
+        <div class="hello">
+          Olá, <b>{{ professor_nome }}</b>!
+          {% if professor_disciplinas_nomes %}
+            <span class="pill">
+              <i class="fa-solid fa-book"></i>
+              {{ professor_disciplinas_nomes|join(', ') }}
+            </span>
+          {% endif %}
+
+          {# Mostra disciplina selecionada #}
+          {% if disciplina_abrev %}
+            <span class="pill">
+              <i class="fa-solid fa-circle-check"></i>
+              Disciplina selecionada: <b>{{ disciplina_abrev }}</b>
+            </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+        <a class="btn" href="{{ url_for('dashboard_professor') }}">
+          <i class="fa-solid fa-house"></i> Painel
+        </a>
+        <a class="btn btn-primary" href="{{ url_for('conselho.conselho_professor_visualizar') }}">
+          <i class="fa-solid fa-eye"></i> Visualizar
+        </a>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="flash">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>{{ msg }}</div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form class="card" method="POST">
+      <div class="row">
+
+        <!-- ✅ 1) DISCIPLINA PRIMEIRO -->
+        <div>
+          <label>Disciplina (sua)</label>
+          <select name="disciplina_abrev" onchange="this.form.submit()">
+            <option value="">Selecione...</option>
+            {% for d in disciplinas %}
+              <option value="{{ d }}" {% if disciplina_abrev == d %}selected{% endif %}>{{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- ✅ 2) TURMA FILTRADA PELA DISCIPLINA -->
+        <div>
+          <label>Turma <span style="opacity:.8">(da disciplina selecionada)</span></label>
+          <select name="turma_id" onchange="this.form.submit()" {% if not disciplina_abrev %}disabled{% endif %}>
+            <option value="">
+              {% if disciplina_abrev %}
+                Selecione...
+              {% else %}
+                Selecione a disciplina primeiro...
+              {% endif %}
+            </option>
+            {% for t in turmas %}
+              <option value="{{ t.id }}" {% if turma_id|int == t.id %}selected{% endif %}>
+                {{ t.nome }} ({{ t.turno }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- ✅ 3) ALUNO (PENDENTES) -->
+        <div>
+          <label>Aluno <span style="opacity:.8">(mostra apenas o que falta)</span></label>
+          <select name="aluno_id" onchange="this.form.submit()"
+                  {% if not turma_id or not disciplina_abrev %}disabled{% endif %}>
+            <option value="">
+              {% if turma_id and disciplina_abrev %}
+                Selecione... (pendentes)
+              {% elif disciplina_abrev and not turma_id %}
+                Selecione a turma...
+              {% else %}
+                Selecione disciplina e turma...
+              {% endif %}
+            </option>
+
+            {% for a in alunos %}
+              <option value="{{ a.id }}" {% if aluno_id|int == a.id %}selected{% endif %}>{{ a.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label>Bimestre</label>
+          <select name="bimestre" onchange="this.form.submit()">
+            {% for b in [1,2,3,4] %}
+              <option value="{{ b }}" {% if bimestre|int == b %}selected{% endif %}>{{ b }}º</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label>Ano</label>
+          <input type="number" name="ano" value="{{ ano }}" min="2020" max="2100" onchange="this.form.submit()">
+        </div>
+      </div>
+
+      <div class="hint">
+        Clique nos itens abaixo para marcar/desmarcar. O Word oficial será montado pelo moderador com o modelo.
+        <br>
+        <span style="opacity:.9">Dica: após salvar, o aluno sai da lista e você já pode escolher o próximo pendente.</span>
+      </div>
+
+      <div class="grid">
+        {% for key, label in aspectos %}
+          {% set marcado = (registro.get(key) == 1 or registro.get(key) == True) %}
+          <div class="item">
+            <div>
+              <b>{{ label }}</b><br>
+              <small>Marque se este aspecto se aplica à sua disciplina.</small>
+            </div>
+
+            <div class="chip {% if marcado %}on{% else %}off{% endif %}" onclick="toggleAsp('{{ key }}')">
+              <i class="fa-solid {% if marcado %}fa-check{% else %}fa-minus{% endif %}"></i>
+              <span>{% if marcado %}X{% else %}—{% endif %}</span>
+            </div>
+
+            <input type="hidden" id="asp_{{ key }}" name="asp_{{ key }}" value="{% if marcado %}1{% else %}0{% endif %}">
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="savebar">
+        <span class="hint" style="margin:0">
+          {% if disciplina_abrev and turma_id and aluno_id %}
+            Pronto para salvar:
+            <b style="color:var(--text)">{{ disciplina_abrev }}</b> •
+            <b style="color:var(--text)">{{ bimestre }}º</b> •
+            <b style="color:var(--text)">{{ ano }}</b>
+          {% else %}
+            Selecione disciplina, turma e aluno para habilitar o salvamento.
+          {% endif %}
+        </span>
+
+        <button class="btn btn-save" type="submit" name="acao" value="salvar"
+                {% if not (disciplina_abrev and turma_id and aluno_id) %}disabled{% endif %}>
+          <i class="fa-solid fa-floppy-disk"></i> Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+
+<script>
+function toggleAsp(key){
+  const inp = document.getElementById("asp_"+key);
+  if(!inp) return;
+
+  inp.value = (inp.value === "1") ? "0" : "1";
+
+  const item = inp.closest(".item");
+  const chip = item ? item.querySelector(".chip") : null;
+  if(!chip) return;
+
+  const on = (inp.value === "1");
+  chip.classList.toggle("on", on);
+  chip.classList.toggle("off", !on);
+
+  const icon = chip.querySelector("i");
+  const text = chip.querySelector("span");
+
+  if(icon) icon.className = "fa-solid " + (on ? "fa-check" : "fa-minus");
+  if(text) text.textContent = on ? "X" : "—";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Moderadores</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #007bff, #6c757d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 650px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #007bff;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 12px 8px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .tipo {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        button:hover {
+            background: #c82333;
+        }
+
+        .voltar {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .voltar:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Moderadores Cadastrados</h1>
+
+    <ul>
+        {% for moderador in moderadores %}
+        <li>
+            <div class="info">
+                <span class="login">{{ moderador.login }}</span>
+                <span class="tipo">
+                    Perfil: {{ moderador.tipo|capitalize }}
+                </span>
+            </div>
+
+            <form action="{{ url_for('excluir_moderador', moderador_id=moderador.id) }}"
+                  method="POST"
+                  style="margin: 0;">
+                <button type="submit"
+                        onclick="return confirm('Tem certeza que deseja excluir este moderador?')">
+                    Excluir
+                </button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <a class="voltar" href="{{ url_for('dashboard_moderador') }}">
+        Voltar ao Dashboard
+    </a>
+</div>
+
+</body>
+</html>

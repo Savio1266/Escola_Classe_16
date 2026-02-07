@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Avaliação Bimestral</title>
+
+    <style>
+        :root {
+            --azul-primario: #0d6efd;
+            --azul-escuro: #003566;
+            --cinza-fundo: #e5e7eb;
+            --cinza-card: #f9fafb;
+            --cinza-borda: #e5e7eb;
+            --texto-principal: #111827;
+            --texto-secundario: #6b7280;
+            --verde: #22c55e;
+            --vermelho: #dc2626;
+            --ciano: #0891b2;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(13, 110, 253, 0.18), transparent 60%),
+                radial-gradient(circle at bottom right, rgba(8, 145, 178, 0.2), transparent 55%),
+                linear-gradient(135deg, #0b1120, #020617);
+            color: var(--texto-principal);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.96);
+            border-radius: 18px;
+            padding: 18px 18px 20px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            box-shadow:
+                0 25px 50px -12px rgba(15, 23, 42, 0.7),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
+            color: #e5e7eb;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.5);
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+
+        .header-left-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .logo-wrap {
+            width: 56px;
+            height: 56px;
+            border-radius: 999px;
+            overflow: hidden;
+            border: 2px solid rgba(56, 189, 248, 0.8);
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.8);
+            flex-shrink: 0;
+        }
+
+        .logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+        .header-left h1 {
+            font-size: 1.25rem;
+            margin: 0 0 4px;
+            color: #f9fafb;
+        }
+
+        .badge-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(56, 189, 248, 0.1);
+            color: #e0f2fe;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
+        }
+
+        .subtitulo {
+            margin: 0;
+            font-size: 0.87rem;
+            color: #cbd5f5;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .pill-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.65);
+            margin-bottom: 4px;
+            font-size: 0.78rem;
+        }
+
+        .pill-info span { font-weight: 600; color: #e5e7eb; }
+        .pill-bimestre { color: #bfdbfe; }
+        .pill-ano { color: #a5b4fc; }
+
+        .cartao {
+            background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            border-radius: 14px;
+            padding: 14px 14px 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.75);
+        }
+
+        .cartao h2 {
+            margin: 0 0 6px;
+            font-size: 1rem;
+            color: #f9fafb;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cartao h2::before {
+            content: "";
+            width: 6px;
+            height: 18px;
+            border-radius: 999px;
+            background: linear-gradient(to bottom, #38bdf8, #4f46e5);
+        }
+
+        .descricao-cartao {
+            margin: 0 0 8px;
+            font-size: 0.82rem;
+            color: #9ca3af;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1.1fr 1.2fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 840px) {
+            .header { flex-direction: column; align-items: flex-start; }
+            .header-right { text-align: left; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        label {
+            display: block;
+            font-size: 0.82rem;
+            margin-bottom: 4px;
+            color: #e5e7eb;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 7px 9px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.8);
+            background: rgba(15, 23, 42, 0.9);
+            color: #e5e7eb;
+            font-size: 0.87rem;
+        }
+
+        input::placeholder,
+        textarea::placeholder { color: #6b7280; }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+        }
+
+        textarea { min-height: 70px; resize: vertical; }
+        small { font-size: 0.75rem; color: #9ca3af; }
+
+        .linha { display: flex; gap: 10px; margin-bottom: 8px; }
+        .linha > div { flex: 1; }
+
+        @media (max-width: 720px) {
+            .linha { flex-direction: column; }
+        }
+
+        .turmas-box {
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.8);
+            padding: 8px 9px;
+            max-height: 180px;
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .grupo-titulo {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #e5e7eb;
+        }
+
+        .turma-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            color: #e5e7eb;
+        }
+
+        .turma-item input { margin-right: 6px; width: auto; }
+
+        .bloco-avaliacao {
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            border-radius: 12px;
+            padding: 12px 12px 10px;
+            margin-top: 6px;
+            background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.95), #020617);
+        }
+
+        .bloco-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            border-bottom: 1px dashed rgba(148, 163, 184, 0.5);
+            padding-bottom: 4px;
+        }
+
+        .bloco-header span { font-size: 0.9rem; font-weight: 600; color: #e5e7eb; }
+
+        .btn-remover-bloco {
+            background: transparent;
+            border-radius: 999px;
+            border: 1px solid rgba(248, 113, 113, 0.7);
+            color: #fecaca;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            cursor: pointer;
+        }
+
+        .btn-remover-bloco:hover { background: rgba(248, 113, 113, 0.15); }
+
+        .botoes-acoes {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            gap: 10px;
+        }
+
+        .botoes-esquerda,
+        .botoes-direita {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-ghost {
+            border-radius: 999px;
+            border: 1px dashed rgba(148, 163, 184, 0.8);
+            background: transparent;
+            color: #e5e7eb;
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+
+        .btn-ghost:hover { background: rgba(15, 23, 42, 0.85); }
+
+        .btn-primary {
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(to right, #38bdf8, #4f46e5);
+            color: #f9fafb;
+            font-weight: 600;
+            font-size: 0.86rem;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-primary span.icon { font-size: 1rem; }
+
+        .btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
+        .lista-conteudos-planejados {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .tag-conteudo-planejado {
+            border: 1px dashed var(--azul-primario);
+            background: rgba(13, 110, 253, 0.08);
+            color: #e5e7eb;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .tag-conteudo-planejado:hover {
+            background: rgba(13, 110, 253, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .tag-conteudo-planejado small {
+            font-size: 0.7rem;
+            color: #bfdbfe;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-left-wrapper">
+            <div class="logo-wrap">
+                <img src="/static/logo.jpg" alt="Logo ESCOLA CLASSE 16">
+            </div>
+            <div class="header-left">
+                <div class="badge-top">
+                    <span class="badge-dot"></span>
+                    Conteúdos de avaliação
+                </div>
+                <h1>Registrar Avaliação Bimestral</h1>
+                <p class="subtitulo">
+                    Preencha os dados gerais e registre uma ou mais avaliações com seus conteúdos.
+                </p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="pill-info">
+                <span>Bimestre:</span>
+                <span class="pill-bimestre">Selecione abaixo</span>
+                <span>| Ano base:</span>
+                <span class="pill-ano">{{ ano_atual }}</span>
+            </div>
+            <div style="font-size: 0.78rem;">
+                As avaliações registradas aparecerão no histórico do professor.
+            </div>
+        </div>
+    </div>
+
+    <form method="POST">
+        <div class="cartao">
+            <h2>1. Dados gerais</h2>
+            <p class="descricao-cartao">
+                Informe a disciplina, o bimestre, o ano e as turmas que participarão das avaliações.
+            </p>
+
+            <div class="grid-2">
+                <div>
+                    <div class="linha">
+                        <div>
+                            <label>Disciplina:</label>
+                            <select name="disciplina" required>
+                                <option value="">Selecione</option>
+                                {% for d in disciplinas %}
+                                    <option value="{{ d }}">{{ d }}</option>
+                                {% endfor %}
+                            </select>
+                            <small>Selecione a disciplina referente a esta avaliação.</small>
+                        </div>
+                    </div>
+
+                    <div class="linha">
+                        <div>
+                            <label>Bimestre:</label>
+                            <input type="number" name="bimestre"
+                                   min="1" max="4" placeholder="1 a 4" required>
+                            <small>Informe o bimestre (de 1 a 4).</small>
+                        </div>
+                        <div>
+                            <label>Ano:</label>
+                            <input type="number" name="ano" value="{{ ano_atual }}" readonly>
+                            <small>O ano é calculado automaticamente.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label>Turmas envolvidas:</label>
+                    <div class="turmas-box">
+                        <div class="grupo-titulo">Selecione uma ou mais turmas:</div>
+                        {% for turma in turmas %}
+                            <label class="turma-item">
+                                <input type="checkbox" name="turmas_ids" value="{{ turma.id }}">
+                                {{ turma.nome }} ({{ turma.turno }})
+                            </label>
+                        {% endfor %}
+                        {% if not turmas %}
+                            <small>Não há turmas cadastradas.</small>
+                        {% endif %}
+                    </div>
+                    <small>Marque todas as turmas que farão esta avaliação.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="cartao">
+            <h2>2. Avaliações do bimestre</h2>
+            <p class="descricao-cartao">
+                Cada bloco abaixo representa uma avaliação (prova, trabalho, projeto etc.). Você pode
+                adicionar quantas avaliações forem necessárias.
+            </p>
+
+            {% if conteudos_planejados %}
+            <div class="cartao" style="margin-top: 8px; border-style: dashed;">
+                <h2>Conteúdos cadastrados em planejamento</h2>
+                <p class="descricao-cartao">
+                    Os conteúdos abaixo são filtrados pelo bimestre informado em <strong>Dados gerais</strong>.<br>
+                    Primeiro, informe o bimestre e depois clique em um conteúdo para copiá-lo
+                    para o bloco de avaliação selecionado.
+                </p>
+                <div class="lista-conteudos-planejados">
+                    {% for item in conteudos_planejados %}
+                        <button type="button"
+                                class="tag-conteudo-planejado"
+                                data-conteudo="{{ item.conteudo }}"
+                                data-bimestre="{{ item.bimestre }}">
+                            {{ item.conteudo }}
+                            <small>
+                                {{ item.disciplina }} – {{ item.bimestre }}º bim – {{ item.turmas or 'Turmas não vinculadas' }}
+                            </small>
+                        </button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div id="blocos-avaliacao">
+                <div class="bloco-avaliacao">
+                    <div class="bloco-header">
+                        <span>Avaliação 1</span>
+                        <button type="button" class="btn-remover-bloco" onclick="removerBloco(this)" style="display:none;">
+                            Remover
+                        </button>
+                    </div>
+
+                    <div class="linha">
+                        <div>
+                            <label>Tipo de Avaliação:</label>
+                            <input type="text" name="tipo_avaliacao" list="tipos_avaliacao"
+                                   placeholder="Ex.: Prova, Trabalho, Projeto...">
+                            <datalist id="tipos_avaliacao">
+                                <option value="Prova">
+                                <option value="Trabalho">
+                                <option value="Formativa">
+                                <option value="Apresentação">
+                                <option value="Atividade Avaliativa">
+                                <option value="Teste">
+                            </datalist>
+                            <small>Digite o tipo de avaliação ou escolha uma sugestão.</small>
+                        </div>
+
+                        <div>
+                            <label>Descrição / Nome da Avaliação:</label>
+                            <input type="text" name="descricao_avaliacao"
+                                   placeholder="Ex.: Prova Bimestral de Matemática">
+                            <small>Um nome curto para identificar esta avaliação.</small>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 8px;">
+                        <label>Conteúdos / Objetivos avaliados:</label>
+                        <textarea name="conteudos"
+                                  placeholder="Liste aqui os conteúdos trabalhados e avaliados..."></textarea>
+                        <small>Dica: você pode clicar nos conteúdos planejados acima para preencher este campo automaticamente.</small>
+                    </div>
+
+                    <div class="linha" style="margin-top: 8px;">
+                        <div>
+                            <label>Data da Avaliação (opcional):</label>
+                            <input type="date" name="data_avaliacao">
+                            <small>Deixe em branco se ainda não tiver data definida.</small>
+                        </div>
+                        <div>
+                            <label>Pontuação (opcional):</label>
+                            <input type="number" name="pontuacao" step="0.1" min="0"
+                                   placeholder="Ex.: 10, 5, 2">
+                            <small>Valor máximo desta avaliação (se aplicável).</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="botoes-acoes">
+                <div class="botoes-esquerda">
+                    <button type="button" class="btn-ghost" onclick="adicionarBloco()">
+                        + Adicionar outra avaliação
+                    </button>
+                </div>
+                <div class="botoes-direita">
+                    <button type="submit" class="btn-primary">
+                        <span class="icon">✔</span>
+                        <span>Salvar avaliações do bimestre</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function atualizarTitulos() {
+        const blocos = document.querySelectorAll('.bloco-avaliacao');
+        blocos.forEach((bloco, idx) => {
+            const span = bloco.querySelector('.bloco-header span');
+            span.textContent = 'Avaliação ' + (idx + 1);
+            const btnRemover = bloco.querySelector('.btn-remover-bloco');
+            btnRemover.style.display = (blocos.length > 1) ? 'inline-block' : 'none';
+        });
+    }
+
+    function adicionarBloco() {
+        const container = document.getElementById('blocos-avaliacao');
+        const primeiro = container.querySelector('.bloco-avaliacao');
+        const novo = primeiro.cloneNode(true);
+
+        novo.querySelectorAll('input, textarea').forEach(el => {
+            if (el.type === 'date' || el.type === 'number' || el.type === 'text') {
+                el.value = '';
+            } else if (el.tagName === 'TEXTAREA') {
+                el.value = '';
+            }
+        });
+
+        container.appendChild(novo);
+        atualizarTitulos();
+    }
+
+    function removerBloco(botao) {
+        const container = document.getElementById('blocos-avaliacao');
+        const blocos = container.querySelectorAll('.bloco-avaliacao');
+        if (blocos.length <= 1) return;
+        botao.closest('.bloco-avaliacao').remove();
+        atualizarTitulos();
+    }
+
+    // ✅ FUNÇÃO NOVA: escolhe automaticamente o bloco de destino
+    function obterBlocoDestino() {
+        const blocos = document.querySelectorAll('#blocos-avaliacao .bloco-avaliacao');
+        if (!blocos || blocos.length === 0) return null;
+
+        // Se só existe 1, usa ele
+        if (blocos.length === 1) return blocos[0];
+
+        // Se tem vários, usa o último (normalmente é o bloco mais recente)
+        return blocos[blocos.length - 1];
+    }
+
+    function configurarCliqueConteudosPlanejados() {
+        const botoes = document.querySelectorAll('.tag-conteudo-planejado');
+        botoes.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const texto = this.getAttribute('data-conteudo') || '';
+
+                // ✅ Agora NÃO precisa clicar antes no bloco!
+                const blocoDestino = obterBlocoDestino();
+                if (!blocoDestino) return;
+
+                const textarea = blocoDestino.querySelector('textarea[name="conteudos"]');
+                if (textarea) {
+                    if (textarea.value.trim()) {
+                        textarea.value = textarea.value.trim() + '\n- ' + texto;
+                    } else {
+                        textarea.value = '- ' + texto;
+                    }
+                    textarea.focus();
+                }
+            });
+        });
+    }
+
+    function filtrarConteudosPorBimestre(bim) {
+        const botoes = document.querySelectorAll('.tag-conteudo-planejado');
+        const valor = (bim || '').trim();
+
+        botoes.forEach(btn => {
+            const bimestreItem = btn.getAttribute('data-bimestre');
+            if (!valor) {
+                btn.style.display = 'none';
+            } else if (String(bimestreItem) === valor) {
+                btn.style.display = 'inline-flex';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+    }
+
+    atualizarTitulos();
+    configurarCliqueConteudosPlanejados();
+
+    const inputBimestre = document.querySelector('input[name="bimestre"]');
+    if (inputBimestre) {
+        filtrarConteudosPorBimestre(inputBimestre.value);
+        inputBimestre.addEventListener('input', function () {
+            filtrarConteudosPorBimestre(this.value);
+        });
+    }
+</script>
+</body>
+</html>

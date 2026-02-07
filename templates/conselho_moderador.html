@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conselho – Moderador</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:rgba(255,255,255,.06);
+      --border:rgba(148,163,184,.22);
+      --text:#e5e7eb;
+      --muted:#a7b3c6;
+      --primary:#38bdf8;
+      --primary-soft:rgba(56,189,248,.18);
+      --shadow:0 18px 45px rgba(0,0,0,.28);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(56,189,248,.18), transparent 55%),
+        radial-gradient(circle at 90% 20%, rgba(99,102,241,.16), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      padding:18px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+    .wrap{width:100%;max-width:1100px; display:flex; flex-direction:column; gap:12px;}
+
+    .top{
+      background:linear-gradient(135deg, rgba(15,23,42,.92), rgba(30,64,175,.84));
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:14px 16px;
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .title{
+      margin:0;
+      font-size:18px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .title i{color:var(--primary);}
+    .sub{
+      margin:6px 0 0 0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+      max-width:760px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      text-decoration:none;
+      font-size:12px;
+      cursor:pointer;
+      transition:transform .12s ease, background .18s ease, border-color .18s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.14);}
+
+    .btn-primary{
+      background:var(--primary-soft);
+      border-color:rgba(56,189,248,.40);
+      color:#e0f2fe;
+    }
+    .btn-primary:hover{background:rgba(56,189,248,.28);}
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:0;
+      box-shadow:0 18px 45px rgba(0,0,0,.18);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    /* ===== Barra superior do card (layout) ===== */
+    .card-head{
+      position:sticky;
+      top:12px;
+      z-index:5;
+      background:linear-gradient(180deg, rgba(15,23,42,.82), rgba(15,23,42,.55));
+      border-bottom:1px solid rgba(148,163,184,.18);
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .head-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:220px;
+    }
+    .count{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background:rgba(255,255,255,.06);
+      font-size:12px;
+      color:var(--muted);
+    }
+    .search{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(2,6,23,.40);
+      min-width:260px;
+      flex:1;
+    }
+    .search i{color:rgba(226,232,240,.75); font-size:13px;}
+    .search input{
+      border:0;
+      outline:0;
+      background:transparent;
+      color:var(--text);
+      width:100%;
+      padding:0;
+      font-size:12px;
+    }
+    .search input::placeholder{color:rgba(167,179,198,.85);}
+
+    /* ===== Filtros (mantidos, só layout) ===== */
+    .filters{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+      margin-top:10px;
+    }
+    .field{ min-width: 160px; }
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    select, input[type="number"]{
+      width:100%;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.25);
+      background: rgba(2,6,23,.55);
+      color: var(--text);
+      outline:none;
+    }
+    select option{
+      background:#0b1220;
+      color:#e5e7eb;
+    }
+
+    /* ===== Grid: 6 turmas por linha (telas grandes) ===== */
+    .grid{
+      padding:14px;
+      display:grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr)); /* ✅ 6 por linha */
+      gap:10px;
+    }
+
+    .tile{
+      border:1px solid rgba(148,163,184,.16);
+      background:rgba(2,6,23,.30);
+      border-radius:16px;
+      padding:10px; /* um pouco mais compacto */
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:108px;
+    }
+
+    .tile-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .ico{
+      width:36px;height:36px;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(56,189,248,.14);
+      border:1px solid rgba(56,189,248,.25);
+      color:var(--primary);
+      flex-shrink:0;
+    }
+    .name{
+      font-weight:700;
+      font-size:12.5px;
+      margin:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+    .meta{
+      margin:3px 0 0 0;
+      font-size:11.5px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background:rgba(255,255,255,.06);
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .tile-actions{
+      margin-top:auto;
+      display:flex;
+      justify-content:flex-end;
+    }
+    .btn-open{
+      width:100%;
+      border-radius:14px;
+      padding:8px 10px;
+      font-weight:700;
+      font-size:12px;
+    }
+
+    /* Responsivo */
+    @media (max-width:1400px){
+      .grid{grid-template-columns: repeat(4, minmax(0, 1fr));}
+    }
+    @media (max-width:980px){
+      .grid{grid-template-columns: repeat(2, minmax(0, 1fr));}
+    }
+    @media (max-width:720px){
+      .wrap{max-width:100%;}
+      .btn{width:100%;}
+      .field{min-width:100%;}
+      .grid{grid-template-columns: 1fr;}
+      .search{min-width:100%;}
+      .card-head{top:0;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="top">
+      <div>
+        <h2 class="title"><i class="fa-solid fa-clipboard-check"></i> Turmas – Conselho de Classe</h2>
+        <p class="sub">
+          Selecione o <b>bimestre</b> e o <b>ano</b> para acompanhar o status correto.
+          Depois clique em “Abrir” na turma.
+        </p>
+
+        <!-- ✅ Filtro do moderador (GET) -->
+        <form class="filters" method="GET" action="{{ url_for('conselho.conselho_moderador') }}">
+          <div class="field">
+            <label>Bimestre</label>
+            <select name="bimestre">
+              {% for b in [1,2,3,4] %}
+                <option value="{{ b }}" {% if bimestre|int == b %}selected{% endif %}>{{ b }}º</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Ano</label>
+            <input type="number" name="ano" value="{{ ano }}" min="2020" max="2100">
+          </div>
+
+          <div class="field" style="min-width:190px;">
+            <label>&nbsp;</label>
+            <button class="btn btn-primary" type="submit">
+              <i class="fa-solid fa-rotate"></i> Aplicar filtro
+            </button>
+          </div>
+        </form>
+
+        <p class="sub" style="margin-top:10px;">
+          Período selecionado: <b>{{ bimestre }}º bimestre</b> • <b>{{ ano }}</b>
+        </p>
+      </div>
+
+      <!-- ✅ Voltar (seu endpoint está em app.py, não no blueprint) -->
+      <a class="btn" href="{{ url_for('dashboard_moderador') }}">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </a>
+    </div>
+
+    <div class="card">
+
+      <!-- Barra de topo do card (somente visual) -->
+      <div class="card-head">
+        <div class="head-left">
+          <span class="count">
+            <i class="fa-solid fa-layer-group"></i>
+            {{ turmas|length }} turmas
+          </span>
+        </div>
+
+        <div class="search" aria-hidden="true">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Pesquisar turma (somente visual)">
+        </div>
+      </div>
+
+      <!-- Grid das turmas -->
+      <div class="grid">
+        {% for t in turmas %}
+          <div class="tile">
+            <div class="tile-top">
+              <div class="left">
+                <div class="ico"><i class="fa-solid fa-school"></i></div>
+                <div style="min-width:0;">
+                  <p class="name">{{ t.nome }}</p>
+                  <p class="meta">
+                    <span class="pill"><i class="fa-solid fa-clock"></i> {{ t.turno }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tile-actions">
+              <!-- ✅ Leva bimestre/ano no link (função intacta) -->
+              <a class="btn btn-primary btn-open"
+                 href="{{ url_for('conselho.conselho_moderador_turma', turma_id=t.id, bimestre=bimestre, ano=ano) }}">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>

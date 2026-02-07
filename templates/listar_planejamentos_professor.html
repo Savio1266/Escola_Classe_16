@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Planejamentos Bimestrais</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007bff, #6c757d);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 980px;
+            margin: 25px 15px;
+            padding: 22px 20px 26px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #007bff;
+            text-align: center;
+            margin: 0 0 4px 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .alert ul {
+            margin: 6px 0 0 18px;
+            padding: 0;
+        }
+
+        .filter-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 12px 12px 8px 12px;
+            margin-bottom: 12px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px 10px;
+        }
+
+        .filters-grid label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .filters-grid select,
+        .filters-grid input {
+            width: 100%;
+            padding: 7px 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+            background: #ffffff;
+        }
+
+        .filters-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn-filter {
+            background: #007bff;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-filter:hover {
+            background: #0056b3;
+        }
+
+        .table-wrapper {
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px 7px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f3f5;
+            color: #444;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #fdfdff;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .empty-msg {
+            text-align: center;
+            font-size: 13px;
+            color: #777;
+            margin-top: 15px;
+        }
+
+        .td-actions {
+            white-space: nowrap;
+        }
+
+        .btn-small {
+            font-size: 11px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+
+        .btn-edit {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #138496;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 720px) {
+            .top-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            .filters-actions {
+                justify-content: stretch;
+            }
+            .btn-filter {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meus Planejamentos Bimestrais</h1>
+        <div class="subtitle">Visualize e acompanhe os planejamentos que você já registrou no sistema.</div>
+
+        <div class="top-actions">
+            <a href="{{ url_for('registrar_planejamento') }}" class="btn-primary">
+                + Novo Planejamento
+            </a>
+            <a href="{{ url_for('dashboard_professor') }}" class="btn-secondary">
+                Voltar ao Painel
+            </a>
+        </div>
+
+        <!-- AVISO: TURMAS SEM PLANEJAMENTO -->
+        {% if turmas_sem_planejamento %}
+            <div class="alert">
+                <strong>Atenção:</strong> As turmas abaixo ainda não possuem planejamento registrado para os filtros atuais:
+                <ul>
+                    {% for turma in turmas_sem_planejamento %}
+                        <li>{{ turma.nome }} ({{ turma.turno }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- FILTROS -->
+        <div class="filter-box">
+            <div class="filter-title">Filtros</div>
+            <form method="GET" action="{{ url_for('listar_planejamentos_professor') }}">
+                <div class="filters-grid">
+                    <div>
+                        <label for="ano_letivo">Ano letivo</label>
+                        <input
+                            type="number"
+                            id="ano_letivo"
+                            name="ano_letivo"
+                            value="{{ filtros.ano_letivo if filtros is defined and filtros.ano_letivo }}"
+                            placeholder="Ex.: 2025">
+                    </div>
+                    <div>
+                        <label for="bimestre">Bimestre</label>
+                        <select id="bimestre" name="bimestre">
+                            <option value="">Todos</option>
+                            <option value="1" {% if filtros.bimestre == '1º Bimestre' %}selected{% endif %}>1º Bimestre</option>
+                            <option value="2" {% if filtros.bimestre == '2º Bimestre' %}selected{% endif %}>2º Bimestre</option>
+                            <option value="3" {% if filtros.bimestre == '3º Bimestre' %}selected{% endif %}>3º Bimestre</option>
+                            <option value="4" {% if filtros.bimestre == '4º Bimestre' %}selected{% endif %}>4º Bimestre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="disciplina">Disciplina</label>
+                        <select id="disciplina" name="disciplina">
+                            <option value="">Todas</option>
+                            {% if disciplinas_professor %}
+                                {% for disc in disciplinas_professor %}
+                                    <option value="{{ disc }}" {% if filtros.disciplina == disc %}selected{% endif %}>{{ disc }}</option>
+                                {% endfor %}
+                            {% else %}
+                                <option value="Português">Português</option>
+                                <option value="Matemática">Matemática</option>
+                                <option value="Ciências">Ciências</option>
+                                <option value="Geografia">Geografia</option>
+                                <option value="História">História</option>
+                                <option value="Artes">Artes</option>
+                                <option value="Inglês">Inglês</option>
+                                <option value="Educação Física">Educação Física</option>
+                                <option value="PD1">PD1</option>
+                                <option value="PD2">PD2</option>
+                                <option value="PD3">PD3</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="turma_id">Turma</label>
+                        <select id="turma_id" name="turma_id">
+                            <option value="">Todas</option>
+                            {% if turmas %}
+                                {% for turma in turmas %}
+                                    <option value="{{ turma.id }}"
+                                        {% if filtros.turma_id and filtros.turma_id == turma.id %}selected{% endif %}>
+                                        {{ turma.nome }} ({{ turma.turno }})
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="filters-actions">
+                    <button type="submit" class="btn-filter">Aplicar filtros</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TABELA DE PLANEJAMENTOS -->
+        <div class="table-wrapper">
+            {% if planejamentos and planejamentos|length > 0 %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ano</th>
+                            <th>Bimestre</th>
+                            <th>Disciplina</th>
+                            <th>Turmas</th>
+                            <th>Conteúdos cadastrados</th>
+                            <th>Criado em</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in planejamentos %}
+                            <tr>
+                                <td>{{ p.ano_letivo }}</td>
+                                <td>{{ p.bimestre }}</td>
+                                <td>{{ p.disciplina }}</td>
+                                <td>
+                                    {% if p.turmas_nomes %}
+                                        <span class="badge">{{ p.turmas_nomes }}</span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if p.conteudos_cadastrados %}
+                                        <span class="badge">
+                                            {{ p.conteudos_cadastrados|replace(',', ' | ') }}
+                                        </span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ p.criado_em if p.criado_em else '-' }}</td>
+                                <td class="td-actions">
+                                    <a href="{{ url_for('detalhar_planejamento', planejamento_id=p.id) }}" class="btn-small btn-edit">
+                                        Ver / Editar
+                                    </a>
+                                    <form action="{{ url_for('excluir_planejamento', planejamento_id=p.id) }}"
+                                          method="POST" style="display:inline;"
+                                          onsubmit="return confirm('Tem certeza que deseja excluir este planejamento?');">
+                                        <button type="submit" class="btn-small btn-delete">
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            {% else %}
+                <div class="empty-msg">
+                    Nenhum planejamento encontrado para os filtros selecionados.
+                    <br>
+                    Clique em <strong>“Novo Planejamento”</strong> para registrar o primeiro.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

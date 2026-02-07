@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Horários - De Olho na Escola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+
+            --bg-main: #f8f9fc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* === HEADER === */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateX(-2px);
+        }
+
+        .page-header {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-light);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .page-title i {
+            color: var(--primary);
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .alert-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            color: #0e7490;
+            font-size: 13px;
+            margin-top: 16px;
+        }
+
+        .alert-info i {
+            font-size: 18px;
+            color: var(--info);
+        }
+
+        /* === TURMAS GRID === */
+        .turmas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .turma-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .turma-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .turma-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .turma-info h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .turma-turno {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge.cadastrado {
+            background: rgba(16, 185, 129, 0.1);
+            color: #047857;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-badge.pendente {
+            background: rgba(245, 158, 11, 0.1);
+            color: #b45309;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .turma-meta {
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .turma-meta div {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .turma-meta div:last-child {
+            margin-bottom: 0;
+        }
+
+        .turma-meta i {
+            width: 16px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .turma-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #0891b2;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            padding: 10px;
+        }
+
+        /* === EMPTY STATE === */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* === FLASH MESSAGES === */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        .alert i {
+            font-size: 18px;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .page-header {
+                padding: 18px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .turmas-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .turma-card {
+                padding: 16px;
+            }
+
+            .turma-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 20px;
+                gap: 8px;
+            }
+
+            .page-title i {
+                font-size: 20px;
+            }
+
+            .flash-messages {
+                left: 12px;
+                right: 12px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' if category == 'error' else 'exclamation-triangle' }}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        <!-- BACK BUTTON -->
+        <a href="{{ url_for('dashboard_moderador') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Voltar ao Dashboard
+        </a>
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <div class="breadcrumb">
+                <span>Início</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>Gestão de Horários</span>
+            </div>
+
+            <h1 class="page-title">
+                <i class="fas fa-clock"></i>
+                Gerenciar Horários de Aula
+            </h1>
+
+            <p class="page-subtitle">
+                Cadastre ou atualize os horários de aula das turmas. Os responsáveis poderão visualizar.
+            </p>
+
+            <div class="alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Importante:</strong> Use apenas arquivos PNG. O horário ficará disponível para todos os responsáveis da turma.
+            </div>
+        </div>
+
+        <!-- TURMAS GRID -->
+        {% if turmas %}
+            <div class="turmas-grid">
+                {% for turma in turmas %}
+                    <div class="turma-card">
+                        <!-- HEADER -->
+                        <div class="turma-header">
+                            <div class="turma-info">
+                                <h3>{{ turma.nome }}</h3>
+                                <div class="turma-turno">
+                                    <i class="fas fa-sun"></i>
+                                    {{ turma.turno }}
+                                </div>
+                            </div>
+
+                            {% if turma.tem_horario %}
+                                <span class="status-badge cadastrado">
+                                    <i class="fas fa-check-circle"></i>
+                                    Cadastrado
+                                </span>
+                            {% else %}
+                                <span class="status-badge pendente">
+                                    <i class="fas fa-clock"></i>
+                                    Pendente
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- META INFO (se tiver horário cadastrado) -->
+                        {% if turma.tem_horario %}
+                            <div class="turma-meta">
+                                <div>
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Cadastrado em: {{ turma.cadastrado_em[:16] if turma.cadastrado_em else 'N/A' }}</span>
+                                </div>
+                                <div>
+                                    <i class="fas fa-user"></i>
+                                    <span>Por: {{ turma.cadastrado_por or 'Sistema' }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- ACTIONS -->
+                        <div class="turma-actions">
+                            {% if turma.tem_horario %}
+                                <!-- Visualizar -->
+                                <a href="{{ url_for('horario.moderador_visualizar_horario', turma_id=turma.id) }}"
+                                   class="btn btn-info">
+                                    <i class="fas fa-eye"></i>
+                                    Visualizar
+                                </a>
+
+                                <!-- Atualizar -->
+                                <a href="{{ url_for('horario.moderador_cadastrar_horario', turma_id=turma.id) }}"
+                                   class="btn btn-success">
+                                    <i class="fas fa-sync-alt"></i>
+                                    Atualizar
+                                </a>
+                            {% else %}
+                                <!-- Cadastrar -->
+                                <a href="{{ url_for('horario.moderador_cadastrar_horario', turma_id=turma.id) }}"
+                                   class="btn btn-primary">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Cadastrar Horário
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state">
+                <i class="fas fa-school"></i>
+                <h3>Nenhuma Turma Cadastrada</h3>
+                <p>Cadastre turmas no sistema para poder adicionar os horários de aula.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Auto-hide flash messages após 5 segundos
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+
+        // Animação de saída
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

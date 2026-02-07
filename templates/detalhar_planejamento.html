@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Planejamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            width: 100%;
+            max-width: 980px;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 16px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px 18px;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .info-item .label {
+            font-weight: bold;
+            color: #0056b3;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .info-item .value {
+            color: #333;
+        }
+
+        .box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        .box-title {
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .turmas-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 10px;
+            font-size: 13px;
+        }
+
+        .turma-pill {
+            background: #e2e6ea;
+            border-radius: 999px;
+            padding: 4px 10px;
+        }
+
+        .observacoes {
+            white-space: pre-wrap;
+            background: #fff;
+            border-radius: 6px;
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px 7px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f1f3f5;
+            color: #444;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #fbfcff;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.3s;
+            margin-top: 18px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #565e64;
+        }
+
+        .btn-edit {
+            background: #0d6efd;
+        }
+
+        .btn-edit:hover {
+            background: #0b5ed7;
+        }
+
+        .data-formatada {
+            white-space: nowrap;
+        }
+
+        .sem-data {
+            color: #999;
+            font-style: italic;
+        }
+
+        @media (max-width: 720px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Detalhes do Planejamento</h2>
+
+    <!-- INFORMAÇÕES GERAIS -->
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="label">Disciplina</span>
+            <span class="value">{{ planejamento.disciplina }}</span>
+        </div>
+        <div class="info-item">
+            <span class="label">Ano letivo</span>
+            <span class="value">{{ planejamento.ano }}</span>
+        </div>
+        <div class="info-item">
+            <span class="label">Bimestre</span>
+            <span class="value">{{ planejamento.bimestre }}º</span>
+        </div>
+        <div class="info-item">
+            <span class="label">Professor</span>
+            <span class="value">{{ planejamento.professor_login }}</span>
+        </div>
+        <div class="info-item">
+            <span class="label">Criado em</span>
+            <span class="value">{{ planejamento.criado_em }}</span>
+        </div>
+    </div>
+
+    <!-- TURMAS VINCULADAS -->
+    <div class="box">
+        <div class="box-title">Turmas vinculadas</div>
+        {% if turmas %}
+            <div class="turmas-lista">
+                {% for t in turmas %}
+                    <span class="turma-pill">{{ t.nome }} ({{ t.turno }})</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            Nenhuma turma vinculada a este planejamento.
+        {% endif %}
+    </div>
+
+    <!-- OBSERVAÇÕES -->
+    <div class="box">
+        <div class="box-title">Observações gerais</div>
+        {% if planejamento.observacoes %}
+            <div class="observacoes">
+{{ planejamento.observacoes }}
+            </div>
+        {% else %}
+            <span style="font-size: 13px; color: #666;">Nenhuma observação registrada.</span>
+        {% endif %}
+    </div>
+
+    <!-- ITENS DO PLANEJAMENTO -->
+    <div class="box">
+        <div class="box-title">Itens do planejamento</div>
+        <div class="table-wrapper">
+            {% if itens and itens|length > 0 %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Conteúdos / Objetivos</th>
+                        <th>Data início</th>
+                        <th>Data término</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in itens %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.conteudo }}</td>
+                            <td>
+                                {% if item.data_inicio %}
+                                    <span class="data-formatada">{{ item.data_inicio_formatada }}</span>
+                                {% else %}
+                                    <span class="sem-data">Não informada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.data_fim %}
+                                    <span class="data-formatada">{{ item.data_fim_formatada }}</span>
+                                {% else %}
+                                    <span class="sem-data">Não informada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post"
+                                      action="{{ url_for('marcar_item_planejamento', item_id=item.id) }}">
+                                    <label style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                                        <input type="checkbox"
+                                               name="concluido"
+                                               onchange="this.form.submit()"
+                                               {% if item.concluido %}checked{% endif %}>
+                                        <span>
+                                            {% if item.concluido %}
+                                                Concluído
+                                            {% else %}
+                                                Em Desenvolvimento
+                                            {% endif %}
+                                        </span>
+                                    </label>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="font-size: 13px; color: #666;">Nenhum item detalhado foi registrado para este planejamento.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{{ url_for('listar_planejamentos_professor') }}" class="btn">⬅ Voltar para meus planejamentos</a>
+    <a href="{{ url_for('editar_planejamento_form', planejamento_id=planejamento.id) }}" class="btn btn-edit">✏️ Editar planejamento</a>
+</div>
+</body>
+</html>

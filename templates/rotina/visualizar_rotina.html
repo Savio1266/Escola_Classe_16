@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos e Avisos - De Olho na Escola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+        }
+        
+        .top-header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .back-link {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .tabs-container {
+            background: white;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            top: 66px;
+            z-index: 99;
+        }
+        
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: #f8fafc;
+        }
+        
+        .content-wrapper {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-left: 4px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            flex: 1;
+            min-width: 0;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        
+        .card-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        
+        .badge-urgente { background: #fee2e2; color: #dc2626; animation: pulse 2s infinite; }
+        .badge-alta { background: #fed7aa; color: #ea580c; }
+        .badge-normal { background: #dbeafe; color: #2563eb; }
+        .badge-baixa { background: #e2e8f0; color: #64748b; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .card-meta {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .card-description {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-width: 100%;
+        }
+        
+        /* Limites responsivos para diferentes tamanhos de tela */
+        @media (min-width: 1400px) {
+            .card-title {
+                max-width: 800px;
+            }
+            .card-description {
+                max-width: 900px;
+            }
+        }
+        
+        @media (min-width: 1024px) and (max-width: 1399px) {
+            .card-title {
+                max-width: 600px;
+            }
+            .card-description {
+                max-width: 700px;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .card-title {
+                max-width: 500px;
+            }
+            .card-description {
+                max-width: 550px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .card-title {
+                max-width: 100%;
+            }
+            .card-description {
+                max-width: 100%;
+            }
+        }
+        }
+        
+        .calendar-wrapper {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .modal-header h2 {
+            font-size: 20px;
+            color: #1e293b;
+            margin: 0;
+            flex: 1;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-info-item {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+        
+        .modal-info-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+        
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 15px; }
+            .card { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="top-header">
+        <h1 class="header-title">📅 Eventos e Avisos</h1>
+        <a href="{{ url_for('dashboard_professor') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </header>
+    
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('eventos')">
+                <i class="fas fa-calendar-alt"></i> Eventos
+            </div>
+            <div class="tab" onclick="showTab('calendario')">
+                <i class="fas fa-calendar"></i> Calendário
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-wrapper">
+        <!-- Tab: Eventos -->
+        <div class="tab-content active" id="tab-eventos">
+            {% if eventos %}
+                {% for evento in eventos %}
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            {% if evento.tipo == 'evento' %}📅{% elif evento.tipo == 'prazo' %}⏰{% elif evento.tipo == 'aviso' %}⚠️{% elif evento.tipo == 'reuniao' %}👥{% endif %}
+                            {{ evento.titulo }}
+                        </div>
+                        <div class="card-badges">
+                            <span class="badge badge-{{ evento.prioridade }}">{{ evento.prioridade }}</span>
+                        </div>
+                    </div>
+                    <div class="card-meta">
+                        <span><i class="fas fa-calendar"></i> {{ evento.data_evento }}</span>
+                        {% if evento.data_limite %}
+                            <span><i class="fas fa-hourglass-end"></i> Prazo: {{ evento.data_limite }}</span>
+                        {% endif %}
+                        <span><i class="fas fa-tag"></i> {{ evento.tipo }}</span>
+                        <span><i class="fas fa-user"></i> {{ evento.criado_por }}</span>
+                    </div>
+                    {% if evento.descricao %}
+                        <div class="card-description">{{ evento.descricao }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <p>Nenhum evento próximo</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Tab: Calendário -->
+        <div class="tab-content" id="tab-calendario">
+            <div class="calendar-wrapper">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalContent"></div>
+        </div>
+    </div>
+    
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+        
+        function showEventDetails(info) {
+            const props = info.event.extendedProps;
+            document.getElementById('modalTitle').textContent = info.event.title;
+            
+            let html = `
+                <div class="modal-info-item">
+                    <strong>Descrição:</strong>
+                    <span style="white-space: pre-wrap;">${props.descricao}</span>
+                </div>
+                <div class="modal-info-item">
+                    <strong>Data:</strong> ${new Date(info.event.start).toLocaleDateString('pt-BR')}
+                </div>
+                ${props.data_limite ? `<div class="modal-info-item"><strong>Prazo:</strong> ${props.data_limite}</div>` : ''}
+                <div class="modal-info-item">
+                    <strong>Tipo:</strong> ${props.tipo}<br>
+                    <strong>Prioridade:</strong> ${props.prioridade}<br>
+                    <strong>Status:</strong> ${props.status}
+                </div>
+                <div class="modal-info-item">
+                    <strong>Criado por:</strong> ${props.criado_por}
+                </div>
+            `;
+            
+            document.getElementById('modalContent').innerHTML = html;
+            document.getElementById('detailModal').style.display = 'block';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('detailModal')) {
+                closeModal();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                initialView: 'dayGridMonth',  // Sempre abre em visualização de mês
+                locale: 'pt-br',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,listWeek'
+                },
+                buttonText: { today: 'Hoje', month: 'Mês', list: 'Lista' },
+                height: window.innerWidth <= 768 ? 'auto' : 550,
+                events: '/api/calendario/eventos',
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault();
+                    showEventDetails(info);
+                }
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>

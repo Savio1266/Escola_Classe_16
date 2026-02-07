@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro Biblioteca – ESCOLA CLASSE 16</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <style>
+        /* mesmo estilo base do login da biblioteca, com pequenas variações */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: radial-gradient(circle at top, #bbf7d0, #0f172a);
+            padding: 16px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 620px;
+            background: #ffffff;
+            border-radius: 24px;
+            border: 1px solid rgba(148,163,184,0.4);
+            box-shadow: 0 18px 40px rgba(15,23,42,0.25);
+            padding: 22px 22px 20px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .logo-mini {
+            width: 56px;
+            height: 56px;
+            border-radius: 999px;
+            border: 2px solid rgba(22,163,74,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+        }
+
+        .logo-mini img {
+            max-width: 46px;
+            border-radius: 999px;
+        }
+
+        .card-header-text h1 {
+            margin: 0;
+            font-size: 1rem;
+            color: #0f172a;
+        }
+
+        .card-header-text span {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .card-body p {
+            font-size: 0.85rem;
+            color: #4b5563;
+            margin-top: 4px;
+            margin-bottom: 16px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 16px;
+        }
+
+        form > div.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.18s ease;
+        }
+
+        input:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 1px rgba(34,197,94,0.35);
+        }
+
+        .btn-primary {
+            border: none;
+            border-radius: 999px;
+            padding: 9px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: #ffffff;
+            box-shadow: 0 14px 30px rgba(22,163,74,0.45);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-row {
+            margin-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .footer-row a {
+            color: #15803d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-row a:hover {
+            text-decoration: underline;
+        }
+
+        .flash {
+            font-size: 0.8rem;
+            color: #b91c1c;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="card-header">
+        <div class="logo-mini">
+            <img src="/static/logo.jpg" alt="Logo ESCOLA CLASSE 16">
+        </div>
+        <div class="card-header-text">
+            <h1>Cadastro – Biblioteca ESCOLA CLASSE 16</h1>
+            <span>Seu acesso será liberado após aprovação do moderador.</span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <p>Preencha os dados abaixo para solicitar acesso como bibliotecário(a).</p>
+
+        <form method="POST">
+            <div class="full">
+                <label for="nome">Nome completo</label>
+                <input type="text" id="nome" name="nome" required>
+            </div>
+
+            <div>
+                <label for="login">Login</label>
+                <input type="text" id="login" name="login" required>
+            </div>
+
+            <div>
+                <label for="telefone">Telefone (opcional)</label>
+                <input type="tel" id="telefone" name="telefone" placeholder="(61) 9XXXX-XXXX">
+            </div>
+
+            <div>
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" required>
+            </div>
+
+            <div>
+                <label for="senha2">Confirmar senha</label>
+                <input type="password" id="senha2" name="senha2" required>
+            </div>
+
+            <div class="full" style="margin-top:4px;">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Enviar solicitação
+                </button>
+            </div>
+        </form>
+
+        <div class="footer-row">
+            <span>Após aprovado, você acessa pelo botão “Biblioteca – ESCOLA CLASSE 16”.</span>
+            <a href="/biblioteca/login">Já tenho acesso</a>
+        </div>
+
+        <div class="footer-row" style="margin-top:6px;">
+            <a href="/">Voltar para a página inicial</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

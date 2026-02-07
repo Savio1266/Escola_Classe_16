@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca - De Olho na Escola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --primary-light: #fbbf24;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --text-white: #ffffff;
+
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* === LAYOUT PRINCIPAL === */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: var(--text-white);
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .school-name {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .user-info-sidebar {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-name i {
+            color: var(--primary-light);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-role {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--text-white);
+            margin-top: 8px;
+            width: fit-content;
+        }
+
+        /* === MENU === */
+        .sidebar-menu {
+            padding: 12px;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            margin-bottom: 4px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .menu-item:hover {
+            background: var(--sidebar-hover);
+            transform: translateX(4px);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-item i {
+            width: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px;
+        }
+
+        /* === PAGE HEADER (COMPACTO) === */
+        .page-header {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-muted);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .page-title i {
+            color: var(--primary);
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            font-size: 12px;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .info-badge i {
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        /* === ATALHOS RÁPIDOS (NO TOPO) === */
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .shortcut-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .shortcut-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .shortcut-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .shortcut-content {
+            flex: 1;
+        }
+
+        .shortcut-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: var(--text-primary);
+        }
+
+        .shortcut-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* === ESTATÍSTICAS (COMPACTAS - EMBAIXO) === */
+        .stats-section {
+            margin-top: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .stat-icon.primary {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+            color: var(--primary);
+        }
+
+        .stat-icon.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            color: var(--success);
+        }
+
+        .stat-icon.info {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.05));
+            color: var(--info);
+        }
+
+        .stat-icon.danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+            color: var(--danger);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .stat-value.small {
+            font-size: 16px;
+        }
+
+        .stat-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* === ALERTA DE BOAS PRÁTICAS (COMPACTO) === */
+        .alert-card {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.05), rgba(14, 165, 233, 0.05));
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .alert-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--info);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .alert-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .alert-content {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .alert-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .alert-badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .alert-badge.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* MOBILE MENU TOGGLE */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: var(--shadow-xl);
+            z-index: 1001;
+            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .menu-toggle.active {
+            background: var(--danger);
+        }
+
+        /* SCROLLBAR */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar.active::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 280px;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: -1;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .shortcuts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .shortcuts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo">
+                        <img src="/static/logo.jpg" alt="Logo">
+                    </div>
+                    <div class="school-name">De Olho na Escola</div>
+                </div>
+
+                <div class="user-info-sidebar">
+                    <div class="user-name">
+                        <i class="fas fa-book-reader"></i>
+                        {{ session.get('usuario', 'Bibliotecário') }}
+                    </div>
+                    <div class="user-role">
+                        <i class="fas fa-book"></i>
+                        Biblioteca ESCOLA CLASSE 16
+                    </div>
+                    <div class="badge-role">
+                        <i class="fas fa-bookmark"></i>
+                        Bibliotecário(a)
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-title">Movimentação</div>
+                    <a href="/biblioteca/emprestimos/novo" class="menu-item">
+                        <i class="fas fa-plus-circle"></i>
+                        Novo Empréstimo
+                    </a>
+                    <a href="/biblioteca/emprestimos/devolucao" class="menu-item">
+                        <i class="fas fa-undo"></i>
+                        Registrar Devolução
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Consultas</div>
+                    <a href="/biblioteca/historico/estudante" class="menu-item">
+                        <i class="fas fa-user-graduate"></i>
+                        Histórico do Estudante
+                    </a>
+                    <a href="/biblioteca/historico/turma" class="menu-item">
+                        <i class="fas fa-users"></i>
+                        Histórico da Turma
+                    </a>
+                    <a href="/biblioteca/indicadores" class="menu-item">
+                        <i class="fas fa-chart-bar"></i>
+                        Indicadores
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Gestão</div>
+                    <a href="/biblioteca/gestao_usuarios" class="menu-item">
+                        <i class="fas fa-user-cog"></i>
+                        Gestão de Bibliotecários
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Sistema</div>
+                    <a href="/" class="menu-item">
+                        <i class="fas fa-home"></i>
+                        Página Inicial
+                    </a>
+                    <a href="{{ url_for('biblioteca.logout_biblioteca') }}" class="menu-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- PAGE HEADER (COMPACTO) -->
+            <div class="page-header">
+                <div class="breadcrumb">
+                    <span>Início</span>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>Biblioteca</span>
+                </div>
+                <h1 class="page-title">
+                    <i class="fas fa-book"></i>
+                    Painel da Biblioteca
+                </h1>
+                <p class="page-subtitle">
+                    Acompanhe rapidamente os empréstimos, devoluções e engajamento das turmas na leitura.
+                </p>
+
+                <div class="info-badge">
+                    <i class="fas fa-leaf"></i>
+                    Leitura como hábito diário no ESCOLA CLASSE 16
+                </div>
+            </div>
+
+            <!-- ATALHOS RÁPIDOS (NO TOPO) -->
+            <div class="shortcuts-grid">
+                <a href="/biblioteca/emprestimos/novo" class="shortcut-card">
+                    <div class="shortcut-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="shortcut-content">
+                        <div class="shortcut-title">Registrar Empréstimo</div>
+                        <div class="shortcut-desc">Turma, aluno, livro e data</div>
+                    </div>
+                </a>
+
+                <a href="/biblioteca/emprestimos/devolucao" class="shortcut-card">
+                    <div class="shortcut-icon">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <div class="shortcut-content">
+                        <div class="shortcut-title">Registrar Devolução</div>
+                        <div class="shortcut-desc">Livros atualmente emprestados</div>
+                    </div>
+                </a>
+
+                <a href="/biblioteca/historico/estudante" class="shortcut-card">
+                    <div class="shortcut-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="shortcut-content">
+                        <div class="shortcut-title">Histórico por Estudante</div>
+                        <div class="shortcut-desc">Livros lidos e atrasos</div>
+                    </div>
+                </a>
+
+                <a href="/biblioteca/historico/turma" class="shortcut-card">
+                    <div class="shortcut-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="shortcut-content">
+                        <div class="shortcut-title">Histórico por Turma</div>
+                        <div class="shortcut-desc">Engajamento de leitura da turma</div>
+                    </div>
+                </a>
+
+                <a href="/biblioteca/indicadores" class="shortcut-card">
+                    <div class="shortcut-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="shortcut-content">
+                        <div class="shortcut-title">Indicadores da Biblioteca</div>
+                        <div class="shortcut-desc">Visão geral e rankings</div>
+                    </div>
+                </a>
+
+                <a href="/biblioteca/gestao_usuarios" class="shortcut-card">
+                    <div class="shortcut-icon">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <div class="shortcut-content">
+                        <div class="shortcut-title">Gestão de Bibliotecários</div>
+                        <div class="shortcut-desc">Função exclusiva do moderador</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ESTATÍSTICAS (COMPACTAS - EMBAIXO) -->
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon primary">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                        </div>
+                        <div class="stat-label">Empréstimos Hoje</div>
+                        <div class="stat-value">{{ emprestimos_hoje }}</div>
+                        <div class="stat-desc">Livros emprestados com data de hoje</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                        <div class="stat-label">Empréstimos do Mês</div>
+                        <div class="stat-value">{{ emprestimos_mes }}</div>
+                        <div class="stat-desc">Total de empréstimos este mês</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon info">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                        </div>
+                        <div class="stat-label">Turma Mais Leitora</div>
+                        <div class="stat-value small">
+                            {% if turma_top %}
+                                {{ turma_top.turma_nome }} - {{ turma_top.turno }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </div>
+                        <div class="stat-desc">
+                            {% if turma_top %}
+                                {{ turma_top.total }} empréstimo(s) em 30 dias
+                            {% else %}
+                                Ainda sem registros
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-label">Livros Atrasados</div>
+                        <div class="stat-value" style="color: var(--danger);">{{ atrasados }}</div>
+                        <div class="stat-desc">Empréstimos fora do prazo</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOAS PRÁTICAS (COMPACTO) -->
+            <div class="alert-card">
+                <div class="alert-header">
+                    <div class="alert-icon">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <h3 class="alert-title">Boas Práticas de Uso</h3>
+                </div>
+                <p class="alert-content">
+                    Mantenha sempre os empréstimos atualizados: registre a devolução assim que o livro retornar à escola. Dessa forma, conseguimos acompanhar a cultura leitora das turmas, organizar melhor o acervo e evitar atrasos excessivos.
+                </p>
+                {% if atrasados > 0 %}
+                <div class="alert-badge warning">
+                    <i class="fas fa-bell"></i>
+                    Há {{ atrasados }} livro(s) atrasado(s). Combine com a turma a devolução.
+                </div>
+                {% else %}
+                <div class="alert-badge success">
+                    <i class="fas fa-check-circle"></i>
+                    Nenhum livro atrasado no momento. Parabéns! 👏
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- MOBILE MENU TOGGLE -->
+    <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menu-toggle');
+            sidebar.classList.toggle('active');
+            toggle.classList.toggle('active');
+
+            const icon = toggle.querySelector('i');
+            if (sidebar.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+                if (window.innerWidth <= 1024) {
+                    document.body.style.overflow = 'hidden';
+                }
+            } else {
+                icon.className = 'fas fa-bars';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Fechar sidebar ao clicar fora
+        window.onclick = function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menu-toggle');
+            if (window.innerWidth <= 1024 &&
+                sidebar.classList.contains('active') &&
+                !sidebar.contains(event.target) &&
+                !toggle.contains(event.target)) {
+                sidebar.classList.remove('active');
+                toggle.classList.remove('active');
+                toggle.querySelector('i').className = 'fas fa-bars';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+</body>
+</html>

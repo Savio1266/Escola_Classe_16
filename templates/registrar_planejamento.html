@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planejamento Bimestral - De Olho na Aprendizagem</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        :root {
+            --azul-primario: #0d6efd;
+            --azul-escuro: #003566;
+            --cinza-fundo: #e5e7eb;
+            --cinza-card: #f9fafb;
+            --verde: #22c55e;
+            --cinza-borda: #e5e7eb;
+            --texto-principal: #111827;
+            --texto-secundario: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(13,110,253,0.35), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(108,117,125,0.35), transparent 55%),
+                #0b1726;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 980px;
+            margin: 20px 10px;
+            padding: 18px 18px 22px 18px;
+            border-radius: 20px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.32);
+            animation: fadeIn 0.7s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CABEÇALHO */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid var(--cinza-borda);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-wrap {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 0 3px var(--cinza-borda);
+            flex-shrink: 0;
+        }
+
+        .logo-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .badge-top {
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--texto-secundario);
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 0;
+            color: var(--azul-escuro);
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--texto-secundario);
+            margin: 0;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .header-right span {
+            display: block;
+        }
+
+        /* BARRA DE INFO */
+        .info-bar {
+            background: #f1f5ff;
+            border: 1px solid #cfe2ff;
+            border-radius: 12px;
+            padding: 9px 11px;
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 14px;
+        }
+
+        .info-bar strong {
+            color: var(--azul-escuro);
+        }
+
+        /* FORMULÁRIO */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-card {
+            background: var(--cinza-card);
+            border-radius: 14px;
+            border: 1px solid var(--cinza-borda);
+            padding: 12px 13px 14px 13px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--texto-principal);
+            margin: 0 0 4px 0;
+        }
+
+        .section-sub {
+            font-size: 12px;
+            color: var(--texto-secundario);
+            margin: 0 0 8px 0;
+        }
+
+        .grid-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px 14px;
+            align-items: flex-end;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 9px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--azul-primario);
+            box-shadow: 0 0 0 1px rgba(13,110,253,0.35);
+            background: #ffffff;
+        }
+
+        .small-hint {
+            font-size: 12px;
+            color: var(--texto-secundario);
+        }
+
+        /* TURMAS (DUAS COLUNAS) */
+        .turmas-box {
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            padding: 8px 10px;
+            max-height: 180px;
+            overflow-y: auto;
+
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px 16px;
+        }
+
+        @media (max-width: 600px) {
+            .turmas-box {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .turma-item {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #374151;
+        }
+
+        .turma-item input {
+            margin: 0;
+        }
+
+        /* TABELA DE LINHAS DE PLANEJAMENTO */
+        .plan-table-wrapper {
+            margin-top: 4px;
+        }
+
+        .plan-header-row {
+            display: grid;
+            grid-template-columns: 2.4fr 0.55fr 0.55fr;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 4px;
+        }
+
+        .plan-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .plan-row {
+            display: grid;
+            grid-template-columns: 2.4fr 0.55fr 0.55fr;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .plan-row textarea {
+            min-height: 64px;
+        }
+
+        .periodo-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .btn-add-row {
+            margin-top: 8px;
+            background: #0d9488;
+            color: #ffffff;
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-add-row:hover {
+            background: #0f766e;
+        }
+
+        .btn-remove-row {
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 4px 7px;
+            font-size: 11px;
+            cursor: pointer;
+            align-self: flex-start;
+        }
+
+        .btn-remove-row:hover {
+            background: #b91c1c;
+        }
+
+        .obs-field {
+            margin-top: 6px;
+        }
+
+        /* AÇÕES */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 6px;
+        }
+
+        .btn-primary {
+            background: #22c55e;
+            color: #ffffff;
+            border: none;
+            border-radius: 999px;
+            padding: 9px 18px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #16a34a;
+        }
+
+        .btn-secondary {
+            background: #111827;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 999px;
+            padding: 9px 18px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary:hover {
+            background: #000000;
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                margin: 14px 6px;
+                padding: 14px 12px 18px 12px;
+                border-radius: 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                text-align: left;
+            }
+
+            .plan-header-row,
+            .plan-row {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn-primary,
+            .btn-secondary,
+            .btn-add-row {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- CABEÇALHO -->
+    <div class="header">
+        <div class="header-main">
+            <div class="logo-wrap">
+                <img src="/static/logo.jpg" alt="Logo da Escola">
+            </div>
+            <div class="header-left">
+                <div class="badge-top">Planejamento docente</div>
+                <h1>Planejamento Bimestral</h1>
+                <p class="subtitle">
+                    De Olho na Aprendizagem • Planejamento bimestral com detalhamento por período.
+                </p>
+            </div>
+        </div>
+        <div class="header-right">
+            <span>Organize os conteúdos, objetivos</span>
+            <span>e períodos de forma clara e registrada.</span>
+        </div>
+    </div>
+
+    <!-- AVISO -->
+    <div class="info-bar">
+        <strong>Orientação:</strong>
+        preencha o planejamento do bimestre indicando os conteúdos/objetivos e o período previsto
+        para desenvolvimento. Em seguida, selecione todas as turmas que terão o mesmo planejamento.
+    </div>
+
+    <form action="{{ url_for('registrar_planejamento') }}" method="POST">
+
+        <!-- DADOS GERAIS -->
+        <div class="section-card">
+            <div class="section-title">Dados gerais do planejamento</div>
+            <p class="section-sub">
+                Informe ano letivo, bimestre e disciplina em que o planejamento será aplicado.
+            </p>
+
+            <div class="grid-top">
+                <div>
+                    <label for="ano_letivo">Ano letivo</label>
+                    <input type="number" id="ano_letivo" name="ano_letivo"
+                           value="{{ ano_atual if ano_atual is defined else '' }}"
+                           placeholder="Ex.: 2025" required>
+                </div>
+
+                <div>
+                    <label for="bimestre">Bimestre</label>
+                    <select id="bimestre" name="bimestre" required>
+                        <option value="" disabled selected>Selecione</option>
+                        <option value="1">1º Bimestre</option>
+                        <option value="2">2º Bimestre</option>
+                        <option value="3">3º Bimestre</option>
+                        <option value="4">4º Bimestre</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="disciplina">Disciplina</label>
+                    {% if disciplinas_professor is defined and disciplinas_professor %}
+                        <select id="disciplina" name="disciplina" required>
+                            <option value="" disabled selected>Selecione</option>
+                            {% for disc in disciplinas_professor %}
+                                <option value="{{ disc }}">{{ disc }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <select id="disciplina" name="disciplina" required>
+                            <option value="" disabled selected>Selecione</option>
+                            <option value="Português">Português</option>
+                            <option value="Matemática">Matemática</option>
+                            <option value="Ciências">Ciências</option>
+                            <option value="Geografia">Geografia</option>
+                            <option value="História">História</option>
+                            <option value="Artes">Artes</option>
+                            <option value="Inglês">Inglês</option>
+                            <option value="Educação Física">Educação Física</option>
+                            <option value="PD1">PD1</option>
+                            <option value="PD2">PD2</option>
+                            <option value="PD3">PD3</option>
+                        </select>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- TURMAS -->
+        <div class="section-card">
+            <div class="section-title">Turmas contempladas</div>
+            <p class="section-sub">
+                Marque todas as turmas que utilizarão este mesmo planejamento.
+            </p>
+
+            <div class="turmas-box">
+                {% if turmas %}
+                    {% for turma in turmas %}
+                        <label class="turma-item">
+                            <input type="checkbox" name="turmas[]" value="{{ turma.id }}">
+                            {{ turma.nome }} ({{ turma.turno }})
+                        </label>
+                    {% endfor %}
+                {% else %}
+                    <p class="small-hint">Ainda não há turmas cadastradas no sistema.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- CONTEÚDOS / OBJETIVOS -->
+        <div class="section-card">
+            <div class="section-title">Conteúdos / Objetivos e período</div>
+            <p class="section-sub">
+                Em cada linha, descreva o conteúdo ou objetivo e selecione as datas de início e término
+                para o desenvolvimento.
+            </p>
+
+            <div class="plan-table-wrapper">
+                <div class="plan-header-row">
+                    <span>Conteúdo / objetivo</span>
+                    <span>Data início</span>
+                    <span>Data término</span>
+                </div>
+
+                <div id="plan-rows" class="plan-rows">
+                    <div class="plan-row">
+                        <textarea name="conteudos[]"
+                                  placeholder="Ex.: Frações – leitura, representação e comparação"
+                                  required></textarea>
+                        <div class="periodo-cell">
+                            <input type="date" name="datas_inicio[]" required>
+                        </div>
+                        <div class="periodo-cell">
+                            <input type="date" name="datas_fim[]" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-add-row" id="add-row-btn">
+                    + Adicionar nova linha de planejamento
+                </button>
+            </div>
+
+            <div class="obs-field">
+                <label for="observacoes_gerais">Observações gerais (opcional)</label>
+                <textarea id="observacoes_gerais" name="observacoes_gerais"
+                          placeholder="Registre combinações com a turma, observações de inclusão, adequações, reforço ou outras anotações importantes."></textarea>
+            </div>
+        </div>
+
+        <!-- AÇÕES -->
+        <div class="actions">
+            <a href="{{ url_for('dashboard_professor') }}" class="btn-secondary">
+                Voltar ao painel
+            </a>
+            <button type="submit" class="btn-primary">
+                Salvar planejamento
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('add-row-btn').addEventListener('click', function () {
+        const container = document.getElementById('plan-rows');
+
+        const row = document.createElement('div');
+        row.classList.add('plan-row');
+
+        row.innerHTML = `
+            <textarea name="conteudos[]" placeholder="Conteúdo / objetivo" required></textarea>
+            <div class="periodo-cell">
+                <input type="date" name="datas_inicio[]" required>
+            </div>
+            <div class="periodo-cell">
+                <input type="date" name="datas_fim[]" required>
+                <button type="button" class="btn-remove-row" onclick="this.closest('.plan-row').remove()">Remover</button>
+            </div>
+        `;
+
+        container.appendChild(row);
+    });
+</script>
+</body>
+</html>

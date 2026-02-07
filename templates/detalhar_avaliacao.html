@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Avaliação Bimestral</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #6f42c1, #4a277f);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 720px;
+            margin: 26px 12px;
+            padding: 22px 20px 26px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #6f42c1;
+            text-align: center;
+            margin: 0 0 4px 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px 14px;
+            margin-bottom: 12px;
+        }
+
+        .field {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 9px 10px;
+            border: 1px solid #e1e4e8;
+        }
+
+        .field-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 2px;
+        }
+
+        .field-value {
+            font-size: 14px;
+            color: #222;
+        }
+
+        .field-value.small {
+            font-size: 13px;
+        }
+
+        .conteudo-box {
+            margin-top: 10px;
+            border-radius: 10px;
+            border: 1px solid #e1e4e8;
+            background: #fdfcff;
+            padding: 10px 11px 12px 11px;
+        }
+
+        .conteudo-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .conteudo-text {
+            font-size: 14px;
+            color: #222;
+            white-space: pre-wrap;
+        }
+
+        .actions {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .btn,
+        .btn-danger,
+        .btn-secondary {
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn {
+            background: #6f42c1;
+            color: #fff;
+        }
+        .btn:hover {
+            background: #522a8a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #b32031;
+        }
+
+        .meta-text {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #777;
+            text-align: right;
+        }
+
+        @media (max-width: 640px) {
+            .actions {
+                justify-content: center;
+            }
+            .btn,
+            .btn-danger,
+            .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            .meta-text {
+                text-align: center;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>Detalhes da Avaliação</h1>
+    <div class="subtitle">
+        Conteúdos e informações da avaliação bimestral cadastrada.
+    </div>
+
+    <div class="info-grid">
+        <div class="field">
+            <div class="field-label">Ano letivo</div>
+            <div class="field-value">{{ avaliacao.ano_letivo }}</div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">Bimestre</div>
+            <div class="field-value">{{ avaliacao.bimestre }}</div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">Disciplina</div>
+            <div class="field-value">{{ avaliacao.disciplina }}</div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">Tipo de avaliação</div>
+            <div class="field-value">{{ avaliacao.tipo }}</div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">Data da avaliação</div>
+            <div class="field-value">{{ avaliacao.data if avaliacao.data else '-' }}</div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">Turmas envolvidas</div>
+            <div class="field-value small">
+                {{ avaliacao.turmas_nomes if avaliacao.turmas_nomes else '-' }}
+            </div>
+        </div>
+
+        {% if avaliacao.professor_login %}
+        <div class="field">
+            <div class="field-label">Professor(a) responsável</div>
+            <div class="field-value small">{{ avaliacao.professor_login }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="conteudo-box">
+        <div class="conteudo-title">Conteúdos / Objetivos Avaliados</div>
+        <div class="conteudo-text">
+            {{ avaliacao.conteudos }}
+        </div>
+    </div>
+
+    {% if avaliacao.criado_em or avaliacao.atualizado_em %}
+    <div class="meta-text">
+        {% if avaliacao.criado_em %}
+            Registrado em: {{ avaliacao.criado_em }}
+        {% endif %}
+        {% if avaliacao.atualizado_em %}
+            | Última atualização: {{ avaliacao.atualizado_em }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="actions">
+        <!-- Voltar para a lista (professor) -->
+        <a href="{{ url_for('listar_avaliacoes_professor') }}" class="btn-secondary">
+            Voltar à lista
+        </a>
+
+        <!-- Botão editar -->
+        <a href="{{ url_for('editar_avaliacao_bimestral', avaliacao_id=avaliacao.id) }}" class="btn">
+            Editar avaliação
+        </a>
+
+        <!-- Botão excluir -->
+        <form action="{{ url_for('excluir_avaliacao_bimestral', avaliacao_id=avaliacao.id) }}" method="POST"
+              onsubmit="return confirmarExclusao();" style="display:inline;">
+            <button type="submit" class="btn-danger">
+                Excluir
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    function confirmarExclusao() {
+        return confirm("Tem certeza de que deseja excluir esta avaliação? Essa ação não poderá ser desfeita.");
+    }
+</script>
+</body>
+</html>

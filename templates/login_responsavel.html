@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login do Responsável – De Olho na Escola</title>
+
+    <!-- CSS global opcional -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Fonte Inter -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <style>
+        :root {
+            --bg-page: #edf5ff;
+            --primary: #7c3aed;
+            --primary-soft: #eee5ff;
+            --accent: #2563eb;
+            --accent-soft: #dbeafe;
+            --verde: #16a34a;
+            --rosa: #ec4899;
+            --card-bg: #ffffff;
+            --border-soft: rgba(148,163,184,0.30);
+            --text-main: #0f172a;
+            --text-muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(222,232,255,0.9), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(240,240,255,0.9), transparent 55%),
+                var(--bg-page);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 560px;
+            border-radius: 26px;
+            background: #ffffff;
+            box-shadow: 0 22px 50px rgba(15,23,42,0.14);
+            border: 1px solid var(--border-soft);
+            padding: 20px 22px 18px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* CABEÇALHO */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .logo-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 999px;
+            background:
+                conic-gradient(from 200deg,
+                               #7c3aed,
+                               #9333ea,
+                               #c084fc,
+                               #7c3aed);
+            padding: 4px;
+            box-shadow: 0 0 26px rgba(124,58,237,0.3);
+        }
+
+        .logo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-inner img {
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .badge-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: rgba(124,58,237,0.08);
+            border: 1px solid rgba(124,58,237,0.32);
+            font-size: 11px;
+            color: #7c3aed;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .school-name h1 {
+            font-size: 22px;
+            margin: 6px 0 2px 0;
+            letter-spacing: 0.03em;
+        }
+
+        .school-name h1 span {
+            color: #7c3aed;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--text-muted);
+        }
+
+        .badge-perfil {
+            margin-top: 6px;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #f3e8ff;
+            color: #7c3aed;
+            border: 1px solid #e9d5ff;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-perfil i {
+            font-size: 12px;
+        }
+
+        /* CARD LOGIN */
+        .login-card {
+            margin-top: 4px;
+            padding: 18px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 14px 30px rgba(15,23,42,0.08);
+        }
+
+        .login-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .login-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .alert {
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .field-label {
+            font-size: 12px;
+            color: var(--text-main);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .field-wrapper {
+            position: relative;
+        }
+
+        .field-wrapper i {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 9px 11px 9px 32px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(148,163,184,0.9);
+            background: #f9fafb;
+        }
+
+        button[type="submit"] {
+            margin-top: 6px;
+            background: linear-gradient(120deg, #9333ea, #7c3aed);
+            color: #ffffff;
+            font-size: 14px;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 12px 26px rgba(124,58,237,0.28);
+            transition: 0.15s ease;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(124,58,237,0.38);
+        }
+
+        /* PRIMEIRO ACESSO */
+        .first-access-box {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 14px;
+            background: #f3e8ff;
+            border: 1px solid #e9d5ff;
+            color: #5b21b6;
+        }
+
+        .first-access-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .first-access-title i {
+            font-size: 16px;
+        }
+
+        .first-access-content a {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 7px 12px;
+            background: linear-gradient(120deg, #9333ea, #7c3aed);
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 6px 16px rgba(124,58,237,0.35);
+        }
+
+        .btn-secondary {
+            margin-top: 12px;
+            background: #f9fafb;
+            padding: 9px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-soft);
+            font-size: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn-secondary:hover {
+            background: #eef2ff;
+        }
+
+        .footer-info {
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        @media (max-width: 520px) {
+            .page-wrapper {
+                padding: 18px 14px;
+            }
+            .logo-ring {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-wrapper">
+
+    <!-- CABEÇALHO -->
+    <header class="header">
+        <div class="logo-ring">
+            <div class="logo-inner">
+                <img src="/static/logo.jpg" alt="Logo ESCOLA CLASSE 16">
+            </div>
+        </div>
+
+        <div class="badge-top">
+            <i class="fas fa-school"></i>
+            Comunidade Escolar ESCOLA CLASSE 16
+        </div>
+
+        <div class="subtitle">ESCOLA CLASSE 16</div>
+
+        <h1>De Olho na Escola <span>ESCOLA CLASSE 16</span></h1>
+
+        <div class="badge-perfil">
+            <i class="fas fa-heart"></i> Acesso do Responsável
+        </div>
+    </header>
+
+    <!-- CARD LOGIN -->
+    <main class="login-card">
+        <div class="login-title">Entre na sua conta</div>
+        <div class="login-sub">
+            Use o usuário e a senha cadastrados pela escola para acessar os dados do(s) estudante(s).
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login_responsavel') }}" method="POST">
+
+            <label class="field-label" for="login">Usuário</label>
+            <div class="field-wrapper">
+                <i class="fas fa-user"></i>
+                <input type="text" id="login" name="login"
+                       required placeholder="Digite seu usuário">
+            </div>
+
+            <label class="field-label" for="senha">Senha</label>
+            <div class="field-wrapper">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="senha" name="senha"
+                       required placeholder="Digite sua senha">
+            </div>
+
+            <button type="submit">
+                <i class="fas fa-sign-in-alt"></i> Entrar
+            </button>
+        </form>
+
+        <!-- PRIMEIRO ACESSO -->
+        <div class="first-access-box">
+            <div class="first-access-title">
+                <i class="fas fa-user-plus"></i> Primeiro acesso?
+            </div>
+            <div class="first-access-content">
+                Faça seu cadastro aqui:
+                <br>
+                <a href="{{ url_for('cadastrar_responsavel') }}">Cadastrar responsável</a>
+            </div>
+        </div>
+
+        <!-- VOLTAR -->
+        <a href="/" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Voltar para a página inicial
+        </a>
+
+        <div class="footer-info">
+            Este acesso é exclusivo para mães, pais e responsáveis legais
+            cadastrados no ESCOLA CLASSE 16.
+        </div>
+    </main>
+
+</div>
+</body>
+</html>

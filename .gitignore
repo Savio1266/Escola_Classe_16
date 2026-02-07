@@ -1,0 +1,13 @@
+# IDE
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Bancos / projetos auxiliares
+*.db
+*.sqbpro
+
+# Pasta que está quebrando o git add
+CEF07_2026_novo/

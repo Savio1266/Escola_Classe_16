@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atestados – De Olho na Escola</title>
+
+    <!-- CSS global (se já existir) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Font Awesome (ícones) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        :root {
+            --page-bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --border-soft: #e2e8f0;
+            --primary: #2563eb;
+            --primary-soft: #dbeafe;
+            --primary-very-soft: #eff6ff;
+            --accent-pink: #ec4899;
+            --text-main: #0f172a;
+            --text-soft: #6b7280;
+            --table-header-bg: #eff6ff;
+            --table-row-alt: #f9fafb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 24px;
+            background:
+                radial-gradient(circle at top left, #dbeafe 0, transparent 55%),
+                radial-gradient(circle at bottom right, #fee2e2 0, transparent 55%),
+                var(--page-bg);
+            color: var(--text-main);
+        }
+
+        .card {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--card-bg);
+            border-radius: 18px;
+            border: 1px solid var(--border-soft);
+            box-shadow:
+                    0 12px 30px rgba(15,23,42,0.08),
+                    0 0 0 1px rgba(148,163,184,0.15);
+            padding: 24px 26px 26px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .title-group h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+        }
+
+        .icon-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 0, #38bdf8, #2563eb 55%, #22c55e 100%);
+            color: #ffffff;
+            font-size: 1rem;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.9);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-soft);
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .pill-status {
+            font-size: 0.75rem;
+            border-radius: 999px;
+            padding: 4px 10px;
+            background: #ecfdf5;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn {
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            background: #ffffff;
+            color: var(--text-main);
+            padding: 7px 16px;
+            font-size: 0.84rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+        }
+
+        .btn:hover {
+            background: #f3f4f6;
+            box-shadow: 0 3px 10px rgba(148,163,184,0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            border: none;
+            background-image: linear-gradient(120deg, var(--primary), #1d4ed8, var(--accent-pink));
+            background-size: 200% 200%;
+            color: #ffffff;
+            box-shadow:
+                    0 10px 22px rgba(37,99,235,0.35),
+                    0 0 0 1px rgba(191,219,254,0.9);
+        }
+
+        .btn-primary:hover {
+            background-position: 100% 0;
+            box-shadow:
+                    0 14px 26px rgba(37,99,235,0.45),
+                    0 0 0 1px rgba(191,219,254,0.95);
+        }
+
+        .flash-messages {
+            margin-bottom: 10px;
+        }
+
+        .flash {
+            font-size: 0.8rem;
+            padding: 8px 10px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-soft);
+            margin-bottom: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px dashed var(--border-soft);
+            margin: 4px 0 10px;
+        }
+
+        .helper {
+            font-size: 0.82rem;
+            color: var(--text-soft);
+            margin-bottom: 10px;
+        }
+
+        form.filters {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        @media (min-width: 768px) {
+            form.filters {
+                grid-template-columns: 1.1fr 1.4fr 1.3fr 0.9fr;
+                align-items: flex-end;
+            }
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            font-weight: 500;
+        }
+
+        select,
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary-soft);
+            background: #ffffff;
+        }
+
+        option {
+            background: #ffffff;
+            color: var(--text-main);
+        }
+
+        .btn-filter {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .table-wrapper {
+            margin-top: 6px;
+            border-radius: 14px;
+            border: 1px solid var(--border-soft);
+            overflow-x: auto;
+            background: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            min-width: 760px; /* garante visibilidade de todas as colunas no mobile com scroll */
+        }
+
+        thead {
+            background: var(--table-header-bg);
+        }
+
+        th, td {
+            padding: 9px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-soft);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--table-row-alt);
+        }
+
+        tbody tr:nth-child(odd) {
+            background: #ffffff;
+        }
+
+        tbody tr:hover {
+            background: #e0f2fe;
+        }
+
+        .col-data {
+            white-space: nowrap;
+        }
+
+        .col-turma {
+            white-space: nowrap;
+        }
+
+        .tag-bimestre {
+            font-size: 0.7rem;
+            border-radius: 999px;
+            padding: 2px 8px;
+            border: 1px solid var(--primary-soft);
+            color: #1d4ed8;
+            background: var(--primary-very-soft);
+        }
+
+        .tag-tipo {
+            font-size: 0.7rem;
+            border-radius: 999px;
+            padding: 2px 8px;
+            border: 1px solid #93c5fd;
+            color: #1d4ed8;
+            background: #eff6ff;
+        }
+
+        .tag-afastamento {
+            border-color: #4ade80;
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .tag-outros {
+            border-color: #facc15;
+            color: #92400e;
+            background: #fef9c3;
+        }
+
+        .acoes {
+            display: inline-flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn-mini {
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            padding: 4px 9px;
+            font-size: 0.74rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            background: #ffffff;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: background 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-mini:hover {
+            background: #f3f4f6;
+            box-shadow: 0 2px 8px rgba(148,163,184,0.35);
+        }
+
+        .btn-mini-danger {
+            border-color: #fecaca;
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .btn-mini-danger:hover {
+            background: #fecaca;
+            box-shadow: 0 2px 8px rgba(248,113,113,0.45);
+        }
+
+        .empty-state {
+            padding: 16px;
+            font-size: 0.85rem;
+            color: var(--text-soft);
+            text-align: center;
+        }
+
+        .empty-state i {
+            color: #9ca3af;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsivo */
+        @media (max-width: 720px) {
+            body {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 16px 14px 20px;
+                border-radius: 16px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .title-group h1 {
+                font-size: 1.2rem;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+            }
+
+            form.filters {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.78rem;
+            }
+
+            table {
+                min-width: 720px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">
+        <div class="title-group">
+            <h1>
+                <span class="icon-badge">
+                    <i class="fa-solid fa-folder-open"></i>
+                </span>
+                Atestados de Estudantes
+            </h1>
+            <span class="subtitle">
+                Visualize e filtre os atestados registrados por bimestre, turma e estudante.
+            </span>
+        </div>
+        <div class="header-actions">
+            <span class="pill-status">
+                <i class="fa-solid fa-shield-heart"></i> Área restrita ao gestor
+            </span>
+            <a href="{{ url_for('registrar_atestado') }}" class="btn btn-primary">
+                <i class="fa-solid fa-file-medical"></i>
+                Novo atestado
+            </a>
+            <a href="{{ url_for('dashboard_moderador') }}" class="btn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Painel do Moderador
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensagens flash -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Filtros -->
+    <div class="section-label">Filtros de busca</div>
+    <hr>
+
+    <p class="helper">
+        Use os filtros abaixo para localizar atestados por <strong>bimestre</strong>, <strong>turma</strong> ou <strong>estudante</strong>.
+        Caso não selecione nenhum filtro, todos os registros serão exibidos.
+    </p>
+
+    <form class="filters" action="{{ url_for('visualizar_atestados') }}" method="get">
+        <div class="field">
+            <label for="bimestre">Bimestre</label>
+            <select name="bimestre" id="bimestre">
+                <option value="">Todos</option>
+                <option value="1" {% if filtro_bimestre == '1' %}selected{% endif %}>1º Bimestre</option>
+                <option value="2" {% if filtro_bimestre == '2' %}selected{% endif %}>2º Bimestre</option>
+                <option value="3" {% if filtro_bimestre == '3' %}selected{% endif %}>3º Bimestre</option>
+                <option value="4" {% if filtro_bimestre == '4' %}selected{% endif %}>4º Bimestre</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="turma_id">Turma</label>
+            <select name="turma_id" id="turma_id">
+                <option value="">Todas</option>
+                {% for turma in turmas %}
+                    <option value="{{ turma['id'] }}"
+                        {% if filtro_turma and filtro_turma|int == turma['id'] %}selected{% endif %}>
+                        {{ turma['nome'] }} – {{ turma['turno'] }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="aluno_id">Estudante</label>
+            <select name="aluno_id" id="aluno_id" {% if not alunos_da_turma %}disabled{% endif %}>
+                {% if not alunos_da_turma %}
+                    <option value="">Selecione uma turma acima</option>
+                {% else %}
+                    <option value="">Todos da turma</option>
+                    {% for aluno in alunos_da_turma %}
+                        <option value="{{ aluno['id'] }}"
+                            {% if filtro_aluno and filtro_aluno|int == aluno['id'] %}selected{% endif %}>
+                            {{ aluno['nome'] }}
+                        </option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+
+        <div class="field">
+            <button type="submit" class="btn btn-primary btn-filter">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Aplicar filtros
+            </button>
+        </div>
+    </form>
+
+    <!-- Tabela de atestados -->
+    <div class="table-wrapper">
+        {% if atestados and atestados|length > 0 %}
+            <table>
+                <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Estudante</th>
+                    <th>Turma / Turno</th>
+                    <th>Bimestre</th>
+                    <th>Tipo</th>
+                    <th>Dias</th>
+                    <th style="text-align: right;">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for a in atestados %}
+                    <tr>
+                        <td class="col-data">
+                            {{ a['data_atestado']|default('—') }}
+                        </td>
+
+                        <td>
+                            {{ a['aluno_nome'] }}
+                        </td>
+                        <td class="col-turma">
+                            {{ a['turma_nome'] }} – {{ a['turma_turno'] }}
+                        </td>
+                        <td>
+                            <span class="tag-bimestre">
+                                {{ a['bimestre'] }}º bimestre
+                            </span>
+                        </td>
+                        <td>
+                            {% set tipo = (a['tipo_atestado'] or '')|upper %}
+                            {% set outro = a['outro_tipo'] %}
+                            <span class="tag-tipo
+                                {% if tipo == 'AFASTAMENTO' %} tag-afastamento{% elif tipo == 'OUTROS' %} tag-outros{% endif %}">
+                                {{ tipo }}
+                            </span>
+                            {% if outro %}
+                                <br>
+                                <small>{{ outro }}</small>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            {% if a['total_dias'] and a['total_dias'] > 0 %}
+                                {{ a['total_dias'] }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td style="text-align: right;">
+                            <div class="acoes">
+                                <a href="{{ url_for('editar_atestado', atestado_id=a['id']) }}"
+                                   class="btn-mini">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    Editar
+                                </a>
+
+                                <form id="form-excluir-{{ a['id'] }}"
+                                      action="{{ url_for('excluir_atestado', atestado_id=a['id']) }}"
+                                      method="post" style="display:inline;">
+                                    <input type="hidden" name="senha_moderador" value="">
+                                    <button type="button"
+                                            class="btn-mini btn-mini-danger"
+                                            onclick="excluirAtestado({{ a['id'] }})">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-inbox"></i>
+                &nbsp;Nenhum atestado encontrado para os filtros selecionados.
+                Você pode registrar um novo clicando em <strong>“Novo atestado”</strong>.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Quando troca a turma no filtro, limpamos o aluno (o backend devolve a lista correta)
+    const turmaSelect = document.getElementById('turma_id');
+    const alunoSelect = document.getElementById('aluno_id');
+
+    if (turmaSelect && alunoSelect) {
+        turmaSelect.addEventListener('change', function () {
+            alunoSelect.innerHTML = '';
+            alunoSelect.disabled = true;
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'Carregando estudantes...';
+            alunoSelect.appendChild(opt);
+        });
+    }
+
+    // Função para excluir atestado pedindo senha do moderador
+    function excluirAtestado(id) {
+        const senha = prompt("Para excluir este atestado, digite a senha de moderador:");
+
+        if (!senha) {
+            return; // cancelou ou deixou em branco
+        }
+
+        const form = document.getElementById('form-excluir-' + id);
+        if (!form) return;
+
+        const inputSenha = form.querySelector('input[name="senha_moderador"]');
+        inputSenha.value = senha;
+        form.submit();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar e Excluir Ocorrências</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <style>
+        :root {
+            --page-bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --border-soft: #e2e8f0;
+            --primary: #2563eb;
+            --primary-soft: #dbeafe;
+            --primary-very-soft: #eff6ff;
+            --danger: #dc2626;
+            --danger-soft: #fee2e2;
+            --text-main: #0f172a;
+            --text-soft: #64748b;
+            --table-header-bg: #eff6ff;
+            --table-row-alt: #f9fafb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 24px;
+            min-height: 100vh;
+            background: var(--page-bg);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text-main);
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 1150px;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            border: 1px solid var(--border-soft);
+            box-shadow:
+                0 10px 28px rgba(15, 23, 42, 0.08),
+                0 0 0 1px rgba(148, 163, 184, 0.15);
+            padding: 20px 22px 18px 22px;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* HEADER COM LOGO */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .logo-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 999px;
+            padding: 3px;
+            background: conic-gradient(from 140deg, #bfdbfe, #a7f3d0, #fde68a, #bfdbfe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-ring-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .logo-ring-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .badge-top {
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-soft);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            letter-spacing: 0.02em;
+            color: var(--text-main);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-soft);
+        }
+
+        /* CARD DE FILTRO */
+        .filtro-card {
+            margin-top: 6px;
+            margin-bottom: 16px;
+            background: var(--primary-very-soft);
+            border-radius: 14px;
+            border: 1px solid var(--primary-soft);
+            padding: 14px 14px 12px 14px;
+        }
+
+        .filtro-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .filtro-sub {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            margin-bottom: 10px;
+        }
+
+        .filtro-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 16px;
+        }
+
+        .filtro-group {
+            flex: 1 1 260px;
+            min-width: 220px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-soft);
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            background-color: #ffffff;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary-soft);
+            background: #ffffff;
+        }
+
+        .button-container {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: var(--primary);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            gap: 6px;
+            transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--text-main);
+            border: 1px solid var(--border-soft);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: #f3f4f6;
+            box-shadow: 0 3px 10px rgba(148, 163, 184, 0.25);
+        }
+
+        .btn-pdf {
+            background: #b91c1c;
+        }
+
+        .btn-pdf:hover {
+            background: #991b1b;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+        }
+
+        /* TABELA */
+        .table-wrapper {
+            margin-top: 4px;
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid var(--border-soft);
+            background: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 880px; /* garante visualização em telas pequenas com scroll */
+        }
+
+        thead {
+            background: var(--table-header-bg);
+        }
+
+        th, td {
+            padding: 9px 8px;
+            font-size: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-soft);
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        tbody tr:nth-child(even) td {
+            background-color: var(--table-row-alt);
+        }
+
+        tbody tr:nth-child(odd) td {
+            background-color: #ffffff;
+        }
+
+        tbody tr:hover td {
+            background-color: #e0f2fe;
+        }
+
+        td {
+            color: var(--text-main);
+            vertical-align: top;
+        }
+
+        td[colspan] {
+            text-align: center;
+            color: var(--text-soft);
+            font-style: italic;
+            padding: 12px 8px;
+        }
+
+        .col-data,
+        .col-professor {
+            white-space: nowrap;
+        }
+
+        .col-motivo {
+            max-width: 260px;
+            word-wrap: break-word;
+            white-space: normal;
+            font-size: 0.8rem;
+        }
+
+        .td-actions form {
+            margin: 0;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            background: #ef4444;
+            color: #fef2f2;
+            transition: background 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-small:hover {
+            background: #dc2626;
+            box-shadow: 0 3px 10px rgba(248, 113, 113, 0.45);
+        }
+
+        footer {
+            text-align: right;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: var(--text-soft);
+        }
+
+        @media (max-width: 900px) {
+            .button-container {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 12px;
+            }
+
+            .main-card {
+                padding: 16px 14px 16px 14px;
+                border-radius: 16px;
+            }
+
+            .header {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+            }
+
+            .filtro-row {
+                flex-direction: column;
+            }
+
+            .button-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn,
+            .btn-secondary,
+            .btn-pdf {
+                width: 100%;
+            }
+
+            th, td {
+                font-size: 0.75rem;
+                padding: 8px 6px;
+            }
+
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="main-card">
+        <div class="main-content">
+
+            <!-- TOPO COM LOGO E TÍTULO -->
+            <div class="header">
+                <div class="logo-ring">
+                    <div class="logo-ring-inner">
+                        <img src="/static/logo.jpg" alt="Logo da Escola">
+                    </div>
+                </div>
+                <div class="header-text">
+                    <div class="badge-top">Registro disciplinar</div>
+                    <h1>Visualizar e Excluir Ocorrências</h1>
+                    <p class="subtitle">
+                        Consulte rapidamente as ocorrências por turma e aluno, com opção de exclusão e geração de relatório em PDF.
+                    </p>
+                </div>
+            </div>
+
+            <!-- CARD DE FILTROS -->
+            <div class="filtro-card">
+                <div class="filtro-title">Filtros de busca</div>
+                <p class="filtro-sub">
+                    Selecione a turma e, se desejar, um aluno específico para listar as ocorrências registradas.
+                </p>
+
+                <form method="GET" action="{{ url_for('visualizar_ocorrencias') }}">
+                    <div class="filtro-row">
+                        <!-- Turma -->
+                        <div class="filtro-group">
+                            <label for="turma_id">Turma</label>
+                            <select id="turma_id" name="turma_id" required>
+                                <option value="">Selecione uma turma</option>
+                                {% for turma in turmas %}
+                                    <option value="{{ turma['id'] }}"
+                                        {% if turma_selecionada and turma_selecionada|int == turma['id'] %}selected{% endif %}>
+                                        {{ turma['nome'] }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Aluno -->
+                        <div class="filtro-group">
+                            <label for="aluno_id">Aluno</label>
+                            <select id="aluno_id" name="aluno_id">
+                                <option value="">Todos os alunos da turma</option>
+                                {% if alunos_da_turma %}
+                                    {% for aluno in alunos_da_turma %}
+                                        <option value="{{ aluno['id'] }}"
+                                            {% if aluno_selecionado and aluno_selecionado|int == aluno['id'] %}selected{% endif %}>
+                                            {{ aluno['nome'] }}
+                                        </option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-container">
+                        <button type="submit" class="btn">
+                            Ver Ocorrências
+                        </button>
+
+                        <a href="{{ url_for('dashboard_professor') }}" class="btn btn-secondary">
+                            Voltar ao Painel
+                        </a>
+
+                        {% if turma_selecionada %}
+                            <a href="{{ url_for('download_ocorrencias_pdf', turma_id=turma_selecionada) }}"
+                               class="btn btn-pdf">
+                                Baixar PDF
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <!-- TABELA DE OCORRÊNCIAS -->
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Data (Ano/Mês/Dia)</th>
+                        <th>Aluno</th>
+                        <th>Turma</th>
+                        <th>Professor</th>
+                        <th>Tipo</th>
+                        <th>Motivo</th>
+                        <th>Dias Susp.</th>
+                        <th>Chamar Resp.</th>
+                        <th>Data Reunião</th>
+                        <th>Hora Reunião</th>
+                        <th>Ação</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if ocorrencias %}
+                        {% for ocorrencia in ocorrencias %}
+                            <tr>
+                                <!-- Data -->
+                                <td class="col-data">{{ ocorrencia[4] }}</td>
+
+                                <!-- Aluno -->
+                                <td>{{ ocorrencia[1] }}</td>
+
+                                <!-- Turma -->
+                                <td>{{ ocorrencia[2] }}</td>
+
+                                <!-- Professor -->
+                                <td class="col-professor">
+                                    {{ ocorrencia[3] if ocorrencia[3] else '-' }}
+                                </td>
+
+                                <!-- Tipo -->
+                                <td>{{ ocorrencia[5] }}</td>
+
+                                <!-- Motivo -->
+                                <td class="col-motivo">
+                                    {{ ocorrencia[6] }}
+                                </td>
+
+                                <!-- Dias Suspensão (só se for SUSPENSAO) -->
+                                <td>
+                                    {% if ocorrencia[5] == 'SUSPENSAO' %}
+                                        {{ ocorrencia[7] }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+
+                                <!-- Chamar Responsável -->
+                                <td>{{ 'Sim' if ocorrencia[8] == 'sim' else 'Não' }}</td>
+
+                                <!-- Data reunião -->
+                                <td>{{ ocorrencia[9] or '-' }}</td>
+
+                                <!-- Hora reunião -->
+                                <td>{{ ocorrencia[10] or '-' }}</td>
+
+                                <!-- Excluir -->
+                                <td class="td-actions">
+                                    <form method="POST" action="{{ url_for('excluir_ocorrencia') }}"
+                                          onsubmit="return confirm('Tem certeza que deseja excluir esta ocorrência?');">
+                                        <input type="hidden" name="ocorrencia_id" value="{{ ocorrencia[0] }}">
+                                        <button type="submit" class="btn-small">
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="11">
+                                Nenhuma ocorrência encontrada para os filtros selecionados.
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- RODAPÉ -->
+            <footer>
+                © 2025 ESCOLA CLASSE 16 de Sobradinho – De Olho na Escola.
+            </footer>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

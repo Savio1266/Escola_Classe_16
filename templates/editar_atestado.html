@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Atestado – De Olho na Escola</title>
+
+    <!-- CSS global (se já existir) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Font Awesome (ícones) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        :root {
+            --azul-fundo: #020817;
+            --azul-1: #0f4fd8;
+            --azul-2: #00b4ff;
+            --rosa: #ec4899;
+            --cinza-borda: rgba(148,163,184,0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: radial-gradient(circle at top left, #0f4fd8 0, transparent 60%),
+                        radial-gradient(circle at bottom right, #ec4899 0, transparent 55%),
+                        #020817;
+            color: #0f172a;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(15,23,42,0.96);
+            border-radius: 18px;
+            border: 1px solid rgba(148,163,184,0.35);
+            box-shadow:
+                    0 18px 45px rgba(15,23,42,0.75),
+                    0 0 0 1px rgba(15,23,42,0.4);
+            padding: 24px 26px 28px;
+            color: #e5e7eb;
+            backdrop-filter: blur(18px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .title-group h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 0, #38bdf8, #0f4fd8 55%, #ec4899 100%);
+            color: #0b1120;
+            font-size: 1rem;
+            box-shadow: 0 0 0 1px rgba(15,23,42,0.2);
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .pill-status {
+            font-size: 0.75rem;
+            border-radius: 999px;
+            padding: 4px 10px;
+            background: rgba(56,189,248,0.08);
+            color: #7dd3fc;
+            border: 1px solid rgba(56,189,248,0.35);
+        }
+
+        .btn {
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.6);
+            background: transparent;
+            color: #e5e7eb;
+            padding: 7px 16px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: rgba(15,23,42,0.7);
+        }
+
+        .btn-primary {
+            border: none;
+            background-image: linear-gradient(120deg, var(--azul-1), var(--azul-2), var(--rosa));
+            background-size: 200% 200%;
+            box-shadow:
+                    0 10px 25px rgba(15,23,42,0.9),
+                    0 0 0 1px rgba(15,23,42,0.6);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background-position 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            background-position: 100% 0;
+            box-shadow:
+                    0 16px 35px rgba(15,23,42,1),
+                    0 0 0 1px rgba(15,23,42,0.7);
+        }
+
+        .flash-messages {
+            margin-bottom: 10px;
+        }
+
+        .flash {
+            font-size: 0.8rem;
+            padding: 8px 10px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            background: rgba(248,250,252,0.05);
+            border: 1px solid rgba(248,250,252,0.12);
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px dashed rgba(148,163,184,0.3);
+            margin: 4px 0 10px;
+        }
+
+        form {
+            display: grid;
+            gap: 18px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        @media (min-width: 720px) {
+            .grid-3 {
+                grid-template-columns: 1.1fr 1.2fr 1.2fr;
+            }
+            .grid-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.8rem;
+            color: #cbd5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .field small {
+            font-size: 0.72rem;
+            color: #9ca3af;
+        }
+
+        select,
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[readonly] {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--cinza-borda);
+            padding: 9px 11px;
+            font-size: 0.9rem;
+            background: rgba(15,23,42,0.96);
+            color: #e5e7eb;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 1px rgba(56,189,248,0.35);
+            background: rgba(15,23,42,1);
+        }
+
+        input[readonly] {
+            background: rgba(15,23,42,0.9);
+            color: #9ca3af;
+        }
+
+        option {
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .badge-required {
+            color: #f97373;
+            margin-left: 4px;
+        }
+
+        .helper {
+            font-size: 0.76rem;
+            color: #9ca3af;
+        }
+
+        .feedback {
+            font-size: 0.8rem;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(248,250,252,0.12);
+            background: rgba(15,23,42,0.85);
+            color: #e5e7eb;
+        }
+
+        .feedback i {
+            margin-right: 6px;
+            color: #38bdf8;
+        }
+
+        .actions-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        .actions-footer .left {
+            font-size: 0.76rem;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .actions-footer .left i {
+            color: #f97373;
+        }
+
+        .btn-submit {
+            border-radius: 999px;
+            border: none;
+            padding: 10px 22px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-image: linear-gradient(120deg, var(--azul-1), var(--azul-2), var(--rosa));
+            background-size: 200% 200%;
+            color: #f9fafb;
+            box-shadow:
+                    0 10px 25px rgba(15,23,42,0.9),
+                    0 0 0 1px rgba(15,23,42,0.6);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background-position 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            background-position: 100% 0;
+            box-shadow:
+                    0 16px 35px rgba(15,23,42,1),
+                    0 0 0 1px rgba(15,23,42,0.7);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+            box-shadow:
+                    0 8px 18px rgba(15,23,42,0.75),
+                    0 0 0 1px rgba(15,23,42,0.7);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">
+        <div class="title-group">
+            <h1>
+                <span class="icon-badge">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </span>
+                Editar Atestado
+            </h1>
+            <span class="subtitle">
+                Ajuste as informações deste atestado. As alterações ficarão registradas no histórico do estudante.
+            </span>
+        </div>
+        <div class="header-actions">
+            <span class="pill-status">
+                <i class="fa-solid fa-shield-heart"></i> Edição restrita ao gestor
+            </span>
+            <a href="{{ url_for('visualizar_atestados') }}" class="btn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Voltar para a lista
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensagens flash -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <form action="{{ url_for('editar_atestado', atestado_id=atestado['id']) }}" method="post" autocomplete="off">
+
+        <!-- Seção 1: Identificação -->
+        <div class="section-label">Identificação do registro</div>
+        <hr>
+
+        <div class="grid grid-3">
+            <div class="field">
+                <label for="bimestre">
+                    Bimestre
+                    <span class="badge-required">*</span>
+                </label>
+                <select name="bimestre" id="bimestre" required>
+                    <option value="1" {% if atestado['bimestre'] == '1' %}selected{% endif %}>1º Bimestre</option>
+                    <option value="2" {% if atestado['bimestre'] == '2' %}selected{% endif %}>2º Bimestre</option>
+                    <option value="3" {% if atestado['bimestre'] == '3' %}selected{% endif %}>3º Bimestre</option>
+                    <option value="4" {% if atestado['bimestre'] == '4' %}selected{% endif %}>4º Bimestre</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>
+                    Turma
+                </label>
+                <!-- Mantemos o vínculo original (turma_id) via input hidden -->
+                <input type="hidden" name="turma_id" value="{{ atestado['turma_id'] }}">
+                <input type="text" value="{{ atestado['turma_nome'] }} – {{ atestado['turma_turno'] }}" readonly>
+                <small>Para alterar o vínculo de turma, considere excluir este atestado e registrar um novo.</small>
+            </div>
+
+            <div class="field">
+                <label>
+                    Estudante
+                </label>
+                <input type="hidden" name="aluno_id" value="{{ atestado['aluno_id'] }}">
+                <input type="text" value="{{ atestado['aluno_nome'] }}" readonly>
+                <small>O estudante vinculado a este atestado permanece o mesmo nesta edição.</small>
+            </div>
+        </div>
+
+        <div class="feedback">
+            <i class="fa-solid fa-circle-info"></i>
+            Nesta tela, você pode ajustar o <strong>bimestre</strong>, o <strong>tipo de atestado</strong>, a <strong>data</strong>
+            e as informações de <strong>afastamento</strong> ou <strong>outros</strong>. O vínculo com a turma e o estudante é preservado.
+        </div>
+
+        <!-- Seção 2: Tipo de atestado -->
+        <div class="section-label" style="margin-top: 10px;">Tipo de atestado</div>
+        <hr>
+
+        <div class="grid grid-2">
+            <div class="field">
+                <label for="tipo_atestado">
+                    Tipo
+                    <span class="badge-required">*</span>
+                </label>
+                {% set tipo_atual = (atestado['tipo_atestado'] or '')|upper %}
+                <select name="tipo_atestado" id="tipo_atestado" required>
+                    <option value="ACOMPANHAMENTO" {% if tipo_atual == 'ACOMPANHAMENTO' %}selected{% endif %}>
+                        Acompanhamento
+                    </option>
+                    <option value="COMPARECIMENTO" {% if tipo_atual == 'COMPARECIMENTO' %}selected{% endif %}>
+                        Comparecimento
+                    </option>
+                    <option value="EXAMES" {% if tipo_atual == 'EXAMES' %}selected{% endif %}>
+                        Exames
+                    </option>
+                    <option value="AFASTAMENTO" {% if tipo_atual == 'AFASTAMENTO' %}selected{% endif %}>
+                        Afastamento
+                    </option>
+                    <option value="OUTROS" {% if tipo_atual == 'OUTROS' %}selected{% endif %}>
+                        Outros
+                    </option>
+                </select>
+                <small>Use <strong>Afastamento</strong> quando houver dias de ausência por orientação médica.</small>
+            </div>
+
+            <div class="field">
+                <label for="data_atestado">
+                    Data do atestado
+                    <span class="badge-required">*</span>
+                </label>
+                <input type="date"
+                       name="data_atestado"
+                       id="data_atestado"
+                       value="{{ atestado['data_atestado'] }}"
+                       required>
+            </div>
+        </div>
+
+        <div class="grid grid-2">
+            <div class="field" id="campo_total_dias">
+                <label for="total_dias">
+                    Total de dias de afastamento
+                </label>
+                <input type="number"
+                       min="0"
+                       step="1"
+                       name="total_dias"
+                       id="total_dias"
+                       value="{{ atestado['total_dias'] if atestado['total_dias'] else '' }}"
+                       placeholder="Ex.: 3">
+                <small>Preencha apenas se o atestado for de afastamento.</small>
+            </div>
+
+            <div class="field" id="campo_outro_tipo">
+                <label for="outro_tipo">
+                    Descreva o tipo de atestado
+                </label>
+                <input type="text"
+                       name="outro_tipo"
+                       id="outro_tipo"
+                       value="{{ atestado['outro_tipo'] or '' }}"
+                       placeholder="Ex.: Atestado de consulta especializada">
+                <small>Use quando o tipo não se encaixar nas opções anteriores.</small>
+            </div>
+        </div>
+
+        <!-- Seção 3: Confirmação com senha -->
+        <div class="section-label" style="margin-top: 8px;">Confirmação de segurança</div>
+        <hr>
+
+        <div class="grid grid-2">
+            <div class="field">
+                <label for="senha_moderador">
+                    Senha de moderador
+                    <span class="badge-required">*</span>
+                </label>
+                <input type="password"
+                       name="senha_moderador"
+                       id="senha_moderador"
+                       placeholder="Digite a senha de moderador para confirmar a edição"
+                       required>
+                <small>A edição do atestado só será concluída após validação da senha do moderador logado.</small>
+            </div>
+        </div>
+
+        <div class="actions-footer">
+            <div class="left">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                As alterações serão aplicadas imediatamente após a confirmação da senha.
+            </div>
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-check-circle"></i>
+                Salvar alterações
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Controle de exibição dos campos "total_dias" e "outro_tipo"
+    const tipoAtestadoSelect = document.getElementById('tipo_atestado');
+    const campoTotalDias = document.getElementById('campo_total_dias');
+    const campoOutroTipo = document.getElementById('campo_outro_tipo');
+    const inputTotalDias = document.getElementById('total_dias');
+    const inputOutroTipo = document.getElementById('outro_tipo');
+
+    function atualizarCamposTipo() {
+        const tipo = (tipoAtestadoSelect.value || '').toUpperCase();
+
+        // Total de dias apenas em afastamento
+        if (tipo === 'AFASTAMENTO') {
+            campoTotalDias.classList.remove('hidden');
+        } else {
+            campoTotalDias.classList.add('hidden');
+            inputTotalDias.value = '';
+        }
+
+        // Campo "outros" apenas em OUTROS
+        if (tipo === 'OUTROS') {
+            campoOutroTipo.classList.remove('hidden');
+        } else {
+            campoOutroTipo.classList.add('hidden');
+            inputOutroTipo.value = '';
+        }
+    }
+
+    tipoAtestadoSelect.addEventListener('change', atualizarCamposTipo);
+
+    // Ao carregar a página, definimos a visibilidade inicial da tela com base no valor do banco
+    (function initCampos() {
+        const tipoInicial = (tipoAtestadoSelect.value || '').toUpperCase();
+        if (tipoInicial !== 'AFASTAMENTO' && !inputTotalDias.value) {
+            campoTotalDias.classList.add('hidden');
+        }
+        if (tipoInicial !== 'OUTROS' && !inputOutroTipo.value) {
+            campoOutroTipo.classList.add('hidden');
+        }
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6c63ff, #3f3d56);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            background: #ffffff;
+            color: #333;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #6c63ff;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin: 10px 0 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #6c63ff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(108, 99, 255, 0.5);
+        }
+
+        button {
+            background: #6c63ff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #574bdb;
+        }
+
+        a {
+            color: #6c63ff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            margin-top: 15px;
+            display: block;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Redefinir Senha</h1>
+        <form action="{{ url_for('redefinir_senha') }}" method="POST">
+            <label for="login">Login:</label>
+            <input type="text" name="login" id="login" placeholder="Digite seu login" required>
+
+            <label for="nova_senha">Nova Senha:</label>
+            <input type="password" name="nova_senha" id="nova_senha" placeholder="Digite a nova senha" required>
+
+            <button type="submit">Redefinir Senha</button>
+        </form>
+        <a href="{{ url_for('login_responsavel') }}" class="back-link">Voltar ao Login</a>
+    </div>
+</body>
+</html>

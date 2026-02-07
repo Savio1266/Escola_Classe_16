@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Excluir Ocorrência</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        td {
+            color: #555;
+            text-align: center;
+        }
+
+        td[colspan] {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #a71d2a;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 12px 20px;
+            margin-top: 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+            padding: 15px 0;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Excluir Ocorrência</h1>
+
+    {% if ocorrencias %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Nome do Aluno</th>
+                    <th>Turma</th>
+                    <th>Tipo de Ocorrência</th>
+                    <th>Motivo</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ocorrencia in ocorrencias %}
+                    <tr>
+                        <td>{{ ocorrencia[3] }}</td> <!-- Data -->
+                        <td>{{ ocorrencia[1] }}</td> <!-- Nome do aluno -->
+                        <td>{{ ocorrencia[2] }}</td> <!-- Nome da turma -->
+                        <td>{{ ocorrencia[4] }}</td> <!-- Tipo de ocorrência -->
+                        <td>{{ ocorrencia[5] }}</td> <!-- Motivo -->
+                        <td>
+                            <form method="POST" action="{{ url_for('excluir_ocorrencia') }}">
+                                <input type="hidden" name="ocorrencia_id" value="{{ ocorrencia[0] }}">
+                                <button type="submit" class="btn">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="text-align: center; color: #555; font-style: italic;">Não foram encontradas ocorrências para exclusão.</p>
+    {% endif %}
+
+    <div style="text-align: center;">
+        <a href="{{ url_for('dashboard_professor') }}" class="btn-secondary">Voltar</a>
+    </div>
+
+    <footer>
+        <p>© 2024 ESCOLA CLASSE 16 de Sobradinho - Desenvolvido pelo Professor Wellton Sávio</p>
+    </footer>
+</body>
+</html>

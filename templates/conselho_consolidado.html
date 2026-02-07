@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Conselho Consolidado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg-1:#020617;
+      --bg-2:#020617;
+
+      --card:rgba(255,255,255,.08);
+      --border:rgba(148,163,184,.25);
+
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+
+      --primary:#38bdf8;
+      --primary-soft:rgba(56,189,248,.18);
+
+      --success:#22c55e;
+      --warning:#f59e0b;
+
+      --radius:18px;
+      --shadow:0 20px 40px rgba(0,0,0,.35);
+    }
+
+    *{ box-sizing:border-box; }
+    html, body { height:100%; }
+
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(900px 420px at 12% 10%, rgba(56,189,248,.12), transparent 55%),
+        radial-gradient(900px 420px at 90% 20%, rgba(99,102,241,.10), transparent 55%),
+        linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      color:var(--text);
+      padding:18px;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:16px 18px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width: 0;
+    }
+
+    .title h2{
+      margin:0;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:.2px;
+      text-transform: uppercase;
+    }
+
+    .subtitle{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      width: fit-content;
+      flex-wrap:wrap;
+    }
+
+    .rowbtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:9px 14px;
+      font-size:12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      cursor:pointer;
+      text-decoration:none;
+      transition:.15s ease;
+      white-space:nowrap;
+      user-select:none;
+    }
+
+    .btn:hover{
+      background:rgba(255,255,255,.10);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary{
+      background:var(--primary-soft);
+      border-color:rgba(56,189,248,.45);
+      color:#e0f2fe;
+    }
+
+    .btn-primary:hover{ background:rgba(56,189,248,.28); }
+
+    .btn-warn{
+      background: rgba(245,158,11,.14);
+      border-color: rgba(245,158,11,.45);
+      color:#ffedd5;
+    }
+    .btn-warn:hover{ background: rgba(245,158,11,.22); }
+
+    .filter{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:8px;
+    }
+
+    select{
+      padding:9px 10px;
+      border-radius:12px;
+      border:1px solid rgba(148,163,184,.25);
+      background: rgba(2,6,23,.55);
+      color: var(--text);
+      outline:none;
+    }
+    select option{
+      background:#0b1220;
+      color:#e5e7eb;
+    }
+
+    .table-wrap{
+      border:1px solid rgba(148,163,184,.20);
+      border-radius:16px;
+      overflow:hidden;
+      background: rgba(255,255,255,.04);
+    }
+
+    .table-scroll{
+      overflow:auto;
+      max-width:100%;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width: 760px;
+    }
+
+    th, td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(148,163,184,.16);
+      text-align:left;
+      font-size:13px;
+      vertical-align: top;
+    }
+
+    th{
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      color:#cbd5f5;
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(6px);
+    }
+
+    tr:hover td{ background:rgba(255,255,255,.04); }
+
+    .col-aspect{
+      min-width: 320px;
+      color:#eaf0ff;
+      font-weight:700;
+    }
+
+    .xcell{
+      text-align:center;
+      font-weight:900;
+      color: var(--success);
+      font-size:14px;
+    }
+
+    .section-title{
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      font-weight: 800;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+
+    .obs{
+      margin:0;
+      font-size:13px;
+      color: var(--text);
+      line-height:1.5;
+      white-space: pre-wrap;
+    }
+
+    .obs-muted{
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media(max-width:768px){
+      body{ padding: 12px; }
+      .top{ flex-direction:column; align-items:flex-start; }
+      .rowbtns{ width:100%; justify-content:flex-start; }
+      .btn{ width:100%; }
+      table{ min-width: 680px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  {# ==========================================================
+     ✅ REGRA DE VISUALIZAÇÃO POR DISCIPLINA DO PROFESSOR
+     - Preferência: colunas_permitidas (backend)
+     - Fallback seguro:
+        1) se disciplina_filtro existir -> mostra só ela
+        2) senão -> mostra apenas disciplinas com ao menos 1 marcação
+        3) se ainda vazio -> volta pro padrão (não quebra)
+     ========================================================== #}
+
+  {% set colunas_visiveis = [] %}
+
+  {# 1) Melhor caso: backend manda exatamente as colunas válidas desse aluno #}
+  {% if colunas_permitidas is defined and colunas_permitidas %}
+    {% set colunas_visiveis = colunas_permitidas %}
+  {% else %}
+    {# 2) Se o professor filtrou por uma disciplina, mostra só ela #}
+    {% if disciplina_filtro %}
+      {% set colunas_visiveis = [disciplina_filtro] %}
+    {% else %}
+      {# 3) Fallback: só mostra disciplinas com alguma marcação #}
+      {% set tmp = [] %}
+      {% for d in colunas %}
+        {% set asp = registros.get(d, {}).get('aspectos', {}) %}
+        {% set tem_marcacao = false %}
+        {% for _k,_v in asp.items() %}
+          {% if _v %}
+            {% set tem_marcacao = true %}
+          {% endif %}
+        {% endfor %}
+        {% if tem_marcacao %}
+          {% set tmp = tmp + [d] %}
+        {% endif %}
+      {% endfor %}
+      {% set colunas_visiveis = tmp %}
+    {% endif %}
+
+    {# 4) Se ficou vazio, cai pro padrão (para não sumir tabela toda) #}
+    {% if not colunas_visiveis %}
+      {% set colunas_visiveis = colunas %}
+    {% endif %}
+  {% endif %}
+
+  <div class="card top">
+    <div class="title">
+      <h2>{{ aluno_nome }}</h2>
+      <p class="subtitle">{{ turma_nome }} – {{ bimestre }}º bimestre / {{ ano }}</p>
+
+      <div class="pill">
+        <i class="fa-solid fa-table-list"></i>
+        Exibindo apenas:
+        {% if colunas_visiveis %}
+          <b>{{ colunas_visiveis|join(', ') }}</b>
+        {% else %}
+          <b>-</b>
+        {% endif %}
+      </div>
+
+      {% if disciplinas_prof and disciplinas_prof|length > 1 %}
+        <form class="filter" method="GET" action="{{ url_for('conselho.conselho_professor_ver') }}">
+          <input type="hidden" name="turma_id" value="{{ request.args.get('turma_id','') }}">
+          <input type="hidden" name="aluno_id" value="{{ request.args.get('aluno_id','') }}">
+          <input type="hidden" name="bimestre" value="{{ bimestre }}">
+          <input type="hidden" name="ano" value="{{ ano }}">
+
+          <span style="font-size:12px;color:var(--muted)">Ver:</span>
+          <select name="disciplina_abrev" onchange="this.form.submit()">
+            <option value="">Somente disciplinas válidas</option>
+            {% for d in colunas_visiveis %}
+              <option value="{{ d }}" {% if disciplina_filtro == d %}selected{% endif %}>Apenas {{ d }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      {% endif %}
+    </div>
+
+    <div class="rowbtns">
+      {% if session.get('tipo') == 'moderador' %}
+        <a class="btn btn-primary" href="{{ url_for('dashboard_moderador') }}">
+          <i class="fa-solid fa-house"></i> Início do Moderador
+        </a>
+      {% else %}
+        <a class="btn btn-primary" href="{{ url_for('dashboard_professor') }}">
+          <i class="fa-solid fa-house"></i> Início do Professor
+        </a>
+      {% endif %}
+
+      {# ✅ BOTÕES DE EDIÇÃO: abre o formulário do professor já no modo editar #}
+      {% if session.get('tipo') == 'professor' %}
+        {% for d in colunas_visiveis %}
+          <a class="btn btn-warn"
+             href="{{ url_for('conselho.conselho_professor',
+                              turma_id=request.args.get('turma_id',''),
+                              aluno_id=request.args.get('aluno_id',''),
+                              disciplina_abrev=d,
+                              bimestre=bimestre,
+                              ano=ano,
+                              modo='editar') }}">
+            <i class="fa-solid fa-pen"></i> Editar {{ d }}
+          </a>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Aspectos</th>
+              {% for d in colunas_visiveis %}
+                <th style="text-align:center; min-width:80px;">{{ d }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+
+          <tbody>
+          {% for key,label in aspectos %}
+            <tr>
+              <td class="col-aspect">{{ label }}</td>
+              {% for d in colunas_visiveis %}
+                <td class="xcell">
+                  {% if registros.get(d, {}).get('aspectos', {}).get(key) %}
+                    X
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">
+      <i class="fa-solid fa-pen-to-square"></i>
+      Observações do Moderador
+    </div>
+
+    {% set obs_txt = (observacao.observacoes if observacao else "") %}
+    {% if obs_txt and obs_txt.strip() %}
+      <p class="obs">{{ obs_txt }}</p>
+    {% else %}
+      <p class="obs obs-muted">Nenhuma observação registrada.</p>
+    {% endif %}
+  </div>
+
+</div>
+</body>
+</html>

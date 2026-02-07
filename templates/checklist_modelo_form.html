@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% if modo=='novo' %}Montar Checklist{% else %}Editar Modelo do Checklist{% endif %}</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root{--primary:#6366f1;--primary-dark:#4f46e5;--bg:#f6f7fb;--card:#fff;--border:#e2e8f0;--shadow:0 10px 20px rgba(2,6,23,.06);--radius:16px;--muted:#64748b;}
+    body{background:var(--bg);}
+    .page{max-width:1100px;margin:24px auto;padding:0 14px;}
+    .cardx{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}
+    .btn-primary{background:var(--primary);border-color:var(--primary);}
+    .btn-primary:hover{background:var(--primary-dark);border-color:var(--primary-dark);}
+    .muted{color:var(--muted);}
+    .item-row{border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px;background:rgba(2,6,23,.01);}
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="cardx mb-3 d-flex flex-wrap align-items-start justify-content-between gap-2">
+      <div>
+        <h5 class="mb-1"><i class="fa-solid fa-screwdriver-wrench"></i>
+          {% if modo=='novo' %}Montar Checklist do Bimestre{% else %}Editar Modelo do Checklist{% endif %}
+        </h5>
+        <div class="muted">Hoje: <b>{{ hoje }}</b></div>
+      </div>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="{{ url_for('checklist.checklist_moderador_home') }}">
+          <i class="fa-solid fa-arrow-left"></i> Voltar
+        </a>
+        {% if modo=='editar' %}
+          <a class="btn btn-primary" href="{{ url_for('checklist.checklist_marcar_professor', bimestre=modelo.bimestre, ano=modelo.ano) }}">
+            <i class="fa-solid fa-user-check"></i> Marcar por Professor
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="cardx">
+      <form method="POST">
+        {% if modo=='novo' %}
+          <div class="row g-2">
+            <div class="col-6 col-md-3">
+              <label class="form-label fw-bold">Bimestre</label>
+              <select class="form-select" name="bimestre" required>
+                <option value="">Selecione...</option>
+                <option value="1">1º</option>
+                <option value="2">2º</option>
+                <option value="3">3º</option>
+                <option value="4">4º</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label fw-bold">Ano</label>
+              <input type="number" class="form-control" name="ano" value="{{ ano_padrao }}" min="2020" max="2100">
+            </div>
+          </div>
+
+          <hr class="my-4"/>
+
+          <div class="fw-bold mb-1"><i class="fa-solid fa-check-double"></i> Itens fixos</div>
+          <div class="muted small mb-3">Marque os itens que farão parte do checklist do bimestre. Defina datas se quiser (opcional).</div>
+
+          <div class="row g-2">
+            {% for titulo in default_itens %}
+              <div class="col-12 col-lg-6">
+                <div class="item-row">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="itens_fixos" value="{{ titulo }}" id="fix_{{ loop.index }}">
+                    <label class="form-check-label fw-bold" for="fix_{{ loop.index }}">
+                      {{ titulo }}
+                    </label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="form-label small muted">Data limite (opcional)</label>
+                    <input type="date" class="form-control" name="data_fix_{{ titulo }}">
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <hr class="my-4"/>
+
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div>
+              <div class="fw-bold"><i class="fa-solid fa-plus"></i> Itens personalizados</div>
+              <div class="muted small">Adicione outros itens que você lembrou (com data opcional).</div>
+            </div>
+            <button type="button" class="btn btn-outline-primary" onclick="addCustomItem()">
+              <i class="fa-solid fa-circle-plus"></i> Adicionar item
+            </button>
+          </div>
+
+          <div id="custom-items" class="mt-3"></div>
+
+          <div class="d-grid mt-4">
+            <button class="btn btn-primary btn-lg" type="submit">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Checklist do Bimestre
+            </button>
+          </div>
+
+        {% else %}
+
+          <div class="mb-2">
+            <span class="badge text-bg-primary">{{ modelo.bimestre }}º bimestre</span>
+            <span class="badge text-bg-secondary">{{ modelo.ano }}</span>
+            <div class="muted small mt-1">Edite datas, adicione itens e reordene automaticamente pela lista.</div>
+          </div>
+
+          {% if itens and itens|length > 0 %}
+            {% for it in itens %}
+              <div class="item-row">
+                <input type="hidden" name="item_id[]" value="{{ it.id }}">
+                <div class="fw-bold mb-2">{{ it.titulo }}</div>
+
+                <div class="row g-2">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label fw-bold">Data limite (opcional)</label>
+                    <input type="date" class="form-control" name="data_{{ it.id }}" value="{{ it.data_limite or '' }}">
+                  </div>
+                  <div class="col-12 col-md-6 d-flex align-items-end">
+                    <form method="POST" action="{{ url_for('checklist.checklist_modelo_excluir_item', item_id=it.id) }}">
+                      <input type="hidden" name="modelo_id" value="{{ modelo.id }}">
+                      <button type="submit" class="btn btn-outline-danger w-100"
+                              onclick="return confirm('Remover este item do checklist do bimestre?');">
+                        <i class="fa-solid fa-trash"></i> Remover do modelo
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="text-center py-4 muted">Modelo sem itens.</div>
+          {% endif %}
+
+          <hr class="my-4"/>
+
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div>
+              <div class="fw-bold"><i class="fa-solid fa-plus"></i> Adicionar itens personalizados</div>
+              <div class="muted small">Novos itens entram para todo mundo nesse bimestre.</div>
+            </div>
+            <button type="button" class="btn btn-outline-primary" onclick="addCustomItem()">
+              <i class="fa-solid fa-circle-plus"></i> Adicionar item
+            </button>
+          </div>
+
+          <div id="custom-items" class="mt-3"></div>
+
+          <div class="d-grid mt-4">
+            <button class="btn btn-primary btn-lg" type="submit">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações do Modelo
+            </button>
+          </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function addCustomItem(){
+      const wrap = document.getElementById('custom-items');
+      const div = document.createElement('div');
+      div.className = 'item-row';
+      div.innerHTML = `
+        <div class="row g-2">
+          <div class="col-12 col-md-8">
+            <label class="form-label fw-bold">Título do item</label>
+            <input type="text" class="form-control" name="custom_titulo[]" placeholder="Ex.: Entregou o diário de classe" required>
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-bold">Data limite (opcional)</label>
+            <input type="date" class="form-control" name="custom_data[]">
+          </div>
+        </div>
+        <div class="mt-2 d-flex justify-content-end">
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.item-row').remove()">
+            <i class="fa-solid fa-xmark"></i> Remover
+          </button>
+        </div>
+      `;
+      wrap.appendChild(div);
+    }
+  </script>
+</body>
+</html>

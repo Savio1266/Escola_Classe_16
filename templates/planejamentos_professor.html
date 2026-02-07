@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Planejamentos Bimestrais</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --bg-main: #f3f4f6;
+            --card-bg: #ffffff;
+            --card-border: rgba(148,163,184,0.35);
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --accent-soft: rgba(37,99,235,0.08);
+            --text-main: #0f172a;
+            --text-soft: #475569;
+            --danger: #ef4444;
+            --success: #16a34a;
+            --badge-bg: #e0f2fe;
+            --badge-muted-bg: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(191,219,254,0.7), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(187,247,208,0.7), transparent 55%),
+                var(--bg-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1080px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow:
+                0 14px 30px rgba(15,23,42,0.08),
+                0 0 0 1px rgba(148,163,184,0.18);
+            padding: 20px 20px 24px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* TOPO */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .logo-ring {
+            width: 76px;
+            height: 76px;
+            border-radius: 999px;
+            padding: 3px;
+            background: conic-gradient(from 140deg, #2563eb, #0ea5e9, #16a34a, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 18px rgba(37,99,235,0.45);
+            flex-shrink: 0;
+        }
+
+        .logo-ring-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-ring-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            margin: 4px 0 2px 0;
+            font-size: 22px;
+            letter-spacing: 0.03em;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-soft);
+        }
+
+        /* BOTÕES TOPO */
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 12px 0 16px 0;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all .15s ease;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 6px 14px rgba(34,197,94,0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(34,197,94,0.5);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        /* ALERTA */
+        .alert {
+            background: #fffbeb;
+            border: 1px solid #facc15;
+            color: #92400e;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .alert strong {
+            color: #b45309;
+        }
+
+        .alert ul {
+            margin-top: 6px;
+            padding-left: 20px;
+        }
+
+        .alert li {
+            margin-bottom: 2px;
+        }
+
+        /* FILTROS */
+        .filter-box {
+            background: #f8fafc;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .filter-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .filter-subtitle {
+            font-size: 12px;
+            color: var(--text-soft);
+        }
+
+        .toggle-filters-btn {
+            border-radius: 999px;
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            background: #e5e7eb;
+            color: var(--text-main);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .toggle-filters-btn:hover {
+            background: #d4d4d8;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px;
+        }
+
+        .filters-grid label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-soft);
+            margin-bottom: 4px;
+        }
+
+        .filters-grid input,
+        .filters-grid select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .filters-grid input:focus,
+        .filters-grid select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(37,99,235,0.18);
+        }
+
+        .filters-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .btn-filter {
+            padding: 8px 18px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            border: none;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 6px 14px rgba(37,99,235,0.35);
+        }
+
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(37,99,235,0.45);
+        }
+
+        .filters-collapsed {
+            display: none;
+        }
+
+        /* TABELA – COMPACTA + SCROLL INTERNO */
+        .table-wrapper {
+            margin-top: 6px;
+            border-radius: 14px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            overflow-x: auto; /* scroll horizontal em telas menores */
+            overflow-y: auto; /* scroll vertical para muitos planejamentos */
+            max-height: 420px; /* limita a altura da área da tabela */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            table-layout: fixed;
+            min-width: 760px; /* garante visibilidade em telas menores via scroll */
+        }
+
+        thead {
+            background: #f1f5f9;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        th {
+            padding: 8px 6px;
+            text-align: left;
+            color: #475569;
+            font-weight: 600;
+            border-bottom: 1px solid #cbd5e1;
+            white-space: nowrap;
+            font-size: 11px;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        tbody tr:nth-child(odd) td {
+            background: #ffffff;
+        }
+
+        tbody tr:hover td {
+            background: #e0f2fe;
+        }
+
+        td {
+            padding: 8px 6px;
+            color: var(--text-main);
+            vertical-align: top;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        /* coluna de conteúdos com largura controlada */
+        .td-conteudos {
+            max-width: 260px;
+        }
+
+        /* coluna de turmas organizada em “chips” */
+        .td-turmas {
+            max-width: 220px;
+        }
+
+        .turmas-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--badge-bg);
+            color: #1e40af;
+            border: 1px solid rgba(37,99,235,0.3);
+            font-size: 11px;
+        }
+
+        .badge-muted {
+            background: var(--badge-muted-bg);
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+
+        .turma-badge {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-small {
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-view {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #7dd3fc;
+        }
+
+        .btn-view:hover {
+            background: #bae6fd;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-delete:hover {
+            background: #fecaca;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 16px;
+            color: var(--text-soft);
+        }
+
+        .table-hint {
+            font-size: 11px;
+            color: var(--text-soft);
+            margin-top: 4px;
+        }
+
+        /* RODAPÉ */
+        .footer {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-soft);
+            margin-top: 14px;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+
+        /* Tablets / telas médias */
+        @media (max-width: 1024px) {
+            body {
+                padding: 16px;
+            }
+            .container {
+                max-width: 100%;
+                padding: 18px 16px 20px 16px;
+            }
+        }
+
+        /* Tablets menores e celulares em landscape */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                display: block;
+            }
+
+            .container {
+                padding: 14px 10px 16px 10px;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+
+            .top-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .filter-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-actions {
+                justify-content: center;
+            }
+
+            table {
+                font-size: 12px;
+                min-width: 700px;
+            }
+
+            th, td {
+                padding: 8px 5px;
+            }
+
+            .td-conteudos {
+                max-width: 220px;
+            }
+        }
+
+        /* Celulares pequenos */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                padding: 12px 6px 14px 6px;
+            }
+
+            .logo-ring {
+                width: 64px;
+                height: 64px;
+            }
+
+            h1 {
+                font-size: 18px;
+            }
+
+            .filter-header {
+                text-align: left;
+            }
+
+            .footer {
+                text-align: center;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="content">
+
+        <!-- TOPO -->
+        <div class="header">
+            <div class="logo-ring">
+                <div class="logo-ring-inner">
+                    <img src="/static/logo.jpg" alt="Logo da Escola">
+                </div>
+            </div>
+
+            <h1>Meus Planejamentos Bimestrais</h1>
+            <p class="subtitle">Acompanhe tudo o que você já organizou para suas turmas.</p>
+        </div>
+
+        <!-- BOTÕES -->
+        <div class="top-actions">
+            <a href="{{ url_for('registrar_planejamento') }}" class="btn btn-primary">
+                ＋ Novo Planejamento
+            </a>
+            <a href="{{ url_for('dashboard_professor') }}" class="btn btn-secondary">
+                ⟵ Voltar ao Painel
+            </a>
+        </div>
+
+        <!-- ALERTA -->
+        {% if turmas_sem_planejamento %}
+        <div class="alert">
+            <strong>Atenção:</strong> as seguintes turmas ainda não possuem planejamento registrado:
+            <ul>
+                {% for turma in turmas_sem_planejamento %}
+                <li>{{ turma.nome }} ({{ turma.turno }})</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- FILTROS -->
+        <div class="filter-box">
+            <div class="filter-header">
+                <div>
+                    <div class="filter-title">Filtros de pesquisa</div>
+                    <div class="filter-subtitle">Refine os resultados usando ano, bimestre, disciplina ou turma.</div>
+                </div>
+                <button type="button" class="toggle-filters-btn" onclick="toggleFilters()">
+                    Mostrar / ocultar filtros
+                </button>
+            </div>
+
+            <form method="GET"
+                  id="filtersForm"
+                  class="filters-grid"
+                  action="{{ url_for('listar_planejamentos_professor') }}">
+                <div>
+                    <label for="ano_letivo">Ano letivo</label>
+                    <input type="number" id="ano_letivo" name="ano_letivo"
+                           placeholder="Ex.: 2025"
+                           value="{{ filtros.ano_letivo if filtros }}">
+                </div>
+
+                <div>
+                    <label for="bimestre">Bimestre</label>
+                    <select id="bimestre" name="bimestre">
+                        <option value="">Todos</option>
+                        <option value="1" {% if filtros.bimestre=='1' %}selected{% endif %}>1º Bimestre</option>
+                        <option value="2" {% if filtros.bimestre=='2' %}selected{% endif %}>2º Bimestre</option>
+                        <option value="3" {% if filtros.bimestre=='3' %}selected{% endif %}>3º Bimestre</option>
+                        <option value="4" {% if filtros.bimestre=='4' %}selected{% endif %}>4º Bimestre</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="disciplina">Disciplina</label>
+                    <select id="disciplina" name="disciplina">
+                        <option value="">Todas</option>
+                        {% for disc in disciplinas_professor %}
+                        <option value="{{ disc }}" {% if filtros.disciplina==disc %}selected{% endif %}>
+                            {{ disc }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="turma_id">Turma</label>
+                    <select id="turma_id" name="turma_id">
+                        <option value="">Todas</option>
+                        {% for turma in turmas %}
+                        <option value="{{ turma.id }}" {% if filtros.turma_id==turma.id %}selected{% endif %}>
+                            {{ turma.nome }} ({{ turma.turno }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filters-actions">
+                    <button type="submit" class="btn-filter">Aplicar Filtros</button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- TABELA (COMPACTA + SCROLL) -->
+        <div class="table-wrapper">
+            {% if planejamentos %}
+            <table>
+                <thead>
+                <tr>
+                    <th>Bimestre</th>
+                    <th>Disciplina</th>
+                    <th>Turmas</th>
+                    <th>Conteúdos</th>
+                    <th>Criado em</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for p in planejamentos %}
+                <tr>
+                    <td>{{ p.bimestre }}º</td>
+                    <td>{{ p.disciplina }}</td>
+                    <td class="td-turmas">
+                        {% if p.turmas_nomes %}
+                            <div class="turmas-wrap">
+                                {# cada turma vira um “chip” separado #}
+                                {% for nome_turma in p.turmas_nomes.split(',') %}
+                                    <span class="badge turma-badge">{{ nome_turma }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <span class="badge badge-muted">Sem turmas</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="td-conteudos">
+                        {{ p.conteudos_cadastrados or '-' }}
+                    </td>
+
+                    <td>{{ p.criado_em or '-' }}</td>
+
+                    <td>
+                        <a href="{{ url_for('detalhar_planejamento', planejamento_id=p.id) }}"
+                           class="btn-small btn-view">Ver</a>
+
+                        <form method="POST"
+                              action="{{ url_for('excluir_planejamento', planejamento_id=p.id) }}"
+                              style="display:inline;"
+                              onsubmit="return confirm('Tem certeza que deseja excluir este planejamento?');">
+                            <button class="btn-small btn-delete">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+
+            {% else %}
+            <div class="empty-msg">
+                Nenhum planejamento encontrado para os filtros selecionados.
+            </div>
+            {% endif %}
+        </div>
+
+        <p class="table-hint">
+            Dica: use a rolagem dentro da tabela para navegar pelos planejamentos sem deixar a página muito longa.
+        </p>
+
+        <div class="footer">
+            Organização pedagógica integrada ao sistema De Olho na Escola.
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function toggleFilters() {
+        const form = document.getElementById('filtersForm');
+        form.classList.toggle('filters-collapsed');
+    }
+</script>
+
+</body>
+</html>

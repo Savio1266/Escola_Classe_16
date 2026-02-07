@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerar Lista de Presença</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg-1:#f6f8fc;
+      --bg-2:#eef2ff;
+      --card:#ffffff;
+      --border:#e6eaf2;
+      --text:#0f172a;
+      --muted:#64748b;
+      --primary:#2563eb;
+      --primary-soft: rgba(37,99,235,.10);
+      --shadow: 0 18px 45px rgba(15,23,42,.08);
+      --radius:18px;
+      --success:#22c55e;
+      --danger:#ef4444;
+      --warning:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 10% 10%, rgba(37,99,235,.16), transparent 60%),
+        radial-gradient(900px 600px at 90% 15%, rgba(34,197,94,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg-2), var(--bg-1));
+      min-height:100vh;
+      padding: 28px 18px;
+    }
+    .wrap{max-width:1100px;margin:0 auto;}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;border:1px solid var(--border);border-radius:16px;
+      background:rgba(255,255,255,.85);box-shadow:var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .title{
+      display:flex;align-items:center;gap:12px;
+    }
+    .title .icon{
+      width:44px;height:44px;border-radius:14px;
+      display:grid;place-items:center;
+      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(37,99,235,.06));
+      border:1px solid rgba(37,99,235,.25);
+      color:var(--primary);
+    }
+    .title h1{font-size:18px;margin:0}
+    .title p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 14px;border-radius:14px;
+      border:1px solid var(--border);
+      background: #fff;
+      text-decoration:none;color:var(--text);
+      cursor:pointer;
+      transition:.15s ease;
+      box-shadow: 0 8px 22px rgba(15,23,42,.06);
+    }
+    .btn:hover{transform: translateY(-1px);}
+    .btn-primary{
+      background: linear-gradient(135deg, var(--primary), #1d4ed8);
+      border-color: rgba(29,78,216,.35);
+      color:#fff;
+    }
+
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background: rgba(255,255,255,.90);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+      backdrop-filter: blur(8px);
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:15px;
+      display:flex;align-items:center;gap:10px;
+    }
+    .card h2 i{color:var(--primary)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media (max-width:720px){.row{grid-template-columns:1fr}}
+    label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:10px 12px;
+      outline:none;
+      background:#fff;
+      font-size:14px;
+    }
+    input:focus, select:focus, textarea:focus{border-color: rgba(37,99,235,.45); box-shadow: 0 0 0 3px rgba(37,99,235,.10);}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:13px;color:var(--text);
+      cursor:pointer;
+      user-select:none;
+    }
+    .turmas{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+      max-height: 390px;
+      overflow:auto;
+      padding-right:6px;
+    }
+    @media (max-width:980px){
+      .turmas{grid-template-columns: repeat(2, 1fr)}
+    }
+    @media (max-width:560px){
+      .turmas{grid-template-columns: 1fr}
+    }
+    .turma-item{
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+      padding:10px 12px;
+      display:flex;gap:10px;align-items:flex-start;
+    }
+    .turma-item input{width:auto;margin-top:3px}
+    .turma-item b{display:block;font-size:14px}
+    .turma-item span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+    .actions{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .warn{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px dashed rgba(245,158,11,.45);
+      background: rgba(245,158,11,.08);
+      color:#7c4a02;
+      font-size:13px;
+    }
+    .flash{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fff;
+      box-shadow: 0 10px 26px rgba(15,23,42,.06);
+    }
+    .flash.error{border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.06)}
+    .flash.success{border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.06)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <div class="icon"><i class="fa-solid fa-clipboard-check"></i></div>
+        <div>
+          <h1>Gerar Lista de Presença</h1>
+          <p>Escolha turno, turma(s), tipo e data. Gere em Word (modelo) ou PDF.</p>
+        </div>
+      </div>
+      <a class="btn" href="{{ url_for('dashboard_moderador') }}"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash error">
+          <b>Atenção:</b>
+          <div style="margin-top:6px">{{ messages[0] }}</div>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('gerar_lista_presenca') }}">
+      <div class="grid">
+        <div class="card">
+          <h2><i class="fa-solid fa-sliders"></i> Configurações</h2>
+
+          <div class="row">
+            <div>
+              <label>Turno</label>
+              <select name="turno" required>
+                <option value="todos">Todos</option>
+                <option value="Matutino">Matutino</option>
+                <option value="Vespertino">Vespertino</option>
+                <option value="Noturno">Noturno</option>
+              </select>
+              <div class="hint">Se escolher um turno, a lista de turmas é filtrada no backend.</div>
+            </div>
+
+            <div>
+              <label>Data (dd/mm/aaaa)</label>
+              <input type="text" name="data" placeholder="ex.: 24/12/2025" required>
+              <div class="hint">Use o formato brasileiro.</div>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <div>
+              <label>Tipo</label>
+              <select name="tipo" id="tipo" required>
+                <option value="Avaliação Bimestral">Avaliação Bimestral</option>
+                <option value="Simulado Bimestral">Simulado Bimestral</option>
+                <option value="Reunião de Pais">Reunião de Pais</option>
+                <option value="outros">Outros (digitar)</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Se "Outros", descreva</label>
+              <input type="text" name="outros" id="outros" placeholder="ex.: Chamada - Oficina de Redação" disabled>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <div>
+              <label>Formato de download</label>
+              <select name="formato" required>
+                <option value="pdf">PDF (único arquivo)</option>
+                <option value="word">Word (1 turma = .docx / várias = .zip)</option>
+              </select>
+            </div>
+
+            <div class="warn">
+              <b>Dica:</b> Para várias turmas em Word, o sistema baixa um <b>.zip</b> com um docx por turma.
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-download"></i> Gerar e baixar
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><i class="fa-solid fa-users"></i> Turmas</h2>
+
+          <label style="margin-bottom:10px">Selecione uma ou mais turmas, ou gere de todas:</label>
+
+          <label class="pill" style="margin-bottom:12px">
+            <input type="checkbox" name="todas_turmas" value="1" id="todas">
+            <span><b>Todas as turmas</b> (ignora seleção abaixo)</span>
+          </label>
+
+          <div class="turmas" id="listaTurmas">
+            {% for t in turmas %}
+              <label class="turma-item">
+                <input type="checkbox" name="turmas" value="{{ t['id'] if t is mapping else t[0] }}">
+                <div>
+                  <b>{{ t['nome'] if t is mapping else t[1] }}</b>
+                  <span>{{ t['turno'] if t is mapping else t[2] }}</span>
+                </div>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div class="hint" style="margin-top:10px">
+            Se marcar “Todas as turmas”, os checkboxes são desabilitados para evitar erro.
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+<script>
+  const tipo = document.getElementById('tipo');
+  const outros = document.getElementById('outros');
+  const todas = document.getElementById('todas');
+  const listaTurmas = document.getElementById('listaTurmas');
+
+  function updateOutros(){
+    if(tipo.value === 'outros'){
+      outros.disabled = false;
+      outros.focus();
+    } else {
+      outros.value = '';
+      outros.disabled = true;
+    }
+  }
+
+  function updateTurmas(){
+    const disabled = todas.checked;
+    listaTurmas.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      cb.disabled = disabled;
+    });
+  }
+
+  tipo.addEventListener('change', updateOutros);
+  todas.addEventListener('change', updateTurmas);
+
+  updateOutros();
+  updateTurmas();
+</script>
+</body>
+</html>

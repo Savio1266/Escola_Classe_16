@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Conselho – Turma</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg-1:#020617;
+      --bg-2:#020617;
+
+      --card:rgba(255,255,255,.08);
+      --border:rgba(148,163,184,.22);
+
+      --text:#e5e7eb;
+      --muted:#a7b3c6;
+
+      --primary:#38bdf8;
+      --primary-soft:rgba(56,189,248,.18);
+
+      --success:#22c55e;
+      --warning:#f59e0b;
+      --danger:#ef4444;
+
+      --shadow:0 20px 40px rgba(0,0,0,.35);
+      --shadow-soft:0 14px 28px rgba(0,0,0,.18);
+      --radius:22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      padding:18px;
+      background:
+        radial-gradient(900px 420px at 10% 10%, rgba(56,189,248,.14), transparent 55%),
+        radial-gradient(900px 420px at 92% 20%, rgba(99,102,241,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:1200px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:16px 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    /* HEADER */
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .title h2{
+      margin:0;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .title h2 i{ color: var(--primary); }
+
+    .subtitle{
+      margin:6px 0 0 0;
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.4;
+      max-width: 860px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(255,255,255,.06);
+      margin-top:10px;
+      width:fit-content;
+    }
+
+    /* FILTERS */
+    .filters{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+    }
+    .field{ min-width: 160px; }
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    select, input, textarea{
+      width:100%;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.25);
+      background: rgba(2,6,23,.55);
+      color: var(--text);
+      outline:none;
+    }
+    select option{ background:#0b1220; color:#e5e7eb; }
+    textarea{ min-height: 110px; resize: vertical; }
+
+    /* BUTTONS */
+    .rowbtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      text-decoration:none;
+      font-size:12px;
+      cursor:pointer;
+      transition: transform .12s ease, background .18s ease, border-color .18s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{
+      background:rgba(255,255,255,.14);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary{
+      background: var(--primary-soft);
+      border-color: rgba(56,189,248,.40);
+      color:#e0f2fe;
+    }
+    .btn-primary:hover{ background: rgba(56,189,248,.28); }
+
+    .btn-ok{
+      background: rgba(34,197,94,.14);
+      border-color: rgba(34,197,94,.35);
+      color:#bbf7d0;
+    }
+    .btn-ok:hover{ background: rgba(34,197,94,.22); }
+
+    .btn-warn{
+      background: rgba(245,158,11,.14);
+      border-color: rgba(245,158,11,.35);
+      color:#fde68a;
+    }
+    .btn-warn:hover{ background: rgba(245,158,11,.22); }
+
+    .btn-soft{ background: rgba(148,163,184,.12); }
+
+    /* TABLE */
+    .table-wrap{
+      border:1px solid rgba(148,163,184,.20);
+      border-radius:18px;
+      overflow:hidden;
+      background: rgba(255,255,255,.04);
+    }
+    .table-scroll{ overflow:auto; max-width:100%; }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width: 980px;
+    }
+    th, td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(148,163,184,.16);
+      text-align:left;
+      font-size:13px;
+      vertical-align: top;
+    }
+    th{
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      color:#cbd5f5;
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(6px);
+    }
+    tr:hover td{ background:rgba(255,255,255,.04); }
+
+    .status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(148,163,184,.18);
+      background: rgba(255,255,255,.06);
+      width: fit-content;
+      white-space: nowrap;
+    }
+    .status.ok{
+      border-color: rgba(34,197,94,.28);
+      background: rgba(34,197,94,.12);
+      color:#bbf7d0;
+    }
+    .status.pend{
+      border-color: rgba(245,158,11,.28);
+      background: rgba(245,158,11,.12);
+      color:#fde68a;
+    }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+      align-items:center;
+    }
+
+    .muted{ color: var(--muted); font-size:12px; }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:12px;
+    }
+    .mini{
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(2,6,23,.35);
+      border-radius:16px;
+      padding:12px 12px;
+    }
+
+    @media (max-width:980px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+    @media (max-width:900px){
+      body{ padding:12px; }
+      .btn{ width:100%; }
+      table{ min-width: 900px; }
+      .field{ min-width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- HEADER -->
+    <div class="card top">
+      <div class="title">
+        <h2><i class="fa-solid fa-users"></i> Conselho – Turma</h2>
+        <p class="subtitle">
+          Turma: <b>{{ turma_nome }}</b><br>
+          Acompanhe o preenchimento por aluno no período selecionado.
+        </p>
+
+        <div class="pill">
+          <i class="fa-solid fa-calendar-days"></i>
+          Período: <b style="margin-left:6px;">{{ bimestre }}º bimestre • {{ ano }}</b>
+        </div>
+
+        <!-- ✅ Seletor bimestre/ano (GET) -->
+        <form class="filters" method="GET" action="{{ url_for('conselho.conselho_moderador_turma', turma_id=turma_id) }}">
+          <div class="field">
+            <label>Bimestre</label>
+            <select name="bimestre">
+              {% for b in [1,2,3,4] %}
+                <option value="{{ b }}" {% if bimestre|int == b %}selected{% endif %}>{{ b }}º</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Ano</label>
+            <input type="number" name="ano" value="{{ ano }}" min="2020" max="2100">
+          </div>
+
+          <div class="field" style="min-width:190px;">
+            <label>&nbsp;</label>
+            <button class="btn btn-primary" type="submit">
+              <i class="fa-solid fa-rotate"></i> Atualizar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="rowbtns">
+        <a class="btn btn-soft" href="{{ url_for('conselho.conselho_moderador', bimestre=bimestre, ano=ano) }}">
+          <i class="fa-solid fa-arrow-left"></i> Voltar (Turmas)
+        </a>
+        <a class="btn btn-soft" href="{{ url_for('dashboard_moderador') }}">
+          <i class="fa-solid fa-house"></i> Painel
+        </a>
+      </div>
+    </div>
+
+    <!-- AÇÕES GERAIS + OBSERVAÇÕES (POST precisa levar bimestre/ano) -->
+    <div class="grid2">
+      <!-- ✅ Download turma -->
+      <div class="card mini">
+        <h3 style="margin:0 0 8px 0; font-size:14px; display:flex; align-items:center; gap:10px;">
+          <i class="fa-solid fa-file-word" style="color:var(--primary);"></i>
+          Downloads
+        </h3>
+        <p class="muted" style="margin:0 0 10px 0;">
+          Gere o Word do período selecionado. (O bimestre/ano precisam ir no POST)
+        </p>
+
+        <form method="POST" action="{{ url_for('conselho.conselho_moderador_gerar_turma', turma_id=turma_id) }}">
+          <input type="hidden" name="bimestre" value="{{ bimestre }}">
+          <input type="hidden" name="ano" value="{{ ano }}">
+          <button class="btn btn-ok" type="submit">
+            <i class="fa-solid fa-download"></i> Baixar Word da Turma (único)
+          </button>
+        </form>
+
+        <p class="muted" style="margin:10px 0 0 0;">
+          Dica: o Word individual fica na tabela de alunos.
+        </p>
+      </div>
+
+      <!-- ✅ Salvar observações do moderador -->
+      <div class="card mini">
+        <h3 style="margin:0 0 8px 0; font-size:14px; display:flex; align-items:center; gap:10px;">
+          <i class="fa-solid fa-pen" style="color:var(--primary);"></i>
+          Observações do moderador
+        </h3>
+        <p class="muted" style="margin:0 0 10px 0;">
+          Salve observações por aluno para este bimestre/ano (fica vinculado ao período).
+        </p>
+
+        <!-- POST cai na própria rota /conselho/moderador/turma/<id> -->
+        <form method="POST" action="{{ url_for('conselho.conselho_moderador_turma', turma_id=turma_id) }}">
+          <input type="hidden" name="bimestre" value="{{ bimestre }}">
+          <input type="hidden" name="ano" value="{{ ano }}">
+
+          <div class="field">
+            <label>Aluno</label>
+            <select name="aluno_id" required>
+              <option value="">Selecione...</option>
+              {% for a in (progresso.get('alunos', []) or []) %}
+                <option value="{{ a.get('aluno_id') }}">{{ a.get('aluno_nome') }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="field" style="margin-top:10px;">
+            <label>Observações</label>
+            <textarea name="observacoes" placeholder="Digite as observações do moderador para este aluno..."></textarea>
+          </div>
+
+          <button class="btn btn-primary" type="submit" style="margin-top:10px;">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar observações
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TABELA ALUNOS -->
+    <div class="card">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div>
+          <h3 style="margin:0; font-size:14px; display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid fa-list-check" style="color:var(--primary);"></i>
+            Progresso por aluno
+          </h3>
+          <p class="muted" style="margin:6px 0 0 0;">
+            Período: <b>{{ bimestre }}º</b> bimestre • Ano: <b>{{ ano }}</b>
+          </p>
+        </div>
+
+        <div class="muted">
+          {% set feitos = progresso.get('feitos', None) %}
+          {% set total = progresso.get('total', None) %}
+          {% if feitos is not none and total is not none %}
+            Concluídos: <b>{{ feitos }}</b> / <b>{{ total }}</b>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40%;">Aluno</th>
+                <th style="width:18%;">Status</th>
+                <th style="width:22%;">Progresso</th>
+                <th style="width:20%;">Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% set alunos = (progresso.get('alunos', []) or []) %}
+              {% for a in alunos %}
+                {% set ok = a.get('ok', False) %}
+                {% set qtd = a.get('qtd', 0) %}
+                {% set tot = a.get('total', 0) %}
+                <tr>
+                  <td>
+                    <b>{{ a.get('aluno_nome') }}</b><br>
+                    <span class="muted">ID: {{ a.get('aluno_id') }}</span>
+                  </td>
+
+                  <td>
+                    {% if ok %}
+                      <span class="status ok"><i class="fa-solid fa-check"></i> OK</span>
+                    {% else %}
+                      <span class="status pend"><i class="fa-solid fa-triangle-exclamation"></i> Pendente</span>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {% if tot and tot > 0 %}
+                      <span class="muted"><b>{{ qtd }}</b> / <b>{{ tot }}</b> disciplinas preenchidas</span>
+                    {% else %}
+                      <span class="muted">—</span>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    <div class="actions">
+                      <!-- ✅ Ver (leva bimestre/ano no GET) -->
+                      <a class="btn btn-soft"
+                         href="{{ url_for('conselho.conselho_moderador_ver',
+                                          turma_id=turma_id,
+                                          aluno_id=a.get('aluno_id'),
+                                          bimestre=bimestre,
+                                          ano=ano) }}">
+                        <i class="fa-solid fa-eye"></i> Ver
+                      </a>
+
+                      <!-- ✅ Baixar Word individual (POST com bimestre/ano) -->
+                      <form method="POST"
+                            action="{{ url_for('conselho.conselho_moderador_gerar',
+                                               turma_id=turma_id,
+                                               aluno_id=a.get('aluno_id')) }}"
+                            style="margin:0;">
+                        <input type="hidden" name="bimestre" value="{{ bimestre }}">
+                        <input type="hidden" name="ano" value="{{ ano }}">
+                        <button class="btn btn-warn" type="submit">
+                          <i class="fa-solid fa-file-word"></i> Word
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+
+              {% if alunos|length == 0 %}
+                <tr>
+                  <td colspan="4" class="muted" style="padding:16px;">
+                    Nenhum aluno encontrado nesta turma.
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

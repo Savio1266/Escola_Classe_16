@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – De Olho na Escola</title>
+
+    <!-- CSS global opcional -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Fonte Inter -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <style>
+        :root {
+            --bg-page: #e7f0ff;
+            --primary: #2563eb;
+            --teal: #0d9488;
+            --card-bg: #ffffff;
+            --border-soft: #d4d4dd;
+            --text-main: #0f172a;
+            --text-muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(219,234,254,0.95), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(204,251,241,0.9), transparent 55%),
+                var(--bg-page);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 560px;
+            border-radius: 26px;
+            background: #ffffff;
+            box-shadow: 0 22px 50px rgba(15,23,42,0.14);
+            border: 1px solid rgba(148,163,184,0.3);
+            padding: 22px 20px 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* CABEÇALHO COM LOGO */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .logo-ring {
+            width: 110px;
+            height: 110px;
+            border-radius: 999px;
+            background:
+                conic-gradient(from 200deg,
+                               #0d9488,
+                               #22c55e,
+                               #38bdf8,
+                               #0d9488);
+            padding: 4px;
+            box-shadow: 0 0 26px rgba(37,99,235,0.3);
+        }
+
+        .logo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-inner img {
+            width: 90%;
+            height: 90%;
+            border-radius: 999px;
+            object-fit: cover;
+        }
+
+        .school-name .badge-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: rgba(15,118,110,0.08);
+            border: 1px solid rgba(13,148,136,0.32);
+            font-size: 11px;
+            color: #0f766e;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 4px;
+        }
+
+        .school-name h1 {
+            font-size: 22px;
+            margin: 4px 0 2px 0;
+            letter-spacing: 0.03em;
+        }
+
+        .school-name h1 span {
+            color: var(--teal);
+        }
+
+        .school-name .subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+        }
+
+        .badge-perfil {
+            margin-top: 6px;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #4ade80;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-perfil i {
+            font-size: 12px;
+            color: #16a34a;
+        }
+
+        /* CARD DE LOGIN */
+        .login-card {
+            margin-top: 4px;
+            padding: 18px 18px 16px 18px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 14px 30px rgba(15,23,42,0.08);
+        }
+
+        .login-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .login-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .field-group {
+            text-align: left;
+        }
+
+        .field-label {
+            font-size: 12px;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .field-wrapper {
+            position: relative;
+        }
+
+        .field-wrapper i {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 9px 11px 9px 32px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(148,163,184,0.9);
+            background: #f9fafb;
+            color: var(--text-main);
+            box-sizing: border-box;
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px rgba(37,99,235,0.25);
+            background: #ffffff;
+        }
+
+        button[type="submit"] {
+            margin-top: 6px;
+            background: linear-gradient(120deg, var(--teal), #0f766e);
+            color: #ffffff;
+            font-size: 14px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 12px 26px rgba(13,148,136,0.28);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+            width: 100%;
+        }
+
+        button[type="submit"] i {
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(13,148,136,0.36);
+            opacity: 0.97;
+        }
+
+        .extra-links {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .btn-link {
+            background: none;
+            color: #2563eb;
+            border: none;
+            padding: 0;
+            text-decoration: underline;
+            cursor: pointer;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .btn-link:hover {
+            color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #f9fafb;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 9px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            border: 1px solid var(--border-soft);
+            transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .btn-secondary i {
+            font-size: 13px;
+        }
+
+        .btn-secondary:hover {
+            background: #eef2ff;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(148,163,184,0.28);
+        }
+
+        .footer-info {
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .footer-info span {
+            display: block;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 12px;
+            }
+
+            .page-wrapper {
+                padding: 18px 14px 16px 14px;
+                border-radius: 22px;
+            }
+
+            .logo-ring {
+                width: 96px;
+                height: 96px;
+            }
+
+            .school-name h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+    <!-- CABEÇALHO -->
+    <header class="header">
+        <div class="logo-ring">
+            <div class="logo-inner">
+                <img src="/static/logo.jpg" alt="Logo ESCOLA CLASSE 16">
+            </div>
+        </div>
+
+        <div class="school-name">
+            <div class="badge-top">
+                <i class="fas fa-school"></i>
+                Comunidade Escolar ESCOLA CLASSE 16
+            </div>
+            <div class="subtitle">ESCOLA CLASSE 16</div>
+            <h1>De Olho na Escola <span>ESCOLA CLASSE 16</span></h1>
+        </div>
+
+        <div class="badge-perfil">
+            <i class="fas fa-lock"></i>
+            Acesso interno – equipe escolar
+        </div>
+    </header>
+
+    <!-- LOGIN -->
+    <main class="login-card">
+        <div class="login-title">Login de Direção, Coordenação e Professores</div>
+        <div class="login-sub">
+            Utilize o usuário e a senha cadastrados para acessar o painel pedagógico.
+        </div>
+
+        <form action="/login" method="POST">
+            <div class="field-group">
+                <label class="field-label" for="usuario">Usuário</label>
+                <div class="field-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="usuario" name="usuario"
+                           placeholder="Digite seu usuário" required>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label class="field-label" for="senha">Senha</label>
+                <div class="field-wrapper">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="senha" name="senha"
+                           placeholder="Digite sua senha" required>
+                </div>
+            </div>
+
+            <button type="submit">
+                <i class="fas fa-sign-in-alt"></i>
+                Entrar
+            </button>
+        </form>
+
+        <div class="extra-links">
+            <button class="btn-link"
+                    onclick="window.location.href='/cadastro_professor'">
+                Não tem conta? Cadastre-se como professor(a)
+            </button>
+
+            <a href="/" class="btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Voltar para a página inicial
+            </a>
+        </div>
+
+        <div class="footer-info">
+            <span>Em caso de dúvida sobre o acesso, procure a coordenação pedagógica.</span>
+        </div>
+    </main>
+
+</div>
+</body>
+</html>

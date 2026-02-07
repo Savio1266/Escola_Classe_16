@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Cadastrar Estudante</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        button {
+            background-color: #007bff;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function carregarAlunos() {
+            const turmaId = document.getElementById('turma').value;
+            const alunoSelect = document.getElementById('aluno');
+
+            // Limpar as opções anteriores
+            alunoSelect.innerHTML = '<option value="">Selecione um aluno</option>';
+
+            if (!turmaId) return;
+
+            // Requisição para buscar alunos da turma
+            fetch(`/get_alunos/${turmaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(aluno => {
+                        const option = document.createElement('option');
+                        option.value = aluno.id;
+                        option.textContent = aluno.nome;
+                        alunoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar alunos:', error));
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastrar Estudante</h1>
+        <form action="{{ url_for('criar_conta_estudante') }}" method="POST">
+            <label for="login">Login do Estudante:</label>
+            <input type="text" id="login" name="login" placeholder="Digite o login" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" placeholder="Digite a senha" required>
+
+            <label for="turma">Selecione a Turma:</label>
+            <select id="turma" name="turma" onchange="carregarAlunos()" required>
+                <option value="">Selecione uma turma</option>
+                {% for turma in turmas %}
+                <option value="{{ turma.id }}">{{ turma.nome }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="aluno">Selecione o Aluno:</label>
+            <select id="aluno" name="aluno_id" required>
+                <option value="">Selecione um aluno</option>
+            </select>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+        <a href="{{ url_for('login_estudante') }}">Voltar ao Login</a>
+    </div>
+</body>
+</html>

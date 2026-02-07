@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carômetro – Visualizar</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    :root{--bg:#f3f4f6;--card:#ffffff;--border:#e5e7eb;--text:#0f172a;--muted:#6b7280;--primary:#2563eb;--danger:#ef4444;--danger-soft:rgba(239,68,68,.08);}
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+    h1{margin:0;font-size:20px;font-weight:800;} .sub{margin:4px 0 0;font-size:13px;color:var(--muted);}
+    .btn{border:1px solid var(--border);background:var(--card);padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:800;text-decoration:none;color:var(--text);display:inline-flex;align-items:center;gap:8px;}
+    .btn-danger{border-color:rgba(239,68,68,.35);background:var(--danger-soft);color:var(--danger);}
+    .topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px;}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;}
+    select{min-width:280px;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff;font-size:14px;}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+    @media(max-width:1000px){.grid{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:740px){.grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:480px){.grid{grid-template-columns:1fr;}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.06);}
+    .img{
+      background:#0b1220;
+      width:72%;
+      height:210px;
+      margin:12px auto 8px;
+      padding:10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      overflow:hidden;
+      border-radius:12px;
+    }
+    .img img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:8px;
+      display:block;
+    }
+    .img .ph{color:#fff;opacity:.8;font-size:12px;padding:10px;text-align:center;}
+    .meta{padding:12px 12px 10px;} .name{font-weight:900;margin:0 0 6px;font-size:14px;} .small{margin:0;font-size:12px;color:var(--muted);}
+    .row{padding:10px 12px 12px;display:flex;gap:10px;} .row .btn{flex:1;justify-content:center;}
+    .empty{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;color:var(--muted);}
+    .alert-info{background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);border-radius:12px;padding:12px;color:#1e40af;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1>Carômetro – Visualizar</h1>
+        <p class="sub">
+          {% if session.get('tipo') == 'moderador' %}
+            Você pode visualizar as fotos de todos os alunos (somente leitura para moderadores).
+          {% else %}
+            Você pode excluir a foto de um aluno (com confirmação).
+          {% endif %}
+        </p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        {% if session.get('tipo') == 'moderador' %}
+          <a class="btn" href="{{ url_for('dashboard_moderador') }}">Voltar ao painel</a>
+          <a class="btn" href="{{ url_for('moderador_registrar_foto') }}">Cadastrar fotos</a>
+        {% else %}
+          <a class="btn" href="{{ url_for('dashboard_professor') }}">Voltar ao painel</a>
+          <a class="btn" href="{{ url_for('bp_carometro.carometro_professor') }}">Cadastrar fotos</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if session.get('tipo') == 'moderador' %}
+    <div class="alert-info">
+      <i class="fas fa-info-circle"></i>
+      <span>Como moderador, você tem acesso de <strong>visualização</strong>. Para cadastrar ou excluir fotos, use a área de cadastro.</span>
+    </div>
+    {% endif %}
+
+    <div class="topbar">
+      <div>
+        <label for="turma">Turma</label>
+        <select id="turma">
+          <option value="">Selecione…</option>
+          {% for t in turmas %}
+            <option value="{{ t['id'] }}" {% if turma_id and turma_id|int == t['id'] %}selected{% endif %}>
+              {{ t['nome'] }} — {{ t['turno'] }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    {% if turma_id %}
+      {% if alunos and alunos|length > 0 %}
+        <div class="grid" id="grid">
+          {% for a in alunos %}
+            <div class="card" data-aluno="{{ a['id'] }}">
+              <div class="img">
+                {% if a['arquivo'] %}
+                  <img src="{{ url_for('static', filename=a['arquivo']) }}" alt="Foto de {{ a['nome'] }}">
+                {% else %}
+                  <div class="ph">Sem foto cadastrada</div>
+                {% endif %}
+              </div>
+              <div class="meta">
+                <p class="name">{{ a['nome'] }}</p>
+                {% if a['atualizado_em'] %}
+                  <p class="small">Atualizado em: {{ a['atualizado_em'] }}</p>
+                {% endif %}
+              </div>
+              {% if session.get('tipo') == 'professor' %}
+              <div class="row">
+                <button class="btn btn-danger btnExcluirAluno" data-aluno="{{ a['id'] }}" {% if not a['arquivo'] %}disabled{% endif %}>
+                  Excluir foto
+                </button>
+              </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty">Nenhum aluno encontrado nesta turma.</div>
+      {% endif %}
+    {% else %}
+      <div class="empty">Selecione uma turma para visualizar.</div>
+    {% endif %}
+  </div>
+
+<script>
+  const turmaSel = document.getElementById('turma');
+  const userTipo = "{{ session.get('tipo', 'professor') }}";
+
+  turmaSel?.addEventListener('change', () => {
+    const turmaId = turmaSel.value;
+
+    // Define a rota correta baseado no tipo de usuário
+    let baseUrl;
+    if (userTipo === 'moderador') {
+      baseUrl = '/moderador/carometro';
+    } else {
+      baseUrl = '/professor/carometro/ver';
+    }
+
+    const url = turmaId ? `${baseUrl}?turma_id=${encodeURIComponent(turmaId)}` : baseUrl;
+    window.location.href = url;
+  });
+
+  // Funcionalidade de exclusão (apenas para professores)
+  {% if session.get('tipo') == 'professor' %}
+  document.querySelectorAll('.btnExcluirAluno').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const turmaId = turmaSel.value;
+      const alunoId = btn.dataset.aluno;
+
+      const ok = confirm('Tem certeza que deseja excluir a foto deste aluno?');
+      if(!ok) return;
+
+      btn.disabled = true;
+
+      try{
+        const r = await fetch('/professor/carometro/api/excluir/aluno', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({turma_id: turmaId, aluno_id: alunoId})
+        });
+        const j = await r.json();
+        if(!j.ok){
+          alert(j.error || 'Erro ao excluir foto.');
+          btn.disabled = false;
+          return;
+        }
+
+        const card = document.querySelector(`.card[data-aluno="${alunoId}"]`);
+        if(card) card.remove();
+
+        alert('Foto excluída com sucesso.');
+      }catch(e){
+        alert('Erro ao excluir foto.');
+        btn.disabled = false;
+      }
+    });
+  });
+  {% endif %}
+</script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!-- salvar como: planejamentos_gestor.html -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planejamentos - Gestor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #007bff, #0056b3);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: #333;
+        }
+
+        .container {
+            background: #fff;
+            margin: 30px 10px;
+            padding: 20px 25px 25px 25px;
+            border-radius: 12px;
+            max-width: 1100px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+            margin-bottom: 18px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .btn-small {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            background: #007bff;
+            color: #fff;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-small i {
+            font-size: 14px;
+        }
+
+        .btn-small:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: #fff;
+            color: #007bff;
+            border: 1px solid #007bff;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #007bff;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background: #eef5ff;
+        }
+
+        .col-id {
+            width: 45px;
+            text-align: center;
+        }
+
+        .col-bimestre,
+        .col-ano {
+            width: 70px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .col-acoes {
+            width: 90px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .badge-turma {
+            display: inline-block;
+            background: #e3f2ff;
+            color: #0056b3;
+            padding: 3px 8px;
+            border-radius: 999px;
+            margin: 2px 3px 2px 0;
+            font-size: 11px;
+        }
+
+        .badge-bimestre {
+            display: inline-block;
+            background: #fdebd0;
+            color: #b45f06;
+            padding: 3px 7px;
+            border-radius: 999px;
+            font-size: 11px;
+        }
+
+        .badge-ano {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #1b5e20;
+            padding: 3px 7px;
+            border-radius: 999px;
+            font-size: 11px;
+        }
+
+        .btn-table {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            border: none;
+            background: #28a745;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-table:hover {
+            background: #1e7e34;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 10px 15px 10px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .empty-state i {
+            font-size: 26px;
+            margin-bottom: 8px;
+            color: #007bff;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 0;
+                margin: 0;
+                min-height: 100vh;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Planejamentos - Visão Gestor</h1>
+    <div class="subtitle">De Olho na Escola - ESCOLA CLASSE 16</div>
+
+    <div class="top-actions">
+        <div class="info-text">
+            Lista de todos os planejamentos registrados pelos professores, com indicação de turmas, bimestre e ano.
+        </div>
+        <div>
+            <a href="{{ url_for('dashboard_moderador') }}" class="btn-small btn-outline">
+                <i class="fas fa-arrow-left"></i> Voltar ao Painel
+            </a>
+        </div>
+    </div>
+
+    {% if planejamentos and planejamentos|length > 0 %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th class="col-id">ID</th>
+                    <th>Professor</th>
+                    <th>Disciplina</th>
+                    <th class="col-bimestre">Bimestre</th>
+                    <th class="col-ano">Ano</th>
+                    <th>Turmas</th>
+                    <th class="col-acoes">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for p in planejamentos %}
+                    <tr>
+                        <td class="col-id">{{ p.id }}</td>
+                        <td>{{ p.professor_login }}</td>
+                        <td>{{ p.disciplina }}</td>
+                        <td class="col-bimestre">
+                            <span class="badge-bimestre">{{ p.bimestre }}º</span>
+                        </td>
+                        <td class="col-ano">
+                            <span class="badge-ano">{{ p.ano }}</span>
+                        </td>
+                        <td>
+                            {% if p.turmas %}
+                                {% for nome_turma in p.turmas.split(',') %}
+                                    <span class="badge-turma">{{ nome_turma.strip() }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span style="color:#999;">Sem turma vinculada</span>
+                            {% endif %}
+                        </td>
+                        <td class="col-acoes">
+                            <a href="{{ url_for('detalhar_planejamento', planejamento_id=p.id) }}"
+                               class="btn-table" title="Detalhar planejamento">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-clipboard-list"></i>
+            <p>Não há planejamentos cadastrados até o momento.</p>
+        </div>
+    {% endif %}
+
+    <footer>
+        Acompanhamento integrado dos planejamentos docentes para apoio à gestão pedagógica.
+    </footer>
+</div>
+</body>
+</html>

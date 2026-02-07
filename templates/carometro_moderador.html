@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carômetro – Moderador</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    :root{--bg:#f3f4f6;--card:#ffffff;--border:#e5e7eb;--text:#0f172a;--muted:#6b7280;--primary:#2563eb;--danger:#ef4444;--success:#16a34a;}
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+    .title{font-size:20px;font-weight:800;margin:0;} .sub{margin:4px 0 0;color:var(--muted);font-size:13px;}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+    .btn-primary{border-color:transparent;background:var(--primary);color:#fff;}
+    .btn:disabled{opacity:.55;cursor:not-allowed;}
+    .grid{display:grid;grid-template-columns:380px 1fr;gap:16px;}
+    @media(max-width:920px){.grid{grid-template-columns:1fr;}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:16px;}
+    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px;}
+    select{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff;font-size:14px;}
+    .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.35;}
+    .videoBox{border-radius:14px;overflow:hidden;border:1px dashed var(--border);background:#0b1220;position:relative;min-height:260px;display:flex;align-items:center;justify-content:center;}
+    video,canvas,img{width:100%;height:auto;display:block;}
+    .overlayTip{position:absolute;inset:auto 10px 10px 10px;background:rgba(255,255,255,.9);border:1px solid var(--border);padding:10px 12px;border-radius:12px;font-size:12px;color:var(--text);}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    .row .btn{flex:1;justify-content:center;}
+    .status{margin-top:12px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);font-size:13px;background:#fff;}
+    .status.ok{border-color:rgba(22,163,74,.35);background:rgba(22,163,74,.08);}
+    .status.err{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1 class="title">Carômetro – Moderador</h1>
+        <p class="sub">Cadastre uma foto por aluno. Após salvar, o aluno sai da lista para evitar duplicidade.</p>
+      </div>
+      <div class="actions">
+        <a class="btn" href="{{ url_for('dashboard_moderador') }}">Voltar ao painel</a>
+        <a class="btn btn-primary" href="{{ url_for('moderador_ver_carometro') }}">Ver carômetro</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <label for="turma">Turma</label>
+        <select id="turma">
+          <option value="">Selecione…</option>
+          {% for t in turmas %}
+            <option value="{{ t['id'] }}">{{ t['nome'] }} — {{ t['turno'] }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="aluno">Aluno (somente sem foto)</label>
+        <select id="aluno" disabled>
+          <option value="">Selecione a turma primeiro…</option>
+        </select>
+
+        <div class="hint">Dica: em celular/tablet a câmera abre direto. Em computador, normalmente usa webcam.</div>
+      </div>
+
+      <div class="card">
+        <div class="videoBox">
+          <video id="video" autoplay playsinline muted style="display:none;"></video>
+          <canvas id="canvas" style="display:none;"></canvas>
+          <img id="preview" alt="Prévia" style="display:none;" />
+          <div class="overlayTip" id="tip">
+            1) Escolha a turma e o aluno<br>
+            2) Clique em "Abrir câmera"<br>
+            3) Tire a foto e salve
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="btnAbrir" disabled>Abrir câmera</button>
+          <button class="btn" id="btnFoto" disabled>Tirar foto</button>
+          <button class="btn" id="btnRefazer" disabled>Refazer</button>
+          <button class="btn btn-primary" id="btnSalvar" disabled>Salvar</button>
+        </div>
+
+        <div class="status" id="status">Aguardando seleção…</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const turmaSel = document.getElementById('turma');
+  const alunoSel = document.getElementById('aluno');
+
+  const btnAbrir = document.getElementById('btnAbrir');
+  const btnFoto = document.getElementById('btnFoto');
+  const btnRefazer = document.getElementById('btnRefazer');
+  const btnSalvar = document.getElementById('btnSalvar');
+
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const preview = document.getElementById('preview');
+  const statusEl = document.getElementById('status');
+  const tip = document.getElementById('tip');
+
+  let stream = null;
+  let ultimoDataURL = null;
+
+  function setStatus(msg, type){
+    statusEl.textContent = msg;
+    statusEl.classList.remove('ok','err');
+    if(type) statusEl.classList.add(type);
+  }
+
+  function resetPreview(){
+    ultimoDataURL = null;
+    preview.style.display = 'none';
+    canvas.style.display = 'none';
+    video.style.display = 'none';
+    btnRefazer.disabled = true;
+    btnSalvar.disabled = true;
+  }
+
+  function stopStream(){
+    if(stream){
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+    }
+  }
+
+  async function carregarAlunos(){
+    const turmaId = turmaSel.value;
+    alunoSel.innerHTML = '';
+    if(!turmaId){
+      alunoSel.disabled = true;
+      alunoSel.innerHTML = '<option value="">Selecione a turma primeiro…</option>';
+      return;
+    }
+    try{
+      // ✅ USA A MESMA API DO PROFESSOR (blueprint carometro)
+      const r = await fetch(`/professor/carometro/api/alunos?turma_id=${encodeURIComponent(turmaId)}`);
+      const j = await r.json();
+      if(!j.ok){
+        alunoSel.disabled = true;
+        alunoSel.innerHTML = '<option value="">Erro ao carregar alunos</option>';
+        setStatus(j.error || 'Erro ao carregar alunos', 'err');
+        return;
+      }
+      if(j.alunos.length === 0){
+        alunoSel.disabled = true;
+        alunoSel.innerHTML = '<option value="">Todos os alunos desta turma já possuem foto ✅</option>';
+        setStatus('Todos os alunos desta turma já possuem foto.', 'ok');
+        return;
+      }
+      alunoSel.disabled = false;
+      alunoSel.innerHTML = '<option value="">Selecione…</option>';
+      for(const a of j.alunos){
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = a.nome;
+        alunoSel.appendChild(opt);
+      }
+      setStatus('Selecione um aluno e clique em "Abrir câmera".');
+    }catch(e){
+      alunoSel.disabled = true;
+      alunoSel.innerHTML = '<option value="">Erro ao carregar alunos</option>';
+      setStatus('Erro ao carregar alunos.', 'err');
+    }
+  }
+
+  function atualizarBotoes(){
+    const ok = turmaSel.value && alunoSel.value;
+    btnAbrir.disabled = !ok;
+    if(!ok){
+      btnFoto.disabled = true;
+      btnRefazer.disabled = true;
+      btnSalvar.disabled = true;
+      resetPreview();
+      stopStream();
+      setStatus('Aguardando seleção…');
+      return;
+    }
+    setStatus('Pronto. Clique em "Abrir câmera".');
+  }
+
+  turmaSel.addEventListener('change', async () => {
+    stopStream();
+    resetPreview();
+    await carregarAlunos();
+    atualizarBotoes();
+  });
+
+  alunoSel.addEventListener('change', () => {
+    stopStream();
+    resetPreview();
+    atualizarBotoes();
+  });
+
+  btnAbrir.addEventListener('click', async () => {
+    stopStream();
+    resetPreview();
+
+    const turmaId = turmaSel.value;
+    const alunoId = alunoSel.value;
+    if(!turmaId || !alunoId) return;
+
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      video.srcObject = stream;
+      video.style.display = 'block';
+      tip.style.display = 'none';
+      btnFoto.disabled = false;
+      setStatus('Câmera aberta. Clique em "Tirar foto".');
+    }catch(e){
+      setStatus('Não foi possível abrir a câmera (verifique permissões).', 'err');
+    }
+  });
+
+  btnFoto.addEventListener('click', () => {
+    if(!stream) return;
+
+    const vw = video.videoWidth || 640;
+    const vh = video.videoHeight || 480;
+
+    const targetW = 480;
+    const scale = targetW / vw;
+    const targetH = Math.round(vh * scale);
+
+    canvas.width = targetW;
+    canvas.height = targetH;
+
+    const ctx = canvas.getContext('2d', { alpha: false });
+    ctx.drawImage(video, 0, 0, targetW, targetH);
+
+    ultimoDataURL = canvas.toDataURL('image/jpeg', 0.65);
+
+    preview.src = ultimoDataURL;
+    preview.style.display = 'block';
+    video.style.display = 'none';
+
+    btnRefazer.disabled = false;
+    btnSalvar.disabled = false;
+    btnFoto.disabled = true;
+
+    stopStream();
+    setStatus('Prévia pronta. Clique em "Salvar".');
+  });
+
+  btnRefazer.addEventListener('click', () => {
+    ultimoDataURL = null;
+    preview.style.display = 'none';
+    btnSalvar.disabled = true;
+    btnRefazer.disabled = true;
+    btnFoto.disabled = false;
+    setStatus('Clique em "Tirar foto" novamente.');
+  });
+
+  btnSalvar.addEventListener('click', async () => {
+    const turmaId = turmaSel.value;
+    const alunoId = alunoSel.value;
+    if(!turmaId || !alunoId || !ultimoDataURL) return;
+
+    btnSalvar.disabled = true;
+
+    try{
+      // ✅ USA A MESMA API DO PROFESSOR (blueprint carometro)
+      const r = await fetch('/professor/carometro/api/salvar', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({turma_id: turmaId, aluno_id: alunoId, imagem: ultimoDataURL})
+      });
+      const j = await r.json();
+
+      if(!j.ok){
+        setStatus(j.error || 'Erro ao salvar.', 'err');
+        btnSalvar.disabled = false;
+        return;
+      }
+
+      setStatus('Foto salva com sucesso ✅ Selecione outro aluno.', 'ok');
+
+      await carregarAlunos();
+      alunoSel.value = '';
+      atualizarBotoes();
+      resetPreview();
+      tip.style.display = 'block';
+
+    }catch(e){
+      setStatus('Erro ao salvar a foto.', 'err');
+      btnSalvar.disabled = false;
+    }
+  });
+
+  // init
+  carregarAlunos();
+  atualizarBotoes();
+</script>
+</body>
+</html>

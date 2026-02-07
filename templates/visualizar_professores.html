@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professores Cadastrados</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #007bff, #6c757d);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 85%;
+            background: #fff;
+            color: #333;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .disciplina {
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn:hover {
+            background: #c82333;
+        }
+
+        .voltar {
+            text-decoration: none;
+            color: white;
+            background: #28a745;
+            padding: 10px 16px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .voltar:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Professores Cadastrados</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Login</th>
+            <th>Disciplina(s)</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for professor in professores %}
+        <tr>
+            <td>{{ professor.login }}</td>
+            <td class="disciplina">
+                {{ professor.disciplinas if professor.disciplinas else '—' }}
+            </td>
+            <td>
+                <form action="{{ url_for('excluir_professor', professor_id=professor.id) }}"
+                      method="POST"
+                      style="display:inline;"
+                      onsubmit="return confirm('Tem certeza que deseja excluir este professor?')">
+                    <button type="submit" class="btn">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('dashboard_moderador') }}" class="voltar">
+    Voltar ao Dashboard
+</a>
+
+</body>
+</html>

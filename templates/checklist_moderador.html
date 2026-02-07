@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checklist (Gestão)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root{--primary:#6366f1;--primary-dark:#4f46e5;--bg:#f6f7fb;--card:#fff;--border:#e2e8f0;--shadow:0 10px 20px rgba(2,6,23,.06);--radius:16px;--muted:#64748b;}
+    body{background:var(--bg);}
+    .page{max-width:1100px;margin:24px auto;padding:0 14px;}
+    .cardx{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}
+    .btn-primary{background:var(--primary);border-color:var(--primary);}
+    .btn-primary:hover{background:var(--primary-dark);border-color:var(--primary-dark);}
+    .muted{color:var(--muted);}
+    .pill{font-size:12px;padding:6px 10px;border-radius:999px;font-weight:700;border:1px solid rgba(0,0,0,.06);display:inline-flex;align-items:center;gap:6px;}
+    .pill.success{background:rgba(16,185,129,.12);color:#065f46;}
+    .pill.danger{background:rgba(239,68,68,.12);color:#7f1d1d;}
+    .pill.secondary{background:rgba(100,116,139,.12);color:#334155;}
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="cardx mb-3 d-flex flex-wrap align-items-start justify-content-between gap-2">
+      <div>
+        <h5 class="mb-1"><i class="fa-solid fa-list-check"></i> Checklist Pedagógico (Gestão)</h5>
+        <div class="muted">Hoje: <b>{{ hoje }}</b></div>
+      </div>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="{{ url_for('dashboard_moderador') }}">
+          <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
+        </a>
+      </div>
+    </div>
+
+    <div class="cardx mb-3">
+      <form class="row g-2 align-items-end" method="GET" action="{{ url_for('checklist.checklist_moderador_home') }}">
+        <div class="col-6 col-md-3">
+          <label class="form-label fw-bold">Bimestre</label>
+          <select name="bimestre" class="form-select">
+            {% for b in [1,2,3,4] %}
+              <option value="{{ b }}" {% if filtro_bimestre==b %}selected{% endif %}>{{ b }}º</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label fw-bold">Ano</label>
+          <input type="number" class="form-control" name="ano" value="{{ filtro_ano }}" min="2020" max="2100">
+        </div>
+        <div class="col-12 col-md-3 d-grid">
+          <button class="btn btn-outline-primary" type="submit">
+            <i class="fa-solid fa-filter"></i> Aplicar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="cardx">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+          <div class="fw-bold">Status do checklist do bimestre</div>
+          <div class="muted small">Primeiro você monta o checklist (modelo). Depois vai marcando professor por professor.</div>
+        </div>
+
+        <div class="d-flex gap-2">
+          {% if modelo %}
+            <span class="pill success"><i class="fa-solid fa-check"></i> Checklist montado</span>
+            <a class="btn btn-outline-primary" href="{{ url_for('checklist.checklist_editar_modelo', modelo_id=modelo.id) }}">
+              <i class="fa-solid fa-pen-to-square"></i> Editar Modelo
+            </a>
+            <a class="btn btn-primary" href="{{ url_for('checklist.checklist_marcar_professor', bimestre=filtro_bimestre, ano=filtro_ano) }}">
+              <i class="fa-solid fa-user-check"></i> Marcar por Professor
+            </a>
+          {% else %}
+            <span class="pill danger"><i class="fa-solid fa-triangle-exclamation"></i> Ainda não montado</span>
+            <a class="btn btn-primary" href="{{ url_for('checklist.checklist_montar_modelo') }}">
+              <i class="fa-solid fa-plus"></i> Montar Checklist do Bimestre
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

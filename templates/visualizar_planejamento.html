@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planejamento - Detalhes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            width: 100%;
+            max-width: 900px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .info {
+            background: #eef5ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #0056b3;
+        }
+
+        .content {
+            white-space: pre-wrap;
+            background: #f8f9fa;
+            padding: 15px;
+            font-size: 15px;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #565e64;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Planejamento - {{ planejamento.bimestre }}º Bimestre</h2>
+
+        <div class="info">
+            <span class="label">Data do Registro:</span>
+            {{ planejamento.data_registro.strftime('%d/%m/%Y') }}<br>
+            <span class="label">Professor:</span>
+            {{ planejamento.professor }}
+        </div>
+
+        <div class="content">
+            {{ planejamento.conteudo | safe }}
+        </div>
+
+        {% if current_user.tipo == "PROFESSOR" %}
+            <a href="{{ url_for('listar_planejamentos_professor') }}" class="btn">Voltar</a>
+        {% else %}
+            <a href="{{ url_for('listar_planejamentos_gestor') }}" class="btn">Voltar</a>
+        {% endif %}
+    </div>
+</body>
+</html>

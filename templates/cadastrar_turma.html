@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Cadastrar Turma</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007bff, #6c757d);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            text-align: left;
+            font-size: 14px;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0,123,255,0.4);
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            font-size: 16px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            font-size: 15px;
+            border-radius: 8px;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastrar Turma</h1>
+
+        <form action="{{ url_for('cadastrar_turma') }}" method="POST">
+            <label for="nome">Nome da Turma</label>
+            <input type="text" id="nome" name="nome" placeholder="Ex.: 6º A, 7º B" required>
+
+            <label for="turno">Turno</label>
+            <select id="turno" name="turno" required>
+                <option value="" disabled selected>Selecione o turno</option>
+                <option value="MATUTINO">Matutino</option>
+                <option value="VESPERTINO">Vespertino</option>
+                <option value="NOTURNO">Noturno</option>
+            </select>
+
+            <button type="submit">
+                <i class="fas fa-save"></i> Cadastrar
+            </button>
+        </form>
+
+        <a href="{{ url_for('dashboard_moderador') }}" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+</body>
+</html>

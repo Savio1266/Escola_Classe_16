@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do Responsável - De Olho na Escola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ec4899;
+            --primary-dark: #db2777;
+            --primary-light: #f472b6;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --text-white: #ffffff;
+
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* === LAYOUT PRINCIPAL === */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: var(--text-white);
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .school-name {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .user-info-sidebar {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-name i {
+            color: var(--primary-light);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-role {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            background: rgba(236, 72, 153, 0.2);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            color: var(--text-white);
+            margin-top: 8px;
+            width: fit-content;
+        }
+
+        /* === MENU === */
+        .sidebar-menu {
+            padding: 12px;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            margin-bottom: 4px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 14px;
+            margin-bottom: 2px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .menu-item:hover {
+            background: var(--sidebar-hover);
+            transform: translateX(4px);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-item i {
+            width: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px;
+        }
+
+        /* === PAGE HEADER === */
+        .page-header {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-muted);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .page-title i {
+            color: var(--primary);
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .aluno-info-box {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .info-item i {
+            color: var(--primary);
+            width: 18px;
+            text-align: center;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* === CONTEÚDO DAS TABS === */
+        .content-panel {
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header {
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* FILTROS */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 180px;
+        }
+
+        .filter-bar label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .filter-bar select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-primary);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-bar select:hover {
+            border-color: var(--primary-light);
+        }
+
+        .filter-bar select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            margin-left: auto;
+        }
+
+        .btn-filter {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: var(--primary-light);
+        }
+
+        /* TABELAS */
+        .table-container {
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            background: white;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(236, 72, 153, 0.05);
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        tbody tr:nth-child(even):hover {
+            background: rgba(236, 72, 153, 0.05);
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-new {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-read {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* DETALHES EXPANSÍVEIS */
+        details {
+            cursor: pointer;
+        }
+
+        details summary {
+            color: var(--primary);
+            font-weight: 600;
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details summary::before {
+            content: "▶";
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .details-content {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .details-content p {
+            margin-bottom: 8px;
+        }
+
+        .details-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .details-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .details-content ul {
+            margin: 8px 0 0 20px;
+            padding: 0;
+        }
+
+        .details-content li {
+            margin-bottom: 6px;
+        }
+
+        /* MENSAGEM VAZIA */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--border);
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* === CARDS DE RESUMO (MENORES E EMBAIXO) === */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .stat-icon.primary {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(236, 72, 153, 0.05));
+            color: var(--primary);
+        }
+
+        .stat-icon.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            color: var(--success);
+        }
+
+        .stat-icon.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+            color: var(--warning);
+        }
+
+        .stat-icon.info {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.05));
+            color: var(--info);
+        }
+
+        .stat-icon.danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+            color: var(--danger);
+        }
+
+        .stat-icon.secondary {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+            color: var(--secondary);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .stat-desc {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        /* MOBILE MENU TOGGLE */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: var(--shadow-xl);
+            z-index: 1001;
+            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .menu-toggle.active {
+            background: var(--danger);
+        }
+
+        /* SCROLLBAR */
+        .table-scroll::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track,
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar.active::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 280px;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: -1;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            .menu-toggle {
+                display: flex;
+                left: max(16px, env(safe-area-inset-left));
+                right: auto;
+                bottom: max(16px, env(safe-area-inset-bottom));
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .filter-actions {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .btn-filter {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .aluno-info-box {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo">
+                        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+                    </div>
+                    <div class="school-name">De Olho na Escola</div>
+                </div>
+
+                <div class="user-info-sidebar">
+                    <div class="user-name">
+                        <i class="fas fa-user-shield"></i>
+                        Responsável
+                    </div>
+                    <div class="user-role">
+                        <i class="fas fa-graduation-cap"></i>
+                        Acompanhamento do Estudante
+                    </div>
+                    <div class="badge-role">
+                        <i class="fas fa-heart"></i>
+                        Família
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-title">Acompanhamento</div>
+                    <button class="menu-item active" data-section="planejamentos">
+                        <i class="fas fa-book"></i>
+                        Planejamentos
+                    </button>
+                    <button class="menu-item" data-section="avaliacoes">
+                        <i class="fas fa-clipboard-check"></i>
+                        Avaliações
+                    </button>
+                    <button class="menu-item" data-section="ocorrencias">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Ocorrências
+                    </button>
+                    <button class="menu-item" data-section="atestados">
+                        <i class="fas fa-file-medical"></i>
+                        Atestados
+                    </button>
+                    <button class="menu-item" data-section="recados">
+                        <i class="fas fa-comment-dots"></i>
+                        Recados
+                    </button>
+                    <button class="menu-item" data-section="biblioteca">
+                        <i class="fas fa-book-open"></i>
+                        Biblioteca
+                    </button>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Sistema</div>
+                    <a href="{{ url_for('index') }}" class="menu-item">
+                        <i class="fas fa-arrow-left"></i>
+                        Voltar ao Início
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <div class="breadcrumb">
+                    <span>Início</span>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>Área do Responsável</span>
+                </div>
+                <h1 class="page-title">
+                    <i class="fas fa-user-shield"></i>
+                    Área do Responsável
+                </h1>
+                <p class="page-subtitle">
+                    Acompanhe de forma simples o que está sendo trabalhado, avaliado e registrado sobre seu filho(a).
+                </p>
+
+                <div class="aluno-info-box">
+                    <div class="info-item">
+                        <i class="fas fa-user-graduate"></i>
+                        <span class="info-label">Aluno(a):</span>
+                        <span class="info-value">{{ aluno_nome }}</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-school"></i>
+                        <span class="info-label">Turma:</span>
+                        <span class="info-value">{{ turma_nome }}</span>
+                    </div>
+                </div>
+
+                <!-- MENSAGEM INSPIRADORA DO PAULO FREIRE -->
+                <div style="margin-top: 16px; padding: 16px; background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(139, 92, 246, 0.05)); border-left: 4px solid var(--primary); border-radius: 12px;">
+                    <div style="display: flex; align-items: start; gap: 12px;">
+                        <i class="fas fa-quote-left" style="color: var(--primary); font-size: 20px; margin-top: 4px; flex-shrink: 0;"></i>
+                        <div style="flex: 1;">
+                            <p id="frase-freire" style="font-size: 14px; color: var(--text-primary); font-style: italic; margin-bottom: 8px; line-height: 1.6;">
+                                <!-- Frase será inserida via JavaScript -->
+                            </p>
+                            <p style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                — Paulo Freire
+                            </p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.08);">
+                                <p style="font-size: 13px; color: var(--primary); font-weight: 600;">
+                                    <i class="fas fa-heart" style="color: #ef4444;"></i>
+                                    O acompanhamento familiar é fundamental para o sucesso escolar! Continue presente na vida do(a) {{ aluno_nome }}. 💜
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PLANEJAMENTOS -->
+            <div class="content-panel active" id="section-planejamentos">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Planejamentos dos Professores</h2>
+                        <p class="section-subtitle">
+                            Veja o que os professores planejaram para a turma em cada bimestre. Clique em "Ver conteúdos" para abrir os detalhes.
+                        </p>
+                    </div>
+
+                    <form method="get" class="filter-bar">
+                        <div class="filter-group">
+                            <label for="bim_plan">
+                                <i class="fas fa-calendar-alt"></i> Bimestre
+                            </label>
+                            <select name="bim_plan" id="bim_plan">
+                                <option value="">Todos os bimestres</option>
+                                <option value="1" {{ 'selected' if bim_plan == '1' else '' }}>1º bimestre</option>
+                                <option value="2" {{ 'selected' if bim_plan == '2' else '' }}>2º bimestre</option>
+                                <option value="3" {{ 'selected' if bim_plan == '3' else '' }}>3º bimestre</option>
+                                <option value="4" {{ 'selected' if bim_plan == '4' else '' }}>4º bimestre</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="disciplina_plan">
+                                <i class="fas fa-book"></i> Disciplina
+                            </label>
+                            <select name="disciplina_plan" id="disciplina_plan">
+                                <option value="">Todas as disciplinas</option>
+                                {% for disc in disciplinas_planejamento %}
+                                <option value="{{ disc }}" {{ 'selected' if disciplina_plan == disc else '' }}>{{ disc }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="professor_plan">
+                                <i class="fas fa-chalkboard-teacher"></i> Professor
+                            </label>
+                            <select name="professor_plan" id="professor_plan">
+                                <option value="">Todos os professores</option>
+                                {% for prof in professores_planejamento %}
+                                <option value="{{ prof }}" {{ 'selected' if professor_plan == prof else '' }}>{{ prof }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-filter btn-primary">
+                                <i class="fas fa-filter"></i> Filtrar
+                            </button>
+                            <a href="{{ url_for('area_responsavel') }}" class="btn-filter btn-secondary">
+                                <i class="fas fa-times"></i> Limpar
+                            </a>
+                        </div>
+                    </form>
+
+                    {% if planejamentos %}
+                    <div class="table-container">
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Professor</th>
+                                        <th>Disciplina</th>
+                                        <th>Bimestre/Ano</th>
+                                        <th>Turmas</th>
+                                        <th>Detalhes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pl in planejamentos %}
+                                    {% set itens = itens_por_planejamento.get(pl['id'], []) %}
+                                    <tr>
+                                        <td>{{ pl['professor_login'] }}</td>
+                                        <td>{{ pl['disciplina'] }}</td>
+                                        <td>{{ pl['bimestre'] }}º / {{ pl['ano'] }}</td>
+                                        <td>{{ pl['turmas_nomes'] or '-' }}</td>
+                                        <td>
+                                            {% if itens %}
+                                            <details>
+                                                <summary>Ver conteúdos</summary>
+                                                <div class="details-content">
+                                                    <ul>
+                                                        {% for it in itens %}
+                                                        <li>
+                                                            <strong>Conteúdo:</strong> {{ it['conteudo'] }}
+                                                            {% if it['data_inicio'] or it['data_fim'] %}
+                                                            | <strong>Período:</strong>
+                                                            {% if it['data_inicio'] %}{{ it['data_inicio'] }}{% endif %}
+                                                            {% if it['data_fim'] %} a {{ it['data_fim'] }}{% endif %}
+                                                            {% endif %}
+                                                            |
+                                                            {% if it['concluido'] %}
+                                                            <span class="badge badge-success">Concluído</span>
+                                                            {% else %}
+                                                            <span class="badge badge-warning">Em andamento</span>
+                                                            {% endif %}
+                                                        </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </details>
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-book"></i>
+                        <p>Ainda não há planejamentos cadastrados para esta turma (com os filtros aplicados).</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- AVALIAÇÕES -->
+            <div class="content-panel" id="section-avaliacoes">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Conteúdos das Avaliações</h2>
+                        <p class="section-subtitle">
+                            Provas, trabalhos e outros instrumentos de avaliação. Clique em "Ver detalhes" para saber o que foi cobrado.
+                        </p>
+                    </div>
+
+                    <form method="get" class="filter-bar">
+                        <div class="filter-group">
+                            <label for="bim_av">
+                                <i class="fas fa-calendar-alt"></i> Bimestre
+                            </label>
+                            <select name="bim_av" id="bim_av">
+                                <option value="">Todos os bimestres</option>
+                                <option value="1" {{ 'selected' if bim_av == '1' else '' }}>1º bimestre</option>
+                                <option value="2" {{ 'selected' if bim_av == '2' else '' }}>2º bimestre</option>
+                                <option value="3" {{ 'selected' if bim_av == '3' else '' }}>3º bimestre</option>
+                                <option value="4" {{ 'selected' if bim_av == '4' else '' }}>4º bimestre</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="disciplina_av">
+                                <i class="fas fa-book"></i> Disciplina
+                            </label>
+                            <select name="disciplina_av" id="disciplina_av">
+                                <option value="">Todas as disciplinas</option>
+                                {% for disc in disciplinas_avaliacao %}
+                                <option value="{{ disc }}" {{ 'selected' if disciplina_av == disc else '' }}>{{ disc }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="professor_av">
+                                <i class="fas fa-chalkboard-teacher"></i> Professor
+                            </label>
+                            <select name="professor_av" id="professor_av">
+                                <option value="">Todos os professores</option>
+                                {% for prof in professores_avaliacao %}
+                                <option value="{{ prof }}" {{ 'selected' if professor_av == prof else '' }}>{{ prof }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-filter btn-primary">
+                                <i class="fas fa-filter"></i> Filtrar
+                            </button>
+                            <a href="{{ url_for('area_responsavel') }}" class="btn-filter btn-secondary">
+                                <i class="fas fa-times"></i> Limpar
+                            </a>
+                        </div>
+                    </form>
+
+                    {% if avaliacoes %}
+                    <div class="table-container">
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Disciplina</th>
+                                        <th>Professor</th>
+                                        <th>Bimestre/Ano</th>
+                                        <th>Detalhes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for av in avaliacoes %}
+                                    <tr>
+                                        <td>{{ av['data_avaliacao_formatada'] }}</td>
+                                        <td>{{ av['disciplina'] }}</td>
+                                        <td>{{ av['professor_login'] }}</td>
+                                        <td>{{ av['bimestre'] }}º / {{ av['ano'] }}</td>
+                                        <td>
+                                            <details>
+                                                <summary>Ver detalhes</summary>
+                                                <div class="details-content">
+                                                    <p><strong>Tipo:</strong> {{ av['tipo_avaliacao'] or '-' }}</p>
+                                                    <p><strong>Descrição:</strong> {{ av['descricao_avaliacao'] or '-' }}</p>
+                                                    <p><strong>Conteúdos:</strong> {{ av['conteudos'] or '-' }}</p>
+                                                    <p>
+                                                        <strong>Pontuação:</strong>
+                                                        {% if av['pontuacao'] is not none %}
+                                                        <span class="badge badge-success">{{ "%.1f"|format(av['pontuacao']) }} pts</span>
+                                                        {% else %}
+                                                        -
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </details>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-check"></i>
+                        <p>Ainda não há avaliações cadastradas para esta turma (com os filtros aplicados).</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- OCORRÊNCIAS -->
+            <div class="content-panel" id="section-ocorrencias">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Ocorrências do Aluno(a)</h2>
+                        <p class="section-subtitle">
+                            Registros disciplinares e convocações de responsáveis. Clique em "Ver detalhes" para ler o motivo da ocorrência.
+                        </p>
+                    </div>
+
+                    <form method="get" class="filter-bar">
+                        <div class="filter-group">
+                            <label for="bim_oc">
+                                <i class="fas fa-calendar-alt"></i> Bimestre
+                            </label>
+                            <select name="bim_oc" id="bim_oc">
+                                <option value="">Todos os bimestres</option>
+                                <option value="1" {{ 'selected' if bim_oc == '1' else '' }}>1º bimestre</option>
+                                <option value="2" {{ 'selected' if bim_oc == '2' else '' }}>2º bimestre</option>
+                                <option value="3" {{ 'selected' if bim_oc == '3' else '' }}>3º bimestre</option>
+                                <option value="4" {{ 'selected' if bim_oc == '4' else '' }}>4º bimestre</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="professor_oc">
+                                <i class="fas fa-chalkboard-teacher"></i> Professor
+                            </label>
+                            <select name="professor_oc" id="professor_oc">
+                                <option value="">Todos os professores</option>
+                                {% for prof in professores_ocorrencia %}
+                                <option value="{{ prof }}" {{ 'selected' if professor_oc == prof else '' }}>{{ prof }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-filter btn-primary">
+                                <i class="fas fa-filter"></i> Filtrar
+                            </button>
+                            <a href="{{ url_for('area_responsavel') }}" class="btn-filter btn-secondary">
+                                <i class="fas fa-times"></i> Limpar
+                            </a>
+                        </div>
+                    </form>
+
+                    {% if ocorrencias %}
+                    <div class="table-container">
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Tipo</th>
+                                        <th>Professor</th>
+                                        <th>Chamar Responsável</th>
+                                        <th>Detalhes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for oc in ocorrencias %}
+                                    <tr>
+                                        <td>{{ oc['data'] }}</td>
+                                        <td>{{ oc['tipo_ocorrencia'] }}</td>
+                                        <td>{{ oc['professor'] or '-' }}</td>
+                                        <td>
+                                            {% if oc['chamar_responsavel'] == 'sim' %}
+                                            <span class="badge badge-danger">Sim</span>
+                                            {% else %}
+                                            <span class="badge badge-success">Não</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <details>
+                                                <summary>Ver detalhes</summary>
+                                                <div class="details-content">
+                                                    <p><strong>Motivo:</strong> {{ oc['motivo'] }}</p>
+                                                    <p><strong>Dias de suspensão:</strong> {{ oc['total_dias'] or 0 }}</p>
+                                                    <p><strong>Reunião agendada:</strong>
+                                                        {% if oc['data_reuniao'] or oc['hora_reuniao'] %}
+                                                        {{ oc['data_reuniao'] or '' }}
+                                                        {% if oc['hora_reuniao'] %} às {{ oc['hora_reuniao'] }}{% endif %}
+                                                        {% else %}
+                                                        Não registrada
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </details>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Não há ocorrências registradas para o(a) aluno(a) {{ aluno_nome }} (com os filtros aplicados).</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ATESTADOS -->
+            <div class="content-panel" id="section-atestados">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Atestados Médicos</h2>
+                        <p class="section-subtitle">
+                            Consulte todos os atestados médicos já registrados para o(a) estudante. Esta área é apenas para visualização.
+                        </p>
+                    </div>
+
+                    <form method="get" class="filter-bar">
+                        <div class="filter-group">
+                            <label for="bim_atest">
+                                <i class="fas fa-calendar-alt"></i> Bimestre
+                            </label>
+                            <select name="bim_atest" id="bim_atest">
+                                <option value="">Todos os bimestres</option>
+                                <option value="1" {{ 'selected' if bim_atest == '1' else '' }}>1º bimestre</option>
+                                <option value="2" {{ 'selected' if bim_atest == '2' else '' }}>2º bimestre</option>
+                                <option value="3" {{ 'selected' if bim_atest == '3' else '' }}>3º bimestre</option>
+                                <option value="4" {{ 'selected' if bim_atest == '4' else '' }}>4º bimestre</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-filter btn-primary">
+                                <i class="fas fa-filter"></i> Filtrar
+                            </button>
+                            <a href="{{ url_for('area_responsavel') }}" class="btn-filter btn-secondary">
+                                <i class="fas fa-times"></i> Limpar
+                            </a>
+                        </div>
+                    </form>
+
+                    {% if atestados_aluno %}
+                    <div class="table-container">
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data do atestado</th>
+                                        <th>Bimestre</th>
+                                        <th>Tipo</th>
+                                        <th>Dias de afastamento</th>
+                                        <th>Observação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for at in atestados_aluno %}
+                                    <tr>
+                                        <td>{{ at['data_atestado'] }}</td>
+                                        <td>{{ at['bimestre'] }}º</td>
+                                        <td>{{ at['tipo_atestado'] }}</td>
+                                        <td>
+                                            {% if at['tipo_atestado'] == 'AFASTAMENTO' %}
+                                            {{ at['total_dias'] or 0 }}
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if at['tipo_atestado'] == 'OUTROS' and at['outro_tipo'] %}
+                                            {{ at['outro_tipo'] }}
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-file-medical"></i>
+                        <p>Não há atestados registrados para o(a) aluno(a) {{ aluno_nome }} (com os filtros aplicados).</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- RECADOS -->
+            <div class="content-panel" id="section-recados">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Recados dos Professores</h2>
+                        <p class="section-subtitle">
+                            Mensagens e orientações importantes enviadas pelos professores. Clique em "Ver recado" para ler o texto completo.
+                        </p>
+                    </div>
+
+                    <form method="get" class="filter-bar">
+                        <div class="filter-group">
+                            <label for="bim_rec">
+                                <i class="fas fa-calendar-alt"></i> Bimestre
+                            </label>
+                            <select name="bim_rec" id="bim_rec">
+                                <option value="">Todos os bimestres</option>
+                                <option value="1" {{ 'selected' if bim_rec == '1' else '' }}>1º bimestre</option>
+                                <option value="2" {{ 'selected' if bim_rec == '2' else '' }}>2º bimestre</option>
+                                <option value="3" {{ 'selected' if bim_rec == '3' else '' }}>3º bimestre</option>
+                                <option value="4" {{ 'selected' if bim_rec == '4' else '' }}>4º bimestre</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="professor_rec">
+                                <i class="fas fa-chalkboard-teacher"></i> Professor
+                            </label>
+                            <select name="professor_rec" id="professor_rec">
+                                <option value="">Todos os professores</option>
+                                {% for prof in professores_recado %}
+                                <option value="{{ prof }}" {{ 'selected' if professor_rec == prof else '' }}>{{ prof }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-filter btn-primary">
+                                <i class="fas fa-filter"></i> Filtrar
+                            </button>
+                            <a href="{{ url_for('area_responsavel') }}" class="btn-filter btn-secondary">
+                                <i class="fas fa-times"></i> Limpar
+                            </a>
+                        </div>
+                    </form>
+
+                    {% if recados_aluno %}
+                    <div class="table-container">
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Professor</th>
+                                        <th>Função</th>
+                                        <th>Turma</th>
+                                        <th>Status</th>
+                                        <th>Recado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for r in recados_aluno %}
+                                    {% if not r.get('excluido_para_responsavel') %}
+                                    <tr>
+                                        <td>{{ r['data_criacao_br'] }}</td>
+                                        <td>{{ r['professor_login'] }}</td>
+                                        <td>{{ r['professor_funcao'] }}</td>
+                                        <td>{{ r['turma_nome'] }}</td>
+                                        <td>
+                                            {% if r['visualizado'] %}
+                                            <span class="badge badge-read">Visualizado</span>
+                                            {% else %}
+                                            <span class="badge badge-new">Novo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <details class="detalhes-recado" data-recado-id="{{ r['id'] }}">
+                                                <summary>Ver recado</summary>
+                                                <div class="details-content">
+                                                    {{ r['conteudo'] }}
+                                                </div>
+                                            </details>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-comment-dots"></i>
+                        <p>Não há recados registrados para o(a) aluno(a) {{ aluno_nome }} (com os filtros aplicados).</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- BIBLIOTECA -->
+            <div class="content-panel" id="section-biblioteca">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Biblioteca – Empréstimos do Estudante</h2>
+                        <p class="section-subtitle">
+                            Acompanhe os livros que o(a) estudante pegou na biblioteca, com status de Emprestado, Devolvido no prazo ou Devolvido com atraso.
+                        </p>
+                    </div>
+
+                    {% if emprestimos_biblioteca %}
+                    <div class="table-container">
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Livro</th>
+                                        <th>Empréstimo</th>
+                                        <th>Previsto</th>
+                                        <th>Devolução</th>
+                                        <th>Status</th>
+                                        <th>Situação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in emprestimos_biblioteca %}
+                                    <tr>
+                                        <td>{{ e.titulo_livro }}</td>
+                                        <td>{{ e.data_emprestimo_br }}</td>
+                                        <td>{{ e.data_prevista_devolucao_br }}</td>
+                                        <td>{{ e.data_devolucao_br }}</td>
+                                        <td>
+                                            {% if e.status == 'Emprestado' %}
+                                            <span class="badge badge-info">Emprestado</span>
+                                            {% elif e.status == 'Devolvido' %}
+                                            <span class="badge badge-success">Devolvido</span>
+                                            {% else %}
+                                            {{ e.status or '-' }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if e.status == 'Emprestado' %}
+                                            —
+                                            {% elif e.status == 'Devolvido' and e.devolucao_pontual == 1 %}
+                                            <span class="badge badge-success">Devolvido no prazo</span>
+                                            {% elif e.status == 'Devolvido' and e.devolucao_pontual == 0 %}
+                                            <span class="badge badge-danger">Devolvido com atraso</span>
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <p>Ainda não há empréstimos de biblioteca registrados para o(a) aluno(a) {{ aluno_nome }}.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- RESUMO RÁPIDO (EMBAIXO) -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-label">Planejamentos</div>
+                    <div class="stat-value">{{ planejamentos|length if planejamentos else 0 }}</div>
+                    <div class="stat-desc">dos professores</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-label">Avaliações</div>
+                    <div class="stat-value">{{ avaliacoes|length if avaliacoes else 0 }}</div>
+                    <div class="stat-desc">conteúdos lançados</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-label">Ocorrências</div>
+                    <div class="stat-value">{{ ocorrencias|length if ocorrencias else 0 }}</div>
+                    <div class="stat-desc">registros disciplinares</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <div class="stat-label">Recados</div>
+                    <div class="stat-value">{{ recados_aluno|length if recados_aluno else 0 }}</div>
+                    <div class="stat-desc">mensagens</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div class="stat-label">Atestados</div>
+                    <div class="stat-value">{{ atestados_aluno|length if atestados_aluno else 0 }}</div>
+                    <div class="stat-desc">registros médicos</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon secondary">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-label">Biblioteca</div>
+                    <div class="stat-value">{{ emprestimos_biblioteca|length if emprestimos_biblioteca else 0 }}</div>
+                    <div class="stat-desc">empréstimos</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MOBILE MENU TOGGLE -->
+    <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        // ========== FRASES DO PAULO FREIRE ==========
+        const frasesFreire = [
+            "Ensinar não é transferir conhecimento, mas criar as possibilidades para a sua própria produção ou a sua construção.",
+            "Ninguém educa ninguém, ninguém educa a si mesmo, os homens se educam entre si, mediatizados pelo mundo.",
+            "Educação não transforma o mundo. Educação muda pessoas. Pessoas transformam o mundo.",
+            "É fundamental diminuir a distância entre o que se diz e o que se faz, de tal forma que, num dado momento, a tua fala seja a tua prática.",
+            "Não há saber mais ou saber menos: há saberes diferentes.",
+            "O educador que aliena a ignorância, se mantém em posições fixas, invariáveis. Será sempre o que sabe, enquanto os educandos serão sempre os que não sabem.",
+            "A educação é um ato de amor, por isso, um ato de coragem. Não pode temer o debate. A análise da realidade. Não pode fugir à discussão criadora, sob pena de ser uma farsa.",
+            "A alegria não chega apenas no encontro do achado, mas faz parte do processo da busca. E ensinar e aprender não podem dar-se fora da procura, fora da boniteza e da alegria.",
+            "Quando a educação não é libertadora, o sonho do oprimido é ser o opressor.",
+            "Todos nós sabemos alguma coisa. Todos nós ignoramos alguma coisa. Por isso, aprendemos sempre."
+        ];
+
+        // Selecionar uma frase aleatória
+        function exibirFraseAleatoria() {
+            const fraseElement = document.getElementById('frase-freire');
+            const fraseAleatoria = frasesFreire[Math.floor(Math.random() * frasesFreire.length)];
+            fraseElement.textContent = `"${fraseAleatoria}"`;
+        }
+
+        // Controle de navegação das seções
+        const menuItems = document.querySelectorAll('.menu-item[data-section]');
+        const contentPanels = document.querySelectorAll('.content-panel');
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.getAttribute('data-section');
+
+                // Remove active de todos
+                menuItems.forEach(mi => mi.classList.remove('active'));
+                contentPanels.forEach(cp => cp.classList.remove('active'));
+
+                // Adiciona active no clicado
+                item.classList.add('active');
+                const targetPanel = document.getElementById(`section-${section}`);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                }
+
+                // Fecha sidebar em mobile
+                if (window.innerWidth <= 1024) {
+                    closeSidebarOnMobile();
+                }
+            });
+        });
+
+        // Marcar recado como lido
+        document.querySelectorAll('.detalhes-recado').forEach(function(details) {
+            details.addEventListener('toggle', function() {
+                if (this.open) {
+                    const recadoId = this.dataset.recadoId;
+                    if (!recadoId) return;
+
+                    fetch(`/recados_aluno/marcar_lido/${recadoId}`, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(resp => resp.json())
+                    .then(data => {
+                        if (data.success) {
+                            const row = details.closest('tr');
+                            const statusBadge = row.querySelector('td:nth-child(5) .badge');
+                            if (statusBadge) {
+                                statusBadge.textContent = 'Visualizado';
+                                statusBadge.classList.remove('badge-new');
+                                statusBadge.classList.add('badge-read');
+                            }
+                        }
+                    })
+                    .catch(err => console.error(err));
+                }
+            });
+        });
+
+        // Sidebar toggle (mobile)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menu-toggle');
+            sidebar.classList.toggle('active');
+            toggle.classList.toggle('active');
+
+            const icon = toggle.querySelector('i');
+            if (sidebar.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+                if (window.innerWidth <= 1024) {
+                    document.body.style.overflow = 'hidden';
+                }
+            } else {
+                icon.className = 'fas fa-bars';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('sidebar');
+                const toggle = document.getElementById('menu-toggle');
+                if (sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    toggle.classList.remove('active');
+                    toggle.querySelector('i').className = 'fas fa-bars';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+
+        // Fechar sidebar ao clicar fora
+        window.onclick = function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menu-toggle');
+            if (window.innerWidth <= 1024 &&
+                sidebar.classList.contains('active') &&
+                !sidebar.contains(event.target) &&
+                !toggle.contains(event.target)) {
+                closeSidebarOnMobile();
+            }
+        }
+
+        // Executar ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            exibirFraseAleatoria();
+        });
+    </script>
+</body>
+</html>

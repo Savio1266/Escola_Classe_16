@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Ocorrência</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <style>
+        :root {
+            --bg-main: #020617;
+            --card-bg: rgba(15,23,42,0.98);
+            --card-border: rgba(148,163,184,0.55);
+            --accent: #38bdf8;
+            --accent-2: #4f46e5;
+            --accent-soft: rgba(56,189,248,0.1);
+            --danger: #f97373;
+            --success: #4ade80;
+            --text-main: #e5e7eb;
+            --text-soft: #9ca3af;
+            --input-bg: rgba(15,23,42,0.9);
+            --input-border: rgba(148,163,184,0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 18px;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.25), transparent 60%),
+                radial-gradient(circle at bottom right, rgba(79,70,229,0.25), transparent 60%),
+                var(--bg-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 780px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            border: 1px solid var(--card-border);
+            box-shadow:
+                0 24px 60px rgba(15,23,42,0.9),
+                0 0 0 1px rgba(15,23,42,0.85);
+            padding: 20px 20px 22px 20px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.7s ease-out;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            inset: -35%;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(56,189,248,0.18), transparent 55%),
+                radial-gradient(circle at 100% 100%, rgba(79,70,229,0.18), transparent 55%);
+            opacity: 0.85;
+            pointer-events: none;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADER COM LOGO */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .logo-ring {
+            width: 70px;
+            height: 70px;
+            border-radius: 999px;
+            padding: 3px;
+            background: conic-gradient(from 140deg, #38bdf8, #4f46e5, #22c55e, #38bdf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 22px rgba(56,189,248,0.7);
+            flex-shrink: 0;
+        }
+
+        .logo-ring-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            background: #020617;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-ring-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .badge-top {
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-soft);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 0.03em;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-soft);
+        }
+
+        /* FORM WRAPPER */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 14px;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-soft);
+            margin-bottom: 4px;
+        }
+
+        select,
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 9px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 14px;
+        }
+
+        textarea {
+            border-radius: 14px;
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(56,189,248,0.55);
+            background: rgba(15,23,42,0.95);
+        }
+
+
+        /* ÍCONE DO CALENDÁRIO BRANCO NO INPUT DATE */
+        #data_ocorrencia::-webkit-calendar-picker-indicator {
+            filter: invert(1);              /* deixa o ícone branco */
+            transform: scale(1.4);          /* aumenta o tamanho do ícone */
+            background-color: transparent;  /* mantém o fundo do campo */
+            border-radius: 999px;
+            box-shadow: 0 0 0 2px #ffffff;  /* “anel” branco em volta do ícone */
+            cursor: pointer;
+        }
+
+        /* ÍCONES BRANCOS EM CAMPOS DE DATA E HORA */
+        #data_ocorrencia::-webkit-calendar-picker-indicator,
+        #data_reuniao::-webkit-calendar-picker-indicator,
+        #hora_reuniao::-webkit-calendar-picker-indicator {
+            filter: invert(1);              /* deixa o ícone branco */
+            transform: scale(1.4);          /* aumenta o tamanho do ícone */
+            background-color: transparent;  /* mantém o fundo do campo */
+            border-radius: 999px;
+            box-shadow: 0 0 0 2px #ffffff;  /* “anel” branco em volta do ícone */
+            cursor: pointer;
+        }
+
+        /* Mantém o contraste interno desses campos */
+        #data_ocorrencia,
+        #data_reuniao,
+        #hora_reuniao {
+            color-scheme: white;
+        }
+
+
+
+        #data_ocorrencia {
+            color-scheme: white;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: var(--text-soft);
+            margin-top: 2px;
+        }
+
+        /* RADIO CHAMAR RESPONSÁVEL */
+        .radio-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .radio-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.7);
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--text-main);
+            background: rgba(15,23,42,0.9);
+            transition: background 0.18s ease, border-color 0.18s ease, transform 0.1s ease;
+        }
+
+        .radio-pill input {
+            margin: 0;
+        }
+
+        .radio-pill:hover {
+            background: rgba(15,23,42,0.95);
+            transform: translateY(-1px);
+        }
+
+        /* CAMPOS CONDICIONAIS */
+        #dias_suspensao,
+        #reuniao_info {
+            display: none;
+            margin-top: 6px;
+        }
+
+        #dias_suspensao input,
+        #reuniao_info input {
+            border-radius: 999px;
+        }
+
+        /* BOTÕES */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #0f172a;
+            font-weight: 600;
+            box-shadow: 0 0 22px rgba(34,197,94,0.45);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(34,197,94,0.6);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: radial-gradient(circle at top left, #0f172a, #020617);
+            color: var(--text-main);
+            border: 1px solid rgba(148,163,184,0.65);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 0 20px rgba(15,23,42,0.85);
+            transform: translateY(-1px);
+        }
+
+        footer {
+            text-align: right;
+            font-size: 11px;
+            color: var(--text-soft);
+            margin-top: 12px;
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 16px 14px 18px 14px;
+                border-radius: 20px;
+            }
+
+            .header {
+                align-items: flex-start;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+
+        <!-- TOPO COM LOGO E TÍTULO -->
+        <div class="header">
+            <div class="logo-ring">
+                <div class="logo-ring-inner">
+                    <img src="/static/logo.jpg" alt="Logo da Escola">
+                </div>
+            </div>
+            <div class="header-text">
+                <div class="badge-top">Registro disciplinar</div>
+                <h1>Registrar Ocorrência</h1>
+                <p class="subtitle">
+                    Registre de forma padronizada as ocorrências pedagógicas e disciplinares do estudante.
+                </p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('registrar_ocorrencia') }}">
+            <!-- LINHA 1: TURMA / ALUNO -->
+            <div class="grid">
+                <div>
+                    <label for="turma_id">Turma</label>
+                    <select id="turma_id" name="turma_id" required>
+                        <option value="">Selecione uma turma</option>
+                        {% for turma in turmas %}
+                            <option value="{{ turma[0] }}">{{ turma[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="aluno_id">Aluno</label>
+                    <select id="aluno_id" name="aluno_id" required>
+                        <option value="">Selecione um aluno</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- LINHA 2: DATA / TIPO -->
+            <div class="grid">
+                <div>
+                    <label for="data_ocorrencia">Data da Ocorrência</label>
+                    <input type="date" id="data_ocorrencia" name="data_ocorrencia" required>
+                </div>
+
+                <div>
+                    <label for="tipo_ocorrencia">Tipo de Ocorrência</label>
+                    <select id="tipo_ocorrencia" name="tipo_ocorrencia" required>
+                        <option value="ADVERTENCIA_PEDAGOGICA">Advertência Pedagógica</option>
+                        <option value="ADVERTENCIA_DISCIPLINAR">Advertência Disciplinar</option>
+                        <option value="SUSPENSAO">Suspensão</option>
+                    </select>
+                    <div id="dias_suspensao">
+                        <label for="total_dias">Total de Dias de Suspensão</label>
+                        <input type="number" id="total_dias" name="total_dias" min="1" placeholder="Ex.: 3">
+                        <p class="hint">Informe o total de dias apenas quando a ocorrência for de suspensão.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOTIVO (TEXTO) -->
+            <div class="full">
+                <label for="motivo">Relato / Motivo da Ocorrência</label>
+                <textarea id="motivo" name="motivo"
+                          placeholder="Descreva de forma objetiva o ocorrido, circunstâncias e encaminhamentos iniciais."
+                          required></textarea>
+            </div>
+
+            <!-- PROFESSOR -->
+            <div class="full">
+                <label for="professor">Professor Responsável</label>
+                <input type="text" id="professor" name="professor"
+                       placeholder="Nome do professor que está registrando" required>
+            </div>
+
+            <!-- CHAMAR RESPONSÁVEL -->
+            <div class="full">
+                <label>Chamar Responsável?</label>
+                <div class="radio-group">
+                    <label class="radio-pill">
+                        <input type="radio" name="chamar_responsavel" value="sim">
+                        <span>Sim</span>
+                    </label>
+                    <label class="radio-pill">
+                        <input type="radio" name="chamar_responsavel" value="nao" checked>
+                        <span>Não</span>
+                    </label>
+                </div>
+
+                <div id="reuniao_info">
+                    <div class="grid" style="margin-top: 6px;">
+                        <div>
+                            <label for="data_reuniao">Data da Reunião</label>
+                            <input type="date" id="data_reuniao" name="data_reuniao">
+                        </div>
+                        <div>
+                            <label for="hora_reuniao">Hora da Reunião</label>
+                            <input type="time" id="hora_reuniao" name="hora_reuniao">
+                        </div>
+                    </div>
+                    <p class="hint">Preencha a data e o horário previstos para o atendimento com o responsável.</p>
+                </div>
+            </div>
+
+            <!-- BOTÕES -->
+            <div class="actions">
+                <a href="{{ url_for('dashboard_professor') }}" class="btn-secondary">
+                    ⟵ Voltar à Área do Professor
+                </a>
+                <button type="submit" class="btn-primary">
+                    Registrar Ocorrência
+                </button>
+            </div>
+        </form>
+
+        <footer>
+            Registro integrado de ocorrências – De Olho na Escola.
+        </footer>
+    </div>
+</div>
+
+<script>
+    // Carregar alunos conforme turma
+    const turmaSelect = document.getElementById('turma_id');
+    const alunoSelect = document.getElementById('aluno_id');
+
+    turmaSelect.addEventListener('change', function () {
+        const turmaId = this.value;
+        if (turmaId) {
+            const url = "{{ url_for('get_alunos', turma_id=0) }}".replace("0", turmaId);
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    alunoSelect.innerHTML = '<option value="">Selecione um aluno</option>';
+                    data.forEach(aluno => {
+                        alunoSelect.innerHTML += `<option value="${aluno.id}">${aluno.nome}</option>`;
+                    });
+                })
+                .catch(console.error);
+        } else {
+            alunoSelect.innerHTML = '<option value="">Selecione um aluno</option>';
+        }
+    });
+
+    // Exibir campo de dias de suspensão
+    const tipoOcorrencia = document.getElementById('tipo_ocorrencia');
+    const diasSuspensao = document.getElementById('dias_suspensao');
+
+    tipoOcorrencia.addEventListener('change', function () {
+        if (this.value === 'SUSPENSAO') {
+            diasSuspensao.style.display = 'block';
+        } else {
+            diasSuspensao.style.display = 'none';
+            document.getElementById('total_dias').value = '';
+        }
+    });
+
+    // Exibir dados de reunião quando marcar "sim"
+    const reuniaoInfo = document.getElementById('reuniao_info');
+    const radiosChamar = document.querySelectorAll('input[name="chamar_responsavel"]');
+
+    radiosChamar.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (this.value === 'sim') {
+                reuniaoInfo.style.display = 'block';
+            } else {
+                reuniaoInfo.style.display = 'none';
+                document.getElementById('data_reuniao').value = '';
+                document.getElementById('hora_reuniao').value = '';
+            }
+        });
+    });
+</script>
+</body>
+</html>

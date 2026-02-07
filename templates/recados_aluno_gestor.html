@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Recados por Aluno - Gestão / Coordenação</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS principal do sistema -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Ícones -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        :root{
+            --bg: #020617;
+            --card: rgba(255,255,255,0.08);
+            --card-solid: #0b1220;
+            --border: rgba(148,163,184,0.28);
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+
+            --blue: #0ea5e9;
+            --blue2:#2563eb;
+            --green:#22c55e;
+            --yellow:#f59e0b;
+            --red:#ef4444;
+
+            --shadow: 0 18px 55px rgba(0,0,0,.45);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(1100px 600px at 10% 10%, rgba(14,165,233,.22), transparent 60%),
+                radial-gradient(900px 500px at 90% 18%, rgba(34,197,94,.18), transparent 60%),
+                radial-gradient(900px 500px at 40% 95%, rgba(99,102,241,.16), transparent 55%),
+                var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 18px 12px 40px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1150px;
+            margin: 0 auto;
+            background: rgba(15,23,42,.68);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 18px 18px 14px;
+            border-bottom: 1px solid rgba(148,163,184,.18);
+            background: linear-gradient(135deg, rgba(14,165,233,.18), rgba(34,197,94,.10));
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .title-wrap {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            border: 1px solid rgba(148,163,184,.30);
+            background: rgba(2,6,23,.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 14px 34px rgba(0,0,0,.35);
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0;
+            letter-spacing: .2px;
+        }
+
+        .subtitle {
+            margin: 2px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .header-actions{
+            display:flex;
+            gap:10px;
+            flex-wrap: wrap;
+            align-items:center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(148,163,184,.28);
+            background: rgba(2,6,23,.40);
+            color: var(--text);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform .15s ease, border-color .15s ease, background .15s ease;
+            white-space: nowrap;
+        }
+        .btn:hover{ transform: translateY(-1px); border-color: rgba(148,163,184,.50); }
+        .btn-primary{
+            background: linear-gradient(135deg, rgba(14,165,233,.22), rgba(37,99,235,.16));
+            border-color: rgba(14,165,233,.38);
+        }
+        .btn-secondary{
+            background: rgba(15,23,42,.55);
+        }
+        .btn-small{
+            padding: 8px 10px;
+            font-size: 12px;
+            border-radius: 11px;
+        }
+
+        /* Content */
+        .content {
+            padding: 16px 18px 18px;
+        }
+
+        .filters-box {
+            background: rgba(2,6,23,.35);
+            border: 1px solid rgba(148,163,184,.22);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .filters-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(160px, 1fr)) auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        @media (max-width: 980px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-actions{
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(148,163,184,.28);
+            font-size: 13px;
+            background: rgba(2,6,23,.55);
+            color: var(--text);
+            outline: none;
+        }
+
+        .hint {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .table-wrapper {
+            border-radius: 16px;
+            border: 1px solid rgba(148,163,184,.22);
+            background: rgba(2,6,23,.30);
+            overflow: auto;
+            max-height: 520px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 980px;
+        }
+
+        thead {
+            background: rgba(15,23,42,.78);
+            color: #cbd5e1;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        th, td {
+            padding: 11px 10px;
+            border-bottom: 1px solid rgba(148,163,184,.14);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: .25px;
+            white-space: nowrap;
+        }
+
+        tr:hover td{
+            background: rgba(15,23,42,.35);
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .col-data {
+            width: 120px;
+            white-space: nowrap;
+            text-align: center;
+            color: #cbd5e1;
+        }
+
+        .col-turma { width: 130px; white-space: nowrap; }
+        .col-aluno { width: 220px; }
+        .col-professor { width: 170px; }
+        .col-status { width: 190px; white-space: nowrap; }
+
+        .col-recado {
+            width: 100%;
+            max-width: 520px;
+            word-wrap: break-word;
+            white-space: normal;
+            line-height: 1.35;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            border: 1px solid rgba(148,163,184,.25);
+            background: rgba(15,23,42,.55);
+            color: var(--text);
+        }
+
+        .badge-status-lido {
+            border-color: rgba(34,197,94,.35);
+            background: rgba(34,197,94,.12);
+            color: #bbf7d0;
+        }
+
+        .badge-status-novo {
+            border-color: rgba(245,158,11,.35);
+            background: rgba(245,158,11,.12);
+            color: #fde68a;
+        }
+
+        .badge-status-excluido {
+            border-color: rgba(239,68,68,.45);
+            background: rgba(239,68,68,.14);
+            color: #fecaca;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 18px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .footer {
+            padding: 14px 18px;
+            border-top: 1px solid rgba(148,163,184,.18);
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+            background: rgba(2,6,23,.22);
+        }
+
+        /* Compact buttons inside filters */
+        .filter-actions{
+            display:flex;
+            gap:10px;
+            flex-wrap: wrap;
+            justify-content:flex-start;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header">
+        <div class="header-row">
+            <div class="title-wrap">
+                <div class="icon-badge">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                </div>
+                <div>
+                    <h1>Recados por Aluno</h1>
+                    <div class="subtitle">
+                        Acompanhamento de recados individuais registrados pelos professores
+                        <span style="color: rgba(229,231,235,.75);">•</span>
+                        Gestão / Coordenação
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <a href="{{ url_for('dashboard_moderador') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar ao Painel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Caixa de filtros -->
+        <div class="filters-box">
+            <div class="filters-title">
+                <i class="fas fa-filter"></i> Filtros de pesquisa
+            </div>
+
+            <form method="get" action="{{ url_for('listar_recados_aluno_gestor') }}">
+                <div class="filters-grid">
+
+                    <!-- Filtro por Turma -->
+                    <div>
+                        <label for="turma_id">Turma</label>
+                        {% set turma_sel = turma_selecionada %}
+                        <select name="turma_id" id="turma_id">
+                            <option value="">Todas as turmas</option>
+                            {% for turma in turmas or [] %}
+                                <option value="{{ turma.id }}"
+                                        {% if turma_sel and turma_sel == turma.id|string %}selected{% endif %}>
+                                    {{ turma.nome }}{% if turma.turno %} ({{ turma.turno }}){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="hint">Dica: filtre por turma para refinar a busca de alunos.</div>
+                    </div>
+
+                    <!-- Filtro por Aluno -->
+                    <div>
+                        <label for="aluno_id">Aluno</label>
+                        {% set aluno_sel = aluno_selecionado %}
+                        <select name="aluno_id" id="aluno_id">
+                            <option value="">Todos os alunos</option>
+                            {% for aluno in alunos or [] %}
+                                <option value="{{ aluno.id }}"
+                                        {% if aluno_sel and aluno_sel == aluno.id|string %}selected{% endif %}>
+                                    {{ aluno.nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Professor -->
+                    <div>
+                        <label for="professor_id">Professor</label>
+                        {% set prof_sel = professor_selecionado %}
+                        <select name="professor_id" id="professor_id">
+                            <option value="">Todos os professores</option>
+                            {% for professor in professores or [] %}
+                                <option value="{{ professor.id }}"
+                                        {% if prof_sel and prof_sel == professor.id|string %}selected{% endif %}>
+                                    {{ professor.login }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Filtrar
+                        </button>
+                        <a href="{{ url_for('listar_recados_aluno_gestor') }}"
+                           class="btn btn-secondary btn-small">
+                            <i class="fas fa-eraser"></i> Limpar
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabela de recados -->
+        <div class="table-wrapper">
+            {% if recados and recados|length > 0 %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th class="col-data">Data</th>
+                        <th class="col-turma">Turma</th>
+                        <th class="col-aluno">Aluno</th>
+                        <th class="col-professor">Professor</th>
+                        <th class="col-status">Status</th>
+                        <th class="col-recado">Recado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for recado in recados %}
+                        <tr>
+                            <td class="col-data">
+                                {% if recado['data_criacao'] %}
+                                    {{ recado['data_criacao'][:10] }} {{ recado['data_criacao'][11:16] }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="col-turma">{{ recado['turma_nome'] or '-' }}</td>
+                            <td class="col-aluno">{{ recado['aluno_nome'] or '-' }}</td>
+                            <td class="col-professor">{{ recado['professor_login'] or '-' }}</td>
+
+                            <td class="col-status">
+                                {# IMPORTANTE:
+                                   Para não dar erro, garanta no SELECT que vem para esta tela:
+                                   IFNULL(ra.excluido_para_responsavel, 0) AS excluido_para_responsavel
+                                   Assim recado['excluido_para_responsavel'] sempre existe (0/1).
+                                #}
+                                {% if recado['excluido_para_responsavel'] %}
+                                    <span class="badge badge-status-excluido">
+                                        <i class="fa-solid fa-trash"></i> Excluído p/ responsável
+                                    </span>
+
+                                    <div style="margin-top:6px; font-size:12px; color: var(--muted); line-height:1.2;">
+                                        {% if recado['excluido_em'] %}
+                                            Em:
+                                            {{ recado['excluido_em'][8:10] }}/{{ recado['excluido_em'][5:7] }}/{{ recado['excluido_em'][:4] }}
+                                            {{ recado['excluido_em'][11:16] }}
+                                        {% else %}
+                                            Em: -
+                                        {% endif %}
+                                        {% if recado['excluido_por_login'] %}
+                                            <span style="margin-left:6px;">(por {{ recado['excluido_por_login'] }})</span>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    {% if recado['visualizado'] %}
+                                        <span class="badge badge-status-lido">
+                                            <i class="fa-solid fa-check"></i> Visto
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-status-novo">
+                                            <i class="fa-solid fa-eye-slash"></i> Não visto
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+
+                            <td class="col-recado">
+                                {{ recado['conteudo'] or '' }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-data">
+                    <i class="fa-regular fa-face-smile"></i>
+                    Nenhum recado encontrado para os filtros selecionados.
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Acompanhamento integrado dos registros de recados por aluno – De Olho na Escola • ESCOLA CLASSE 16.
+    </div>
+
+</div>
+</body>
+</html>

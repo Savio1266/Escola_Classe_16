@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Atestado – De Olho na Escola</title>
+
+    <!-- CSS global (se já existir) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Font Awesome (ícones) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        :root {
+            --azul-fundo: #020817;
+            --azul-1: #0f4fd8;
+            --azul-2: #00b4ff;
+            --rosa: #ec4899;
+            --cinza-borda: rgba(148,163,184,0.45);
+            --cinza-claro: #f3f4f6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: radial-gradient(circle at top left, #0f4fd8 0, transparent 60%),
+                        radial-gradient(circle at bottom right, #ec4899 0, transparent 55%),
+                        #020817;
+            color: #0f172a;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(15,23,42,0.96);
+            border-radius: 18px;
+            border: 1px solid rgba(148,163,184,0.35);
+            box-shadow:
+                0 18px 45px rgba(15,23,42,0.75),
+                0 0 0 1px rgba(15,23,42,0.4);
+            padding: 24px 26px 28px;
+            color: #e5e7eb;
+            backdrop-filter: blur(18px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .title-group h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-group h1 .icon-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 0, #38bdf8, #0f4fd8 55%, #ec4899 100%);
+            color: #0b1120;
+            font-size: 1rem;
+            box-shadow: 0 0 0 1px rgba(15,23,42,0.2);
+        }
+
+        .title-group span.subtitle {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .card-header .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-voltar {
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.6);
+            background: transparent;
+            color: #e5e7eb;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-voltar:hover {
+            background: rgba(15,23,42,0.7);
+        }
+
+        .pill-status {
+            font-size: 0.75rem;
+            border-radius: 999px;
+            padding: 4px 10px;
+            background: rgba(56,189,248,0.08);
+            color: #7dd3fc;
+            border: 1px solid rgba(56,189,248,0.35);
+        }
+
+        form {
+            display: grid;
+            gap: 18px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        @media (min-width: 720px) {
+            .grid-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .grid-3 {
+                grid-template-columns: 1.2fr 1.2fr 0.8fr;
+            }
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.8rem;
+            color: #cbd5f5;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .field small {
+            font-size: 0.72rem;
+            color: #9ca3af;
+        }
+
+        select,
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--cinza-borda);
+            padding: 9px 11px;
+            font-size: 0.9rem;
+            background: rgba(15,23,42,0.96);
+            color: #e5e7eb;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 1px rgba(56,189,248,0.35);
+            background: rgba(15,23,42,1);
+        }
+
+        option {
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .badge-required {
+            color: #f97373;
+            margin-left: 4px;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px dashed rgba(148,163,184,0.3);
+            margin: 4px 0 2px;
+        }
+
+        .field-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .field-inline > * {
+            flex: 1;
+        }
+
+        .helper-bagde {
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.6);
+            color: #9ca3af;
+        }
+
+        .feedback {
+            font-size: 0.8rem;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(248,250,252,0.12);
+            background: rgba(15,23,42,0.85);
+            color: #e5e7eb;
+        }
+
+        .feedback i {
+            margin-right: 6px;
+            color: #38bdf8;
+        }
+
+        .flash-messages {
+            margin-bottom: 8px;
+        }
+
+        .flash {
+            font-size: 0.8rem;
+            padding: 8px 10px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            background: rgba(248,250,252,0.05);
+            border: 1px solid rgba(248,250,252,0.12);
+        }
+
+        .actions-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .btn-submit {
+            border-radius: 999px;
+            border: none;
+            padding: 10px 22px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-image: linear-gradient(120deg, var(--azul-1), var(--azul-2), var(--rosa));
+            background-size: 200% 200%;
+            color: #f9fafb;
+            box-shadow:
+                0 10px 25px rgba(15,23,42,0.9),
+                0 0 0 1px rgba(15,23,42,0.6);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background-position 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            background-position: 100% 0;
+            box-shadow:
+                0 16px 35px rgba(15,23,42,1),
+                0 0 0 1px rgba(15,23,42,0.7);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+            box-shadow:
+                0 8px 18px rgba(15,23,42,0.75),
+                0 0 0 1px rgba(15,23,42,0.7);
+        }
+
+        .btn-submit i {
+            font-size: 0.95rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">
+        <div class="title-group">
+            <h1>
+                <span class="icon-badge">
+                    <i class="fa-solid fa-file-medical"></i>
+                </span>
+                Registrar Atestado de Estudante
+            </h1>
+            <span class="subtitle">
+                Preencha os dados do atestado para manter o histórico organizado por bimestre, turma e estudante.
+            </span>
+        </div>
+        <div class="actions">
+            <span class="pill-status">
+                <i class="fa-solid fa-shield-heart"></i> Área restrita ao gestor
+            </span>
+            <a href="{{ url_for('dashboard_moderador') }}" class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i>
+                Painel do Moderador
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensagens flash -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <form action="{{ url_for('registrar_atestado') }}" method="post" autocomplete="off">
+        <!-- Seção 1: Bimestre, Turma, Estudante -->
+        <div class="section-label">Identificação do registro</div>
+        <hr>
+
+        <div class="grid grid-3">
+            <div class="field">
+                <label for="bimestre">
+                    Bimestre
+                    <span class="badge-required">*</span>
+                </label>
+                <select name="bimestre" id="bimestre" required>
+                    <option value="">Selecione...</option>
+                    <option value="1">1º Bimestre</option>
+                    <option value="2">2º Bimestre</option>
+                    <option value="3">3º Bimestre</option>
+                    <option value="4">4º Bimestre</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="turma_id">
+                    Turma
+                    <span class="badge-required">*</span>
+                </label>
+                <select name="turma_id" id="turma_id" required>
+                    <option value="">Selecione a turma...</option>
+                    {% for turma in turmas %}
+                        <option value="{{ turma['id'] }}">
+                            {{ turma['nome'] }} – {{ turma['turno'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="aluno_id">
+                    Estudante
+                    <span class="badge-required">*</span>
+                </label>
+                <select name="aluno_id" id="aluno_id" required disabled>
+                    <option value="">Selecione primeiro a turma...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="feedback">
+            <i class="fa-solid fa-circle-info"></i>
+            Primeiro selecione o <strong>bimestre</strong> e a <strong>turma</strong>. Em seguida, escolha o estudante para vincular o atestado.
+        </div>
+
+        <!-- Seção 2: Tipo de atestado -->
+        <div class="section-label" style="margin-top: 10px;">Tipo de atestado</div>
+        <hr>
+
+        <div class="grid grid-2">
+            <div class="field">
+                <label for="tipo_atestado">
+                    Tipo
+                    <span class="badge-required">*</span>
+                </label>
+                <select name="tipo_atestado" id="tipo_atestado" required>
+                    <option value="">Selecione...</option>
+                    <option value="ACOMPANHAMENTO">Acompanhamento</option>
+                    <option value="COMPARECIMENTO">Comparecimento</option>
+                    <option value="EXAMES">Exames</option>
+                    <option value="AFASTAMENTO">Afastamento</option>
+                    <option value="OUTROS">Outros</option>
+                </select>
+                <small>Use <strong>Afastamento</strong> quando o estudante ficar dias sem frequentar por orientação médica.</small>
+            </div>
+
+            <div class="field">
+                <label for="data_atestado">
+                    Data do atestado
+                    <span class="badge-required">*</span>
+                </label>
+                <input type="date" name="data_atestado" id="data_atestado" required>
+            </div>
+        </div>
+
+        <div class="grid grid-2">
+            <div class="field" id="campo_total_dias" class="hidden">
+                <label for="total_dias">
+                    Total de dias de afastamento
+                </label>
+                <input type="number" min="0" step="1" name="total_dias" id="total_dias"
+                       placeholder="Ex.: 3">
+                <small>Preencha apenas se o atestado for de afastamento.</small>
+            </div>
+
+            <div class="field" id="campo_outro_tipo" class="hidden">
+                <label for="outro_tipo">
+                    Descreva o tipo de atestado
+                </label>
+                <input type="text" name="outro_tipo" id="outro_tipo"
+                       placeholder="Ex.: Atestado de consulta especializada">
+                <small>Use quando o tipo não se encaixar nas opções anteriores.</small>
+            </div>
+        </div>
+
+        <div class="actions-footer">
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-save"></i>
+                Salvar atestado
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // --- Mapeia alunos por turma para preencher o select dinamicamente ---
+    const alunos = {{ alunos|tojson|safe }};
+    const alunosPorTurma = {};
+
+    alunos.forEach(a => {
+        const turmaId = a.turma_id || a['turma_id'];
+        if (!alunosPorTurma[turmaId]) {
+            alunosPorTurma[turmaId] = [];
+        }
+        alunosPorTurma[turmaId].push(a);
+    });
+
+    const turmaSelect = document.getElementById('turma_id');
+    const alunoSelect = document.getElementById('aluno_id');
+
+    turmaSelect.addEventListener('change', function () {
+        const turmaId = this.value;
+        alunoSelect.innerHTML = '';
+
+        if (!turmaId || !alunosPorTurma[turmaId]) {
+            alunoSelect.disabled = true;
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'Selecione primeiro a turma...';
+            alunoSelect.appendChild(opt);
+            return;
+        }
+
+        alunoSelect.disabled = false;
+        const optDefault = document.createElement('option');
+        optDefault.value = '';
+        optDefault.textContent = 'Selecione o estudante...';
+        alunoSelect.appendChild(optDefault);
+
+        alunosPorTurma[turmaId]
+            .sort((a, b) => (a.nome || a['nome']).localeCompare(b.nome || b['nome']))
+            .forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.id || a['id'];
+                opt.textContent = a.nome || a['nome'];
+                alunoSelect.appendChild(opt);
+            });
+    });
+
+    // --- Controle de campos conforme o tipo de atestado ---
+    const tipoAtestadoSelect = document.getElementById('tipo_atestado');
+    const campoTotalDias = document.getElementById('campo_total_dias');
+    const campoOutroTipo = document.getElementById('campo_outro_tipo');
+    const inputTotalDias = document.getElementById('total_dias');
+    const inputOutroTipo = document.getElementById('outro_tipo');
+
+    function atualizarCamposTipo() {
+        const tipo = (tipoAtestadoSelect.value || '').toUpperCase();
+
+        // Total de dias apenas em afastamento
+        if (tipo === 'AFASTAMENTO') {
+            campoTotalDias.classList.remove('hidden');
+        } else {
+            campoTotalDias.classList.add('hidden');
+            inputTotalDias.value = '';
+        }
+
+        // Campo "outros" apenas em OUTROS
+        if (tipo === 'OUTROS') {
+            campoOutroTipo.classList.remove('hidden');
+        } else {
+            campoOutroTipo.classList.add('hidden');
+            inputOutroTipo.value = '';
+        }
+    }
+
+    tipoAtestadoSelect.addEventListener('change', atualizarCamposTipo);
+    atualizarCamposTipo();
+</script>
+</body>
+</html>

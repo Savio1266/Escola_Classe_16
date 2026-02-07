@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico por Estudante – Biblioteca ESCOLA CLASSE 16</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <style>
+        :root {
+            --bg: #020817;
+            --card-bg: #ffffff;
+            --primary: #15803d;
+            --primary-soft: rgba(34,197,94,0.12);
+            --border-soft: rgba(148,163,184,0.35);
+            --text-main: #0f172a;
+            --text-muted: #6b7280;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(187,247,208,0.65), transparent 55%),
+                radial-gradient(circle at bottom, rgba(15,23,42,0.95), #020817);
+            padding: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1180px;
+        }
+
+        /* TOPO */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-mini {
+            width: 48px;
+            height: 48px;
+            border-radius: 999px;
+            border: 2px solid rgba(22,163,74,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            box-shadow: 0 10px 22px rgba(22,163,74,0.45);
+        }
+
+        .logo-mini img {
+            max-width: 38px;
+            border-radius: 999px;
+        }
+
+        .topbar-title h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #f9fafb;
+        }
+
+        .topbar-title span {
+            display: block;
+            font-size: 0.78rem;
+            color: rgba(209,213,219,0.9);
+        }
+
+        .top-actions a {
+            font-size: 0.78rem;
+            text-decoration: none;
+            padding: 6px 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.75);
+            color: #e5e7eb;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15,23,42,0.9);
+        }
+
+        .top-actions a i {
+            font-size: 0.8rem;
+        }
+
+        .top-actions a:hover {
+            background: rgba(15,23,42,1);
+            border-color: rgba(148,163,184,0.95);
+        }
+
+        /* CONTEÚDO EM UMA COLUNA */
+        .shell {
+            background: #f9fafb;
+            border-radius: 22px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 20px 42px rgba(15,23,42,0.5);
+            padding: 18px 18px 20px;
+        }
+
+        /* Cabeçalho interno */
+        .header-inline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .header-text {
+            max-width: 640px;
+        }
+
+        .header-text-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 3px;
+        }
+
+        .header-text-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .header-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: rgba(22,163,74,0.12);
+            border: 1px solid rgba(22,163,74,0.4);
+            font-size: 0.75rem;
+            color: #166534;
+            margin-top: 5px;
+        }
+
+        .header-chip i {
+            font-size: 0.8rem;
+        }
+
+        .helper-inline {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #ffffff;
+            border: 1px dashed rgba(148,163,184,0.7);
+        }
+
+        /* Cards gerais */
+        .card {
+            border-radius: 18px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            padding: 16px 18px 18px;
+            margin-top: 10px;
+        }
+
+        .card:first-of-type {
+            margin-top: 0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title h3 {
+            margin: 0;
+            font-size: 0.98rem;
+            color: var(--text-main);
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Flash */
+        .flash-messages {
+            list-style: none;
+            padding-left: 0;
+            margin: 4px 0 8px;
+        }
+
+        .flash-messages li {
+            font-size: 0.8rem;
+            color: #b91c1c;
+            background: #fee2e2;
+            border-radius: 10px;
+            padding: 6px 9px;
+            border: 1px solid #fecaca;
+        }
+
+        /* Form seleção */
+        form.selector-form {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 10px 14px;
+            margin-bottom: 2px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        select {
+            width: 100%;
+            padding: 7px 10px;
+            border-radius: 999px;
+            border: 1px solid #d1d5db;
+            font-size: 0.86rem;
+            outline: none;
+            background: #ffffff;
+        }
+
+        select:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 1px rgba(34,197,94,0.25);
+        }
+
+        .btn-submit {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2px;
+        }
+
+        .btn-primary {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: #ffffff;
+            box-shadow: 0 14px 30px rgba(22,163,74,0.4);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 18px 40px rgba(22,163,74,0.55);
+            transform: translateY(-1px);
+        }
+
+        .helper {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Resumo */
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .summary-card {
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            font-size: 0.8rem;
+        }
+
+        .summary-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .summary-value {
+            font-size: 0.96rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .summary-tag {
+            margin-top: 4px;
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .summary-tag.regular {
+            background: rgba(34,197,94,0.12);
+            color: #166534;
+        }
+
+        .summary-tag.baixo {
+            background: rgba(234,179,8,0.15);
+            color: #854d0e;
+        }
+
+        .summary-tag.alto {
+            background: rgba(59,130,246,0.12);
+            color: #1d4ed8;
+        }
+
+        /* Tabela */
+        .table-wrapper {
+            max-height: 320px;
+            overflow-y: auto;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        thead {
+            background: #f3f4f6;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        th, td {
+            padding: 7px 9px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.76rem;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+        }
+
+        .status-emp {
+            background: rgba(59,130,246,0.12);
+            color: #1d4ed8;
+        }
+
+        .status-dev {
+            background: rgba(34,197,94,0.12);
+            color: #166534;
+        }
+
+        .atraso-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Responsivo */
+        @media (max-width: 980px) {
+            body {
+                padding: 14px;
+            }
+
+            form.selector-form {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .summary-row {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- TOPO -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="logo-mini">
+                <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo ESCOLA CLASSE 16">
+            </div>
+            <div class="topbar-title">
+                <h1>Biblioteca ESCOLA CLASSE 16</h1>
+                <span>Histórico individual de leituras</span>
+            </div>
+        </div>
+        <div class="top-actions">
+            <a href="{{ url_for('biblioteca.dashboard_biblioteca') }}">
+                <i class="fas fa-arrow-left"></i> Voltar ao painel
+            </a>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO EM UMA COLUNA -->
+    <div class="shell">
+
+        <!-- Cabeçalho interno -->
+        <div class="header-inline">
+            <div class="header-text">
+                <div class="header-text-title">Histórico por Estudante</div>
+                <div class="header-text-sub">
+                    Acompanhe todos os livros registrados para um estudante, incluindo atrasos e um
+                    indicador simples de frequência de leitura.
+                </div>
+                <div class="header-chip">
+                    <i class="fas fa-child"></i>
+                    Pensado para apoiar reuniões pedagógicas e conversas com as famílias.
+                </div>
+            </div>
+            <div class="helper-inline">
+                Escolha a turma e depois o estudante para visualizar o histórico completo.
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for msg in messages %}
+                    <li>{{ msg }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Seleção do estudante -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-user-graduate"></i>
+                    <h3>Selecione o estudante</h3>
+                </div>
+                <div class="card-sub">
+                    As turmas e estudantes são os mesmos cadastrados no sistema principal.
+                </div>
+            </div>
+
+            <form method="POST" class="selector-form">
+                <div>
+                    <label for="turma_id">Turma</label>
+                    <select id="turma_id" name="turma_id">
+                        <option value="">Selecione a turma</option>
+                        {% for t in turmas %}
+                            <option value="{{ t.id }}">
+                                {{ t.nome }} – {{ t.turno }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="aluno_id">Estudante</label>
+                    <select id="aluno_id" name="aluno_id" required>
+                        <option value="">Selecione a turma primeiro</option>
+                    </select>
+                    <div class="helper">Somente estudantes da turma escolhida serão listados.</div>
+                </div>
+
+                <div class="btn-submit">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-search"></i> Ver histórico
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% if aluno_nome %}
+        <!-- Resumo -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Resumo do estudante</h3>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <div class="summary-card">
+                    <div class="summary-label">Estudante</div>
+                    <div class="summary-value">{{ aluno_nome }}</div>
+                    <div class="helper">{{ turma_info }}</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Total de livros registrados</div>
+                    <div class="summary-value">{{ total_lidos }}</div>
+                    {% if total_lidos == 0 %}
+                        <div class="summary-tag baixo">
+                            <i class="fas fa-circle"></i> Sem registros ainda
+                        </div>
+                    {% elif total_lidos < 3 %}
+                        <div class="summary-tag baixo">
+                            <i class="fas fa-circle"></i> Leitor esporádico
+                        </div>
+                    {% elif total_lidos < 8 %}
+                        <div class="summary-tag regular">
+                            <i class="fas fa-circle"></i> Leitor regular
+                        </div>
+                    {% else %}
+                        <div class="summary-tag alto">
+                            <i class="fas fa-trophy"></i> Leitor destaque
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Devoluções em atraso</div>
+                    <div class="summary-value">{{ atrasos }}</div>
+                    {% if atrasos == 0 %}
+                        <div class="summary-tag regular">
+                            <i class="fas fa-smile"></i> Sempre em dia
+                        </div>
+                    {% else %}
+                        <div class="summary-tag baixo">
+                            <i class="fas fa-clock"></i> Precisa de apoio com prazos
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de histórico -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-book-open"></i>
+                    <h3>Linha do tempo das leituras</h3>
+                </div>
+                <div class="card-sub">
+                    Registros mais recentes aparecem primeiro.
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                {% if historico and historico|length > 0 %}
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Livro</th>
+                            <th>Empréstimo</th>
+                            <th>Previsto</th>
+                            <th>Devolução</th>
+                            <th>Status</th>
+                            <th>Atraso</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for e in historico %}
+                            <tr>
+                                <td>{{ e.titulo_livro }}</td>
+                                <td>
+                                    {% if e.data_emprestimo %}
+                                        {% set d = e.data_emprestimo %}
+                                        {% if d|length >= 10 %}
+                                            {{ d[8:10] }}/{{ d[5:7] }}/{{ d[0:4] }}
+                                        {% else %}
+                                            {{ d }}
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if e.data_prevista_devolucao %}
+                                        {% set dp = e.data_prevista_devolucao %}
+                                        {% if dp|length >= 10 %}
+                                            {{ dp[8:10] }}/{{ dp[5:7] }}/{{ dp[0:4] }}
+                                        {% else %}
+                                            {{ dp }}
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if e.data_devolucao %}
+                                        {% set dd = e.data_devolucao %}
+                                        {% if dd|length >= 10 %}
+                                            {{ dd[8:10] }}/{{ dd[5:7] }}/{{ dd[0:4] }}
+                                        {% else %}
+                                            {{ dd }}
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if e.status == 'Emprestado' %}
+                                        <span class="status-pill status-emp">
+                                            <i class="fas fa-book"></i> Emprestado
+                                        </span>
+                                    {% else %}
+                                        <span class="status-pill status-dev">
+                                            <i class="fas fa-check-circle"></i> Devolvido
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if e.status == 'Devolvido' and e.devolucao_pontual == 0 %}
+                                        <span class="atraso-badge">
+                                            <i class="fas fa-exclamation-triangle"></i> Atrasado
+                                        </span>
+                                    {% elif e.status == 'Devolvido' and e.devolucao_pontual == 1 %}
+                                        <span class="summary-tag regular" style="font-size:0.7rem;">
+                                            <i class="fas fa-clock"></i> No prazo
+                                        </span>
+                                    {% else %}
+                                        <span style="font-size:0.72rem; color:var(--text-muted);">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div style="font-size:0.82rem; color:var(--text-muted); padding: 12px; text-align:center;">
+                        Nenhum livro registrado ainda para este estudante.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    const alunosPorTurma = {{ alunos_por_turma|tojson }};
+    const turmaSelect = document.getElementById('turma_id');
+    const alunoSelect = document.getElementById('aluno_id');
+    const alunoIdSelecionado = "{{ aluno_id_selecionado or '' }}";
+
+    function atualizarAlunos() {
+        const turmaId = turmaSelect.value;
+        alunoSelect.innerHTML = '';
+
+        if (!turmaId) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'Selecione a turma primeiro';
+            alunoSelect.appendChild(opt);
+            alunoSelect.disabled = true;
+            return;
+        }
+
+        const lista = alunosPorTurma[turmaId] || [];
+        alunoSelect.disabled = false;
+
+        const optDefault = document.createElement('option');
+        optDefault.value = '';
+        optDefault.textContent = 'Selecione o estudante';
+        alunoSelect.appendChild(optDefault);
+
+        lista.forEach(aluno => {
+            const opt = document.createElement('option');
+            opt.value = aluno.id;
+            opt.textContent = aluno.nome;
+            if (alunoIdSelecionado && String(aluno.id) === alunoIdSelecionado) {
+                opt.selected = true;
+            }
+            alunoSelect.appendChild(opt);
+        });
+    }
+
+    turmaSelect.addEventListener('change', atualizarAlunos);
+
+    // Se já vier aluno selecionado, tenta descobrir a turma dele
+    {% if aluno_id_selecionado %}
+    (function escolherTurmaAutomaticamente() {
+        const alunoId = "{{ aluno_id_selecionado }}";
+        for (const [tid, lista] of Object.entries(alunosPorTurma)) {
+            if (lista.some(a => String(a.id) === alunoId)) {
+                turmaSelect.value = tid;
+                atualizarAlunos();
+                break;
+            }
+        }
+    })();
+    {% endif %}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Horário - De Olho na Escola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+
+            --bg-main: #f8f9fc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* === HEADER === */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateX(-2px);
+        }
+
+        .page-header {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-light);
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .page-title i {
+            color: var(--primary);
+        }
+
+        .turma-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .turma-info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .turma-info-item i {
+            color: var(--primary);
+        }
+
+        .turma-info-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .turma-info-value {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* === FORM === */
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section-title i {
+            color: var(--primary);
+        }
+
+        /* === UPLOAD AREA === */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 14px;
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.01);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.08);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .upload-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .upload-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .upload-specs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .upload-spec {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .upload-spec i {
+            color: var(--info);
+        }
+
+        /* === PREVIEW === */
+        .preview-container {
+            display: none;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .preview-container.active {
+            display: block;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .preview-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-title i {
+            color: var(--success);
+        }
+
+        .preview-remove {
+            padding: 6px 12px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .preview-remove:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .preview-image {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 12px;
+        }
+
+        .preview-info {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        .preview-info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .preview-info-item i {
+            color: var(--primary);
+        }
+
+        /* === FILE INPUT (HIDDEN) === */
+        #arquivo {
+            display: none;
+        }
+
+        /* === BUTTONS === */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        /* === ALERTS === */
+        .alert {
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #b45309;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .alert-info {
+            background: rgba(6, 182, 212, 0.1);
+            color: #0e7490;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .alert i {
+            font-size: 18px;
+        }
+
+        /* === FLASH MESSAGES === */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .flash-alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .flash-alert.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .flash-alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .page-header {
+                padding: 18px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .upload-area {
+                padding: 30px 16px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .turma-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 20px;
+            }
+
+            .upload-icon {
+                font-size: 36px;
+            }
+
+            .upload-title {
+                font-size: 16px;
+            }
+
+            .flash-messages {
+                left: 12px;
+                right: 12px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-alert {{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        <!-- BACK BUTTON -->
+        <a href="{{ url_for('horario.moderador_gerenciar_horarios') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Voltar à Lista de Turmas
+        </a>
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <div class="breadcrumb">
+                <span>Início</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>Gestão de Horários</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>{{ 'Atualizar' if horario_atual else 'Cadastrar' }} Horário</span>
+            </div>
+
+            <h1 class="page-title">
+                <i class="fas fa-{{ 'sync-alt' if horario_atual else 'plus-circle' }}"></i>
+                {{ 'Atualizar' if horario_atual else 'Cadastrar' }} Horário de Aula
+            </h1>
+
+            <div class="turma-info">
+                <div class="turma-info-item">
+                    <i class="fas fa-school"></i>
+                    <span class="turma-info-label">Turma:</span>
+                    <span class="turma-info-value">{{ turma.nome }}</span>
+                </div>
+                <div class="turma-info-item">
+                    <i class="fas fa-sun"></i>
+                    <span class="turma-info-label">Turno:</span>
+                    <span class="turma-info-value">{{ turma.turno }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="form-card">
+                <h2 class="form-section-title">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Enviar Arquivo do Horário
+                </h2>
+
+                <!-- ALERT SE JÁ EXISTE HORÁRIO -->
+                {% if horario_atual %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Atenção:</strong> Esta turma já possui um horário cadastrado.
+                        Ao enviar um novo arquivo, o horário anterior será substituído.
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ALERT DE INSTRUÇÕES -->
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Formato aceito:</strong> Apenas arquivos PNG (até 5MB).
+                        O horário ficará disponível para todos os responsáveis da turma.
+                    </div>
+                </div>
+
+                <!-- UPLOAD AREA -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-title">Arraste o arquivo ou clique para selecionar</div>
+                    <div class="upload-subtitle">
+                        Solte o arquivo PNG do horário aqui
+                    </div>
+                    <div class="upload-specs">
+                        <div class="upload-spec">
+                            <i class="fas fa-image"></i>
+                            Formato: PNG
+                        </div>
+                        <div class="upload-spec">
+                            <i class="fas fa-weight-hanging"></i>
+                            Tamanho máx: 5MB
+                        </div>
+                    </div>
+                </div>
+
+                <input type="file" name="arquivo" id="arquivo" accept=".png,image/png" required>
+
+                <!-- PREVIEW -->
+                <div class="preview-container" id="previewContainer">
+                    <div class="preview-header">
+                        <div class="preview-title">
+                            <i class="fas fa-check-circle"></i>
+                            Arquivo Selecionado
+                        </div>
+                        <button type="button" class="preview-remove" onclick="removerArquivo()">
+                            <i class="fas fa-times"></i>
+                            Remover
+                        </button>
+                    </div>
+                    <img id="previewImage" class="preview-image" alt="Preview do horário">
+                    <div class="preview-info">
+                        <div class="preview-info-item">
+                            <i class="fas fa-file"></i>
+                            <span id="fileName">-</span>
+                        </div>
+                        <div class="preview-info-item">
+                            <i class="fas fa-weight-hanging"></i>
+                            <span id="fileSize">-</span>
+                        </div>
+                        <div class="preview-info-item">
+                            <i class="fas fa-image"></i>
+                            <span id="fileDimensions">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BUTTONS -->
+                <div class="form-actions">
+                    <a href="{{ url_for('horario.moderador_gerenciar_horarios') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                        <i class="fas fa-{{ 'sync-alt' if horario_atual else 'save' }}"></i>
+                        {{ 'Atualizar Horário' if horario_atual else 'Salvar Horário' }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('arquivo');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadForm = document.getElementById('uploadForm');
+
+        const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+        // Click na área de upload
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // Seleção de arquivo
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        // Processar arquivo selecionado
+        function handleFileSelect(file) {
+            console.log('Arquivo selecionado:', file.name, file.size, file.type);
+
+            // Validar tipo
+            if (!file.type.match('image/png')) {
+                alert('❌ Erro: Apenas arquivos PNG são aceitos!\n\nTipo detectado: ' + file.type);
+                fileInput.value = '';
+                return;
+            }
+
+            // Validar tamanho
+            if (file.size > MAX_SIZE) {
+                const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                alert(`❌ Erro: Arquivo muito grande!\n\nTamanho: ${sizeMB}MB\nMáximo: 5MB`);
+                fileInput.value = '';
+                return;
+            }
+
+            // Mostrar preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+
+                // Obter dimensões da imagem
+                const img = new Image();
+                img.onload = () => {
+                    document.getElementById('fileDimensions').textContent = `${img.width} x ${img.height}px`;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Atualizar informações
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+
+            // Mostrar preview e habilitar botão
+            uploadArea.style.display = 'none';
+            previewContainer.classList.add('active');
+            submitBtn.disabled = false;
+
+            console.log('✅ Arquivo validado e pronto para envio');
+        }
+
+        // Remover arquivo
+        function removerArquivo() {
+            fileInput.value = '';
+            previewContainer.classList.remove('active');
+            uploadArea.style.display = 'block';
+            submitBtn.disabled = true;
+            console.log('Arquivo removido');
+        }
+
+        // Formatar tamanho do arquivo
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // Validação antes de enviar
+        uploadForm.addEventListener('submit', (e) => {
+            if (!fileInput.files || fileInput.files.length === 0) {
+                e.preventDefault();
+                alert('❌ Erro: Nenhum arquivo selecionado!');
+                return false;
+            }
+
+            const file = fileInput.files[0];
+
+            if (!file.type.match('image/png')) {
+                e.preventDefault();
+                alert('❌ Erro: Apenas arquivos PNG são aceitos!');
+                return false;
+            }
+
+            if (file.size > MAX_SIZE) {
+                e.preventDefault();
+                alert('❌ Erro: Arquivo muito grande! Máximo: 5MB');
+                return false;
+            }
+
+            console.log('✅ Enviando formulário...');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            return true;
+        });
+
+        // Auto-hide flash messages
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.flash-alert');
+            alerts.forEach(alert => {
+                alert.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

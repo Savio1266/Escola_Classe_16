@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horário - {{ turma.nome }} - De Olho na Escola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --bg-main: #f8f9fc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .turma-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+            color: var(--primary);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .horario-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+        }
+
+        .horario-image {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .horario-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        .zoom-hint {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 12px;
+        }
+
+        .zoom-hint i {
+            color: var(--primary);
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        /* Modal de zoom */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            border-radius: 8px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .modal-close:hover {
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .page-header, .horario-card {
+                padding: 16px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-clock"></i>
+                Horário de Aula
+            </h1>
+            <div class="turma-badge">
+                <i class="fas fa-school"></i>
+                {{ turma.nome }} - {{ turma.turno }}
+            </div>
+        </div>
+
+        <div class="horario-card">
+            <img src="{{ url_for('horario.servir_imagem_horario', filename=horario.arquivo) }}" 
+                 alt="Horário da turma {{ turma.nome }}"
+                 class="horario-image"
+                 id="horarioImage">
+            
+            <div class="zoom-hint">
+                <i class="fas fa-search-plus"></i>
+                Clique na imagem para ampliar
+            </div>
+        </div>
+
+        <div class="actions">
+            {% if tipo_usuario == 'moderador' %}
+            <a href="{{ url_for('horario.moderador_gerenciar_horarios') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            <a href="{{ url_for('horario.moderador_cadastrar_horario', turma_id=turma.id) }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Atualizar Horário
+            </a>
+            {% else %}
+            <a href="{{ url_for('area_responsavel') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal de Zoom -->
+    <div class="modal" id="zoomModal">
+        <span class="modal-close" id="closeModal">&times;</span>
+        <img src="{{ url_for('horario.servir_imagem_horario', filename=horario.arquivo) }}" 
+             class="modal-content" 
+             id="modalImage"
+             alt="Horário ampliado">
+    </div>
+
+    <script>
+        const horarioImage = document.getElementById('horarioImage');
+        const modal = document.getElementById('zoomModal');
+        const closeModal = document.getElementById('closeModal');
+
+        // Abrir modal ao clicar na imagem
+        horarioImage.addEventListener('click', () => {
+            modal.classList.add('show');
+        });
+
+        // Fechar modal
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('show');
+        });
+
+        // Fechar modal ao clicar fora da imagem
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+
+        // Fechar com ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                modal.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

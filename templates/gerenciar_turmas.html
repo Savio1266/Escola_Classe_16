@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Gerenciar Turmas</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #007bff, #0056b3);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            background: #fff;
+            color: #333;
+            padding: 20px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .button-wrapper {
+            display: flex;
+            position: relative;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            background: #0056b3;
+        }
+
+        .nested-buttons {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .nested-buttons .btn-secondary {
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: transform 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nested-buttons .btn-secondary:hover {
+            transform: translateX(5px);
+            background: #218838;
+        }
+
+        .show {
+            display: flex !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciar Turmas</h1>
+        <div class="button-wrapper">
+            <button class="btn-primary" onclick="toggleButtons()">Gerenciar Turmas</button>
+            <div id="nested-buttons-1" class="nested-buttons">
+                <button class="btn-secondary" onclick="showNextLevel('matutino')">Turmas Matutino</button>
+                <button class="btn-secondary" onclick="showNextLevel('vespertino')">Turmas Vespertino</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleButtons() {
+            const nestedButtons = document.getElementById('nested-buttons-1');
+            nestedButtons.classList.toggle('show');
+        }
+
+        function showNextLevel(turno) {
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'flex';
+            wrapper.style.flexDirection = 'column';
+            wrapper.style.marginLeft = '10px';
+
+            const actionButton = document.createElement('button');
+            actionButton.textContent = `Ações para ${turno}`;
+            actionButton.className = 'btn-secondary';
+            wrapper.appendChild(actionButton);
+
+            const parent = document.querySelector('.button-wrapper');
+            parent.appendChild(wrapper);
+        }
+    </script>
+</body>
+</html>

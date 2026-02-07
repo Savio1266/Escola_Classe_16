@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acompanhamento das Avaliações Bimestrais</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #6f42c1, #4a277f);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 1040px;
+            margin: 22px 12px;
+            padding: 22px 18px 26px 18px;
+            border-radius: 12px;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #6f42c1;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .btn,
+        .btn-secondary {
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn {
+            background: #6f42c1;
+            color: #fff;
+        }
+        .btn:hover {
+            background: #522a8a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 11px 13px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .alert ul {
+            margin: 6px 0 0 18px;
+            padding: 0;
+        }
+
+        .filter-box {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px 10px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 7px 8px;
+            font-size: 13px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .filters-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .btn-filter {
+            background: #6f42c1;
+            color: #fff;
+            padding: 8px 14px;
+            font-size: 13px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-filter:hover {
+            background: #522a8a;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px 7px;
+        }
+
+        th {
+            background: #f1f3f5;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background: #fcfcff;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 3px 6px;
+            border-radius: 10px;
+            background: #e2e3e5;
+            color: #444;
+        }
+
+        .empty-msg {
+            text-align: center;
+            font-size: 13px;
+            color: #777;
+            margin-top: 14px;
+        }
+
+        @media (max-width: 720px) {
+            .top-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn,
+            .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            .btn-filter {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>Acompanhamento das Avaliações</h1>
+    <div class="subtitle">
+        Direção/Coordenação — Visão completa dos conteúdos avaliativos lançados pelos professores.
+    </div>
+
+    <div class="top-actions">
+        <a href="{{ url_for('dashboard_moderador') }}" class="btn-secondary">
+            Voltar ao Painel
+        </a>
+    </div>
+
+    {% if turmas_sem_avaliacao %}
+    <div class="alert">
+        <strong>Atenção:</strong> As turmas abaixo ainda não possuem avaliações registradas para os filtros selecionados:
+        <ul>
+            {% for t in turmas_sem_avaliacao %}
+                <li>{{ t.nome }} ({{ t.turno }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- FILTROS -->
+    <div class="filter-box">
+        <div class="filter-title">Filtros de acompanhamento</div>
+        <form method="GET" action="{{ url_for('listar_avaliacoes_moderador') }}">
+
+            <div class="filters-grid">
+
+                <div>
+                    <label>Ano letivo</label>
+                    <input type="number" name="ano_letivo" placeholder="2025"
+                        value="{{ filtros.ano_letivo if filtros }}">
+                </div>
+
+                <div>
+                    <label>Bimestre</label>
+                    <select name="bimestre">
+                        <option value="">Todos</option>
+                        <option {% if filtros.bimestre == "1º Bimestre" %}selected{% endif %}>1º Bimestre</option>
+                        <option {% if filtros.bimestre == "2º Bimestre" %}selected{% endif %}>2º Bimestre</option>
+                        <option {% if filtros.bimestre == "3º Bimestre" %}selected{% endif %}>3º Bimestre</option>
+                        <option {% if filtros.bimestre == "4º Bimestre" %}selected{% endif %}>4º Bimestre</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Disciplina</label>
+                    <select name="disciplina">
+                        <option value="">Todas</option>
+                        {% for d in disciplinas %}
+                        <option value="{{ d }}" {% if filtros.disciplina == d %}selected{% endif %}>{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label>Turma</label>
+                    <select name="turma_id">
+                        <option value="">Todas</option>
+                        {% for turma in turmas %}
+                        <option value="{{ turma.id }}" {% if filtros.turma_id == turma.id %}selected{% endif %}>
+                            {{ turma.nome }} ({{ turma.turno }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label>Professor(a)</label>
+                    <select name="professor_id">
+                        <option value="">Todos</option>
+                        {% for p in professores %}
+                        <option value="{{ p.id }}" {% if filtros.professor_id == p.id %}selected{% endif %}>
+                            {{ p.login }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label>Tipo</label>
+                    <select name="tipo">
+                        <option value="">Todos</option>
+                        <option {% if filtros.tipo == "Prova" %}selected{% endif %}>Prova</option>
+                        <option {% if filtros.tipo == "Trabalho" %}selected{% endif %}>Trabalho</option>
+                        <option {% if filtros.tipo == "Projeto" %}selected{% endif %}>Projeto</option>
+                        <option {% if filtros.tipo == "Apresentação" %}selected{% endif %}>Apresentação</option>
+                        <option {% if filtros.tipo == "Atividade Avaliativa" %}selected{% endif %}>Atividade Avaliativa</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="filters-actions">
+                <button type="submit" class="btn-filter">Aplicar Filtros</button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-wrapper">
+        {% if avaliacoes %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Professor(a)</th>
+                    <th>Ano</th>
+                    <th>Bimestre</th>
+                    <th>Disciplina</th>
+                    <th>Turmas</th>
+                    <th>Tipo</th>
+                    <th>Data</th>
+                    <th>Conteúdos Avaliados</th>
+                    <th>Registrado em</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in avaliacoes %}
+                <tr>
+                    <td>{{ a.professor_login }}</td>
+                    <td>{{ a.ano_letivo }}</td>
+                    <td>{{ a.bimestre }}</td>
+                    <td>{{ a.disciplina }}</td>
+                    <td>
+                        <span class="badge">{{ a.turmas_nomes }}</span>
+                    </td>
+                    <td>{{ a.tipo }}</td>
+                    <td>{{ a.data }}</td>
+                    <td title="{{ a.conteudos }}">{{ a.conteudos }}</td>
+                    <td>{{ a.criado_em }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-msg">
+            Nenhuma avaliação encontrada com os filtros aplicados.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>

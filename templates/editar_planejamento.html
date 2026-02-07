@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Planejamento - De Olho na Aprendizagem</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root {
+            --azul-primario: #0d6efd;
+            --azul-escuro: #003566;
+            --cinza-fundo: #e5e7eb;
+            --cinza-card: #f9fafb;
+            --verde: #22c55e;
+            --cinza-borda: #e5e7eb;
+            --texto-principal: #111827;
+            --texto-secundario: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(13,110,253,0.35), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(108,117,125,0.35), transparent 55%),
+                #0b1726;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 980px;
+            margin: 20px 10px;
+            padding: 18px 18px 22px 18px;
+            border-radius: 20px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.32);
+            animation: fadeIn 0.7s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid var(--cinza-borda);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 0;
+            color: var(--azul-escuro);
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--texto-secundario);
+            margin: 0;
+        }
+
+        .info-bar {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 9px 11px;
+            font-size: 13px;
+            color: #856404;
+            margin-bottom: 14px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-card {
+            background: var(--cinza-card);
+            border-radius: 14px;
+            border: 1px solid var(--cinza-borda);
+            padding: 12px 13px 14px 13px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--texto-principal);
+            margin: 0 0 4px 0;
+        }
+
+        .section-sub {
+            font-size: 12px;
+            color: var(--texto-secundario);
+            margin: 0 0 8px 0;
+        }
+
+        .grid-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px 14px;
+            align-items: flex-end;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 9px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--azul-primario);
+            box-shadow: 0 0 0 1px rgba(13,110,253,0.35);
+            background: #ffffff;
+        }
+
+        .turmas-box {
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            padding: 8px 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px 16px;
+        }
+
+        .turma-item {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #374151;
+        }
+
+        .plan-header-row {
+            display: grid;
+            grid-template-columns: 2.4fr 0.55fr 0.55fr;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 4px;
+        }
+
+        .plan-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .plan-row {
+            display: grid;
+            grid-template-columns: 2.4fr 0.55fr 0.55fr;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .plan-row textarea {
+            min-height: 64px;
+        }
+
+        .periodo-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .btn-add-row {
+            margin-top: 8px;
+            background: #0d9488;
+            color: #ffffff;
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-remove-row {
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 4px 7px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 6px;
+        }
+
+        .btn-primary {
+            background: #22c55e;
+            color: #ffffff;
+            border: none;
+            border-radius: 999px;
+            padding: 9px 18px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 999px;
+            padding: 9px 18px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-main">
+            <div>
+                <h1>Editar Planejamento</h1>
+                <p class="subtitle">Atualize os dados do seu planejamento bimestral</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-bar">
+        <strong>⚠️ Atenção:</strong> Ao salvar, todas as alterações serão aplicadas permanentemente.
+    </div>
+
+    <form action="{{ url_for('atualizar_planejamento', planejamento_id=planejamento.id) }}" method="POST">
+        <!-- DADOS GERAIS -->
+        <div class="section-card">
+            <div class="section-title">Dados gerais</div>
+            <div class="grid-top">
+                <div>
+                    <label for="ano_letivo">Ano letivo</label>
+                    <input type="number" id="ano_letivo" name="ano_letivo"
+                           value="{{ planejamento.ano }}" required>
+                </div>
+                <div>
+                    <label for="bimestre">Bimestre</label>
+                    <select id="bimestre" name="bimestre" required>
+                        <option value="1" {% if planejamento.bimestre == 1 %}selected{% endif %}>1º Bimestre</option>
+                        <option value="2" {% if planejamento.bimestre == 2 %}selected{% endif %}>2º Bimestre</option>
+                        <option value="3" {% if planejamento.bimestre == 3 %}selected{% endif %}>3º Bimestre</option>
+                        <option value="4" {% if planejamento.bimestre == 4 %}selected{% endif %}>4º Bimestre</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="disciplina">Disciplina</label>
+                    <select id="disciplina" name="disciplina" required>
+                        {% for disc in disciplinas_professor %}
+                            <option value="{{ disc }}" {% if disc == planejamento.disciplina %}selected{% endif %}>
+                                {{ disc }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- TURMAS -->
+        <div class="section-card">
+            <div class="section-title">Turmas</div>
+            <div class="turmas-box">
+                {% for turma in turmas %}
+                    <label class="turma-item">
+                        <input type="checkbox" name="turmas[]" value="{{ turma.id }}"
+                               {% if turma.id in turmas_selecionadas %}checked{% endif %}>
+                        {{ turma.nome }} ({{ turma.turno }})
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- CONTEÚDOS -->
+        <div class="section-card">
+            <div class="section-title">Conteúdos e períodos</div>
+            <div class="plan-header-row">
+                <span>Conteúdo / objetivo</span>
+                <span>Data início</span>
+                <span>Data término</span>
+            </div>
+            <div id="plan-rows" class="plan-rows">
+                {% for item in itens %}
+                    <div class="plan-row">
+                        <input type="hidden" name="item_ids[]" value="{{ item.id }}">
+                        <textarea name="conteudos[]" required>{{ item.conteudo }}</textarea>
+                        <div class="periodo-cell">
+                            <input type="date" name="datas_inicio[]"
+                                   value="{{ item.data_inicio if item.data_inicio else '' }}">
+                        </div>
+                        <div class="periodo-cell">
+                            <input type="date" name="datas_fim[]"
+                                   value="{{ item.data_fim if item.data_fim else '' }}">
+                            {% if not loop.first %}
+                            <button type="button" class="btn-remove-row"
+                                    onclick="this.closest('.plan-row').remove()">Remover</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="btn-add-row" id="add-row-btn">
+                + Adicionar nova linha
+            </button>
+
+            <div style="margin-top: 12px;">
+                <label for="observacoes_gerais">Observações gerais</label>
+                <textarea id="observacoes_gerais" name="observacoes_gerais">{{ planejamento.observacoes if planejamento.observacoes else '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="{{ url_for('detalhar_planejamento', planejamento_id=planejamento.id) }}"
+               class="btn-secondary">Cancelar</a>
+            <button type="submit" class="btn-primary">💾 Salvar alterações</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let itemCounter = {{ itens|length }};
+
+    document.getElementById('add-row-btn').addEventListener('click', function () {
+        const container = document.getElementById('plan-rows');
+        const row = document.createElement('div');
+        row.classList.add('plan-row');
+        row.innerHTML = `
+            <input type="hidden" name="item_ids[]" value="">
+            <textarea name="conteudos[]" placeholder="Novo conteúdo" required></textarea>
+            <div class="periodo-cell">
+                <input type="date" name="datas_inicio[]">
+            </div>
+            <div class="periodo-cell">
+                <input type="date" name="datas_fim[]">
+                <button type="button" class="btn-remove-row" onclick="this.closest('.plan-row').remove()">Remover</button>
+            </div>
+        `;
+        container.appendChild(row);
+    });
+</script>
+</body>
+</html>

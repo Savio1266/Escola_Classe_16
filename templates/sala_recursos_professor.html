@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sala de Recursos – Visualização</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    :root{
+      --primary:#6366f1;
+      --primary-dark:#4f46e5;
+      --bg:#f8f9fc;
+      --card:#ffffff;
+      --text:#1e293b;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --shadow: 0 10px 15px -3px rgba(0,0,0,.08);
+      --shadow2: 0 4px 6px -1px rgba(0,0,0,.06);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .container{max-width:980px;margin:24px auto;padding:0 16px}
+    .topbar{
+      background:linear-gradient(135deg,var(--primary),#8b5cf6);
+      color:#fff;border-radius:var(--radius);
+      padding:18px 18px; box-shadow:var(--shadow);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .topbar h1{font-size:20px;font-weight:800;display:flex;gap:10px;align-items:center}
+    .topbar a{color:#fff;text-decoration:none;font-weight:600;opacity:.95}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow2);
+      padding:16px;
+      margin-top:16px;
+    }
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:600}
+    select{
+      width:100%; border:1px solid var(--border); border-radius:12px;
+      padding:10px 12px; background:#fff; outline:none;
+    }
+    .muted{color:var(--muted);font-size:13px}
+    .list{
+      border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-top:12px
+    }
+    .list-header{padding:10px 12px;background:#f1f5f9;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .list-body{max-height:520px; overflow:auto}
+    .item{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border)}
+    .item:last-child{border-bottom:none}
+    .badge{font-size:12px;padding:4px 10px;border-radius:999px;background:#e2e8f0;color:#334155;font-weight:700}
+    .empty{padding:14px;border:1px dashed var(--border);border-radius:14px;background:#fff;color:var(--muted);text-align:center}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1><i class="fa-solid fa-universal-access"></i> Sala de Recursos (AEE)</h1>
+      <a href="{{ url_for('dashboard_professor') }}"><i class="fa-solid fa-arrow-left"></i> Voltar ao Painel</a>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:16px;margin-bottom:6px">Visualizar alunos cadastrados</h2>
+      <p class="muted">Selecione a turma para visualizar os alunos atendidos na Sala de Recursos.</p>
+
+      <div style="margin-top:12px">
+        <label>Turma</label>
+        <select id="turma_id" onchange="onTurmaChange()">
+          {% if turmas %}
+            {% for t in turmas %}
+              <option value="{{ t.id }}" {% if t.id == turma_sel_id %}selected{% endif %}>{{ t.nome }}</option>
+            {% endfor %}
+          {% else %}
+            <option value="">Nenhuma turma vinculada</option>
+          {% endif %}
+        </select>
+      </div>
+
+      <div class="list">
+        <div class="list-header">
+          <span style="font-weight:800">
+            {% if turma_nome %}{{ turma_nome }}{% else %}Alunos{% endif %}
+          </span>
+          <span class="badge">{{ alunos_sala|length }}</span>
+        </div>
+        <div class="list-body">
+          {% if alunos_sala %}
+            {% for a in alunos_sala %}
+              <div class="item">
+                <i class="fa-solid fa-star" style="color: #f59e0b"></i>
+                <span>{{ a.nome }}</span>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty">Nenhum aluno cadastrado na Sala de Recursos para esta turma.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function onTurmaChange(){
+      const turma = document.getElementById('turma_id').value;
+      if(!turma) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set('turma_id', turma);
+      window.location = url.toString();
+    }
+  </script>
+</body>
+</html>

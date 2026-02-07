@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transferir Aluno – Moderador</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg-1:#f6f8fc;
+      --bg-2:#eef2ff;
+      --card:#ffffff;
+      --border:rgba(148,163,184,.35);
+      --text:#0f172a;
+      --muted:#64748b;
+      --primary:#2563eb;
+      --shadow:0 10px 25px rgba(15,23,42,.08);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(900px 500px at 10% 10%, rgba(37,99,235,.12), transparent 60%),
+                  radial-gradient(900px 500px at 90% 20%, rgba(13,148,136,.10), transparent 55%),
+                  linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      color:var(--text);
+      min-height:100vh;
+    }
+    .wrap{max-width:980px;margin:18px auto;padding:0 14px;}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .head{
+      padding:16px 18px;
+      border-bottom:1px solid rgba(148,163,184,.25);
+      display:flex;gap:12px;align-items:center;
+    }
+    .head i{font-size:20px;color:var(--primary)}
+    .title{margin:0;font-size:18px}
+    .sub{margin:2px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+    .body{padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:760px){.grid{grid-template-columns:1fr}}
+    label{display:block;font-weight:700;margin:10px 0 6px}
+    select, textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(148,163,184,.45);
+      outline:none;
+      background:#fff;
+    }
+    textarea{min-height:92px;resize:vertical}
+    .actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+    .btnx{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 14px;border-radius:12px;border:none;
+      cursor:pointer;text-decoration:none;
+      font-weight:700;
+    }
+    .primary{background:var(--primary);color:#fff}
+    .neutral{background:#eef2ff;color:#0f172a}
+    .hint{color:var(--muted);font-size:13px;margin-top:8px}
+    .warn{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      background:rgba(245,158,11,.12);
+      border:1px solid rgba(245,158,11,.25);
+      color:#7c4a00;
+      font-size:13px;
+      line-height:1.35;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="head">
+        <i class="fas fa-right-left"></i>
+        <div>
+          <h1 class="title">Transferência de aluno</h1>
+          <p class="sub">
+            O aluno sai da turma atual e passa a aparecer na turma nova, mantendo todo o histórico
+            (atestados, ocorrências, biblioteca, recados e demais registros), pois o ID do aluno é preservado.
+          </p>
+        </div>
+      </div>
+
+      <div class="body">
+        <form method="POST" action="{{ url_for('transferir_aluno') }}">
+          <div class="grid">
+            <div>
+              <label for="turma_origem_id">Turma de origem</label>
+              <select id="turma_origem_id" name="turma_origem_id" required>
+                <option value="" selected disabled>Selecione...</option>
+                {% for t in turmas %}
+                  <option value="{{ t.id }}">{{ t.turno }} – {{ t.nome }}</option>
+                {% endfor %}
+              </select>
+              <p class="hint">Depois de escolher a turma de origem, a lista de alunos é carregada automaticamente.</p>
+            </div>
+
+            <div>
+              <label for="aluno_id">Aluno</label>
+              <select id="aluno_id" name="aluno_id" required>
+                <option value="" selected disabled>Selecione a turma de origem primeiro</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="turma_destino_id">Turma de destino</label>
+              <select id="turma_destino_id" name="turma_destino_id" required>
+                <option value="" selected disabled>Selecione...</option>
+                {% for t in turmas %}
+                  <option value="{{ t.id }}">{{ t.turno }} – {{ t.nome }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label for="motivo">Motivo (opcional)</label>
+              <textarea id="motivo" name="motivo" placeholder="Ex.: Transferência, remanejamento, ajuste de enturmação..."></textarea>
+            </div>
+          </div>
+
+          <div class="warn">
+            <b>Importante:</b> esta ação não apaga nem reescreve registros antigos. Ela apenas muda a turma atual do aluno e registra a transferência.
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btnx primary">
+              <i class="fas fa-check"></i> Confirmar transferência
+            </button>
+            <a href="{{ url_for('dashboard_moderador') }}" class="btnx neutral">
+              <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const turmaOrigem = document.getElementById('turma_origem_id');
+    const alunoSelect = document.getElementById('aluno_id');
+
+    turmaOrigem.addEventListener('change', async () => {
+      const turmaId = turmaOrigem.value;
+      alunoSelect.innerHTML = `<option value="" selected disabled>Carregando...</option>`;
+
+      try {
+        const resp = await fetch(`/api/alunos_por_turma/${turmaId}`);
+        if (!resp.ok) throw new Error("Falha ao buscar alunos");
+        const alunos = await resp.json();
+
+        if (!Array.isArray(alunos) || alunos.length === 0) {
+          alunoSelect.innerHTML = `<option value="" selected disabled>Não há alunos nesta turma</option>`;
+          return;
+        }
+
+        alunoSelect.innerHTML = `<option value="" selected disabled>Selecione...</option>`;
+        for (const a of alunos) {
+          const opt = document.createElement('option');
+          opt.value = a.id;
+          opt.textContent = a.nome;
+          alunoSelect.appendChild(opt);
+        }
+      } catch (e) {
+        alunoSelect.innerHTML = `<option value="" selected disabled>Erro ao carregar alunos</option>`;
+      }
+    });
+  </script>
+</body>
+</html>

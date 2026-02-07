@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Conteúdos das Avaliações</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #6f42c1, #4a277f);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            width: 100%;
+            max-width: 750px;
+            padding: 35px 28px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #6f42c1;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        form {
+            display: grid;
+            gap: 14px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        button {
+            font-size: 16px;
+            padding: 12px;
+            width: 100%;
+            background: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: #522a8a;
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            display: block;
+            background: #6c757d;
+            text-align: center;
+            margin-top: 12px;
+            color: #fff;
+            border-radius: 8px;
+            padding: 11px;
+            font-size: 14px;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        .subtitulo {
+            font-size: 14px;
+            font-weight: bold;
+            color: #6f42c1;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+
+        .conteudos-wrapper {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 4px;
+        }
+
+        .conteudo-bloco {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #ffffff;
+        }
+
+        .conteudo-linha {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .conteudo-linha-2 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .campo-label-pequeno {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .btn-add-conteudo {
+            width: auto;
+            padding: 8px 14px;
+            font-size: 13px;
+            background: #17a2b8;
+            margin-top: 6px;
+        }
+
+        .btn-add-conteudo:hover {
+            background: #0f7280;
+            transform: none;
+        }
+
+        .btn-remover {
+            background: #dc3545;
+            color: #fff;
+            border-radius: 6px;
+            border: none;
+            padding: 6px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .btn-remover:hover {
+            background: #b02130;
+        }
+
+        .linha-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .preview-box {
+            font-size: 13px;
+            background: #f1f3f5;
+            border-radius: 8px;
+            padding: 8px;
+            max-height: 120px;
+            overflow-y: auto;
+            white-space: pre-line;
+            border: 1px dashed #ccc;
+        }
+
+        small {
+            font-size: 12px;
+            color: #555;
+        }
+
+        @media (max-width: 700px) {
+            .conteudo-linha,
+            .conteudo-linha-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>Registrar Conteúdos das Avaliações</h1>
+
+    <form id="form-avaliacao" action="{{ url_for('registrar_avaliacao_bimestral') }}" method="POST">
+
+        <!-- Ano / Bimestre -->
+        <div>
+            <label>Ano Letivo:</label>
+            <input type="number" name="ano" value="{{ ano_atual }}" required>
+        </div>
+
+        <div>
+            <label>Bimestre:</label>
+            <select name="bimestre" required>
+                <option value="">Selecione</option>
+                <option value="1" {% if bimestre_atual == 1 %}selected{% endif %}>1º Bimestre</option>
+                <option value="2" {% if bimestre_atual == 2 %}selected{% endif %}>2º Bimestre</option>
+                <option value="3" {% if bimestre_atual == 3 %}selected{% endif %}>3º Bimestre</option>
+                <option value="4" {% if bimestre_atual == 4 %}selected{% endif %}>4º Bimestre</option>
+            </select>
+        </div>
+
+        <!-- Disciplina / Turma -->
+        <div>
+            <label>Disciplina:</label>
+            <select name="disciplina" required>
+                <option value="">Selecione</option>
+                {% for d in disciplinas %}
+                <option value="{{ d }}">{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Turma:</label>
+            <select name="turma_id" required>
+                <option value="">Selecione</option>
+                {% for turma in turmas %}
+                <option value="{{ turma.id }}">{{ turma.nome }} ({{ turma.turno }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Info geral da avaliação -->
+        <div>
+            <label>Título / Descrição da Avaliação (geral):</label>
+            <input type="text" name="descricao_avaliacao" placeholder="Ex: Avaliação Bimestral 2º Bimestre - Matemática">
+        </div>
+
+        <div>
+            <label>Tipo de Avaliação (geral):</label>
+            <select name="tipo_avaliacao">
+                <option value="">Selecione (opcional)</option>
+                <option value="Prova">Prova</option>
+                <option value="Trabalho">Trabalho</option>
+                <option value="Formativa">Formativa</option>
+                <option value="Apresentação">Apresentação</option>
+                <option value="Atividade Avaliativa">Atividade Avaliativa</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Data da Avaliação (geral):</label>
+            <input type="date" name="data_avaliacao" id="data_avaliacao">
+            <div class="linha-checkbox">
+                <input type="checkbox" id="sem_data_geral">
+                <label for="sem_data_geral" style="font-weight: normal;">Sem data definida / ainda será combinada</label>
+            </div>
+        </div>
+
+        <div>
+            <label>Pontuação total da Avaliação (opcional):</label>
+            <input type="number" step="0.1" min="0" name="pontuacao" placeholder="Ex: 10,0">
+        </div>
+
+        <!-- Conteúdos múltiplos -->
+        <div>
+            <div class="subtitulo">Conteúdos e suas Avaliações</div>
+            <small>Adicione cada conteúdo, a forma como será avaliado, data (se quiser) e pontos por conteúdo.</small>
+
+            <div class="conteudos-wrapper" id="conteudos-wrapper">
+
+                <!-- Bloco modelo inicial -->
+                <div class="conteudo-bloco">
+                    <div class="conteudo-linha">
+                        <div>
+                            <span class="campo-label-pequeno">Conteúdo / Habilidade</span>
+                            <input type="text" name="conteudo[]" placeholder="Ex: Operações com números naturais" required>
+                        </div>
+                        <div>
+                            <span class="campo-label-pequeno">Forma de avaliação</span>
+                            <select name="forma[]">
+                                <option value="">Selecione</option>
+                                <option value="Prova escrita">Prova escrita</option>
+                                <option value="Atividade em sala">Atividade em sala</option>
+                                <option value="Trabalho em grupo">Trabalho em grupo</option>
+                                <option value="Apresentação oral">Apresentação oral</option>
+                                <option value="Projeto / Pesquisa">Projeto / Pesquisa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="conteudo-linha-2">
+                        <div>
+                            <span class="campo-label-pequeno">Data (opcional)</span>
+                            <input type="date" name="data_conteudo[]">
+                        </div>
+                        <div>
+                            <span class="campo-label-pequeno">Pontos (opcional)</span>
+                            <input type="number" step="0.1" min="0" name="pontos_conteudo[]" placeholder="Ex: 2,0">
+                        </div>
+                        <div>
+                            <span class="campo-label-pequeno">&nbsp;</span>
+                            <button type="button" class="btn-remover" onclick="removerBloco(this)" style="display:none;">
+                                Remover
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="button" class="btn-add-conteudo" id="btn-add-conteudo">
+                + Adicionar outro conteúdo
+            </button>
+        </div>
+
+        <!-- Campo real que será enviado para o backend -->
+        <textarea name="conteudos" id="conteudos_hidden" style="display:none;"></textarea>
+
+        <!-- Pequena pré-visualização do texto que será salvo -->
+        <div>
+            <label>Pré-visualização dos conteúdos que serão salvos:</label>
+            <div id="preview_conteudos" class="preview-box">
+                Ainda não há conteúdos montados.
+            </div>
+        </div>
+
+        <button type="submit">Salvar Avaliação</button>
+    </form>
+
+    <a href="{{ url_for('dashboard_professor') }}" class="btn-secondary">Voltar</a>
+
+</div>
+
+<script>
+    // --------- Data geral opcional ---------
+    const chkSemDataGeral = document.getElementById('sem_data_geral');
+    const inputDataGeral = document.getElementById('data_avaliacao');
+
+    if (chkSemDataGeral && inputDataGeral) {
+        chkSemDataGeral.addEventListener('change', function () {
+            if (this.checked) {
+                inputDataGeral.value = '';
+                inputDataGeral.disabled = true;
+            } else {
+                inputDataGeral.disabled = false;
+            }
+        });
+    }
+
+    // --------- Blocos de conteúdos dinâmicos ---------
+    const wrapper = document.getElementById('conteudos-wrapper');
+    const btnAdd = document.getElementById('btn-add-conteudo');
+    const previewBox = document.getElementById('preview_conteudos');
+    const hiddenConteudos = document.getElementById('conteudos_hidden');
+    const formAvaliacao = document.getElementById('form-avaliacao');
+
+    function removerBloco(botao) {
+        const bloco = botao.closest('.conteudo-bloco');
+        if (bloco) {
+            bloco.remove();
+            atualizarPreview();
+        }
+    }
+
+    function clonarBloco() {
+        const blocos = wrapper.querySelectorAll('.conteudo-bloco');
+        if (!blocos.length) return;
+
+        const modelo = blocos[0];
+        const novo = modelo.cloneNode(true);
+
+        // Limpa valores dos inputs do novo bloco
+        novo.querySelectorAll('input, select, textarea').forEach(function (el) {
+            if (el.tagName.toLowerCase() === 'select') {
+                el.selectedIndex = 0;
+            } else {
+                el.value = '';
+            }
+        });
+
+        // Exibe botão remover nos blocos clonados
+        const btnRemover = novo.querySelector('.btn-remover');
+        if (btnRemover) {
+            btnRemover.style.display = 'inline-block';
+        }
+
+        wrapper.appendChild(novo);
+    }
+
+    if (btnAdd) {
+        btnAdd.addEventListener('click', function () {
+            clonarBloco();
+        });
+    }
+
+    // --------- Montar texto dos conteúdos no hidden + preview ---------
+    function formatarDataBr(iso) {
+        if (!iso) return '';
+        const partes = iso.split('-'); // yyyy-mm-dd
+        if (partes.length !== 3) return iso;
+        return partes[2] + '/' + partes[1] + '/' + partes[0];
+    }
+
+    function atualizarPreview() {
+        const blocos = wrapper.querySelectorAll('.conteudo-bloco');
+        let linhas = [];
+
+        blocos.forEach(function (bloco, idx) {
+            const conteudo = bloco.querySelector('input[name="conteudo[]"]')?.value.trim() || '';
+            const forma = bloco.querySelector('select[name="forma[]"]')?.value.trim() || '';
+            const data = bloco.querySelector('input[name="data_conteudo[]"]')?.value || '';
+            const pontos = bloco.querySelector('input[name="pontos_conteudo[]"]')?.value.trim() || '';
+
+            if (!conteudo) return;
+
+            let linha = `• Conteúdo ${idx + 1}: ${conteudo}`;
+            if (forma) linha += ` | Avaliação: ${forma}`;
+            if (data) linha += ` | Data: ${formatarDataBr(data)}`;
+            if (pontos) linha += ` | Pontos: ${pontos}`;
+
+            linhas.push(linha);
+        });
+
+        if (!linhas.length) {
+            previewBox.textContent = 'Ainda não há conteúdos montados.';
+            hiddenConteudos.value = '';
+        } else {
+            const textoFinal = linhas.join('\n');
+            previewBox.textContent = textoFinal;
+            hiddenConteudos.value = textoFinal;
+        }
+    }
+
+    // Atualiza preview quando algum campo dos blocos mudar (delegação de eventos)
+    wrapper.addEventListener('input', function (e) {
+        if (
+            e.target.matches('input[name="conteudo[]"]') ||
+            e.target.matches('select[name="forma[]"]') ||
+            e.target.matches('input[name="data_conteudo[]"]') ||
+            e.target.matches('input[name="pontos_conteudo[]"]')
+        ) {
+            atualizarPreview();
+        }
+    });
+
+    // Garante que o hidden seja montado antes de enviar
+    if (formAvaliacao) {
+        formAvaliacao.addEventListener('submit', function (e) {
+            atualizarPreview();
+            if (!hiddenConteudos.value.trim()) {
+                alert('Informe pelo menos um conteúdo para a avaliação.');
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Atualiza preview inicial
+    atualizarPreview();
+</script>
+
+</body>
+</html>

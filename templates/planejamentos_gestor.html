@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Acompanhamento dos Planejamentos - Gestor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --page-bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --border-soft: #e2e8f0;
+            --primary: #2563eb;
+            --primary-soft: #dbeafe;
+            --primary-very-soft: #eff6ff;
+            --text-main: #0f172a;
+            --text-soft: #64748b;
+            --table-header-bg: #eff6ff;
+            --table-row-alt: #f9fafb;
+            --badge-bg: #e0f2fe;
+            --badge-text: #1d4ed8;
+            --badge-muted-bg: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, #dbeafe 0, transparent 55%),
+                radial-gradient(circle at bottom right, #bbf7d0 0, transparent 55%),
+                var(--page-bg);
+            margin: 0;
+            padding: 22px 12px;
+            display: flex;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1150px;
+            background: var(--card-bg);
+            padding: 22px 22px 26px;
+            border-radius: 18px;
+            box-shadow:
+                0 12px 30px rgba(15,23,42,0.08),
+                0 0 0 1px rgba(148,163,184,0.12);
+        }
+
+        /* TÍTULO E SUBTÍTULO */
+        .header {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            margin: 0;
+            color: var(--text-main);
+            font-size: 1.45rem;
+            letter-spacing: .03em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2 span.icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 0, #38bdf8, #2563eb 55%, #22c55e 100%);
+            color: #ffffff;
+            font-size: 1rem;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.9);
+        }
+
+        .subtitle {
+            color: var(--text-soft);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* CAIXA DE FILTROS */
+        .filter-box {
+            background: var(--primary-very-soft);
+            border-radius: 14px;
+            padding: 12px 12px 10px;
+            margin-bottom: 18px;
+            border: 1px solid var(--primary-soft);
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .filter-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .filter-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+        }
+
+        .toggle-filters-btn {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            background: #e5e7eb;
+            color: var(--text-main);
+            font-size: 0.78rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .toggle-filters-btn:hover {
+            background: #d4d4d8;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
+        }
+
+        .filter-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            color: var(--text-soft);
+            margin-bottom: 4px;
+            letter-spacing: .06em;
+            font-weight: 600;
+        }
+
+        .filter-select {
+            padding: 7px 9px;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary-soft);
+        }
+
+        .filter-actions {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: background .2s, box-shadow .15s, transform .05s;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--text-main);
+            border: 1px solid var(--border-soft);
+        }
+
+        .btn-secondary:hover {
+            background: #f3f4f6;
+            box-shadow: 0 3px 10px rgba(148,163,184,0.25);
+        }
+
+        .filters-collapsed {
+            display: none;
+        }
+
+        /* TABELA – COMPACTA + SCROLL INTERNO */
+        .table-wrapper {
+            margin-top: 10px;
+            border-radius: 14px;
+            border: 1px solid var(--border-soft);
+            background: #ffffff;
+            overflow-x: auto;
+            overflow-y: auto;   /* scroll vertical para muitos registros */
+            max-height: 420px;  /* limita altura da área da tabela */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            font-size: 0.82rem;
+            min-width: 920px; /* garante visualização em telas pequenas via scroll horizontal */
+            table-layout: fixed;
+        }
+
+        thead {
+            background: var(--table-header-bg);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        th, td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        th {
+            color: var(--text-soft);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: var(--table-row-alt);
+        }
+
+        tbody tr:nth-child(odd) td {
+            background: #ffffff;
+        }
+
+        tbody tr:hover td {
+            background: #e0f2fe;
+        }
+
+        .col-prof {
+            text-transform: lowercase;
+        }
+
+        /* === ESTILO DA COLUNA TURMAS IGUAL AO "MEUS PLANEJAMENTOS" === */
+        .td-turmas {
+            max-width: 220px;
+        }
+
+        .turmas-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--badge-bg);
+            color: #1e40af;
+            border: 1px solid rgba(37,99,235,0.3);
+            font-size: 11px;
+        }
+
+        .badge-muted {
+            background: var(--badge-muted-bg);
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+
+        .turma-badge {
+            display: inline-flex;
+            align-items: center;
+        }
+        /* === FIM ESTILO TURMAS === */
+
+        .actions-col .btn {
+            padding: 5px 10px;
+            font-size: 0.78rem;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-soft);
+            padding: 16px 0;
+            font-size: 0.9rem;
+        }
+
+        .back-btn {
+            margin-top: 16px;
+        }
+
+        .table-hint {
+            font-size: 0.75rem;
+            color: var(--text-soft);
+            margin-top: 4px;
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 900px) {
+            .filter-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 12px 8px;
+            }
+
+            .container {
+                padding: 18px 14px 20px;
+                border-radius: 16px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+            }
+
+            .filter-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            th, td {
+                font-size: 0.78rem;
+                padding: 8px 5px;
+            }
+
+            table {
+                min-width: 880px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px 4px;
+            }
+
+            .container {
+                padding: 16px 10px 18px;
+                border-radius: 14px;
+            }
+
+            .header {
+                text-align: left;
+            }
+
+            .table-hint {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>
+            <span class="icon">📑</span>
+            Acompanhamento dos Planejamentos
+        </h2>
+        <p class="subtitle">
+            Visualização geral dos planejamentos enviados pelos professores, com filtros por docente, turma, disciplina e bimestre.
+        </p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filter-box">
+        <div class="filter-header">
+            <div>
+                <div class="filter-title">Filtros de busca</div>
+                <div class="filter-subtitle">
+                    Refine a visualização escolhendo um professor, turma, disciplina ou bimestre específico.
+                </div>
+            </div>
+            <button type="button" class="toggle-filters-btn" onclick="toggleFilters()">
+                Mostrar / ocultar filtros
+            </button>
+        </div>
+
+        <form method="get" action="{{ url_for('listar_planejamentos_gestor') }}">
+            <div id="filtersArea" class="filter-row">
+                <!-- Professor -->
+                <div class="filter-group">
+                    <label class="filter-label" for="professor_login">Professor</label>
+                    <select name="professor_login" id="professor_login" class="filter-select">
+                        <option value="">Todos</option>
+                        {% for p in professores %}
+                            <option value="{{ p }}"
+                                {% if filtros.professor_login == p %}selected{% endif %}>
+                                {{ p|lower }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Turma -->
+                <div class="filter-group">
+                    <label class="filter-label" for="turma_id">Turma</label>
+                    <select name="turma_id" id="turma_id" class="filter-select">
+                        <option value="">Todas</option>
+                        {% for t in turmas %}
+                            <option value="{{ t.id }}"
+                                {% if filtros.turma_id and filtros.turma_id|string == t.id|string %}selected{% endif %}>
+                                {{ t.nome }} ({{ t.turno }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Disciplina -->
+                <div class="filter-group">
+                    <label class="filter-label" for="disciplina">Disciplina</label>
+                    <select name="disciplina" id="disciplina" class="filter-select">
+                        <option value="">Todas</option>
+                        {% for d in disciplinas %}
+                            <option value="{{ d }}"
+                                {% if filtros.disciplina == d %}selected{% endif %}>
+                                {{ d }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Bimestre -->
+                <div class="filter-group">
+                    <label class="filter-label" for="bimestre">Bimestre</label>
+                    <select name="bimestre" id="bimestre" class="filter-select">
+                        <option value="">Todos</option>
+                        {% for b in bimestres %}
+                            <option value="{{ b }}"
+                                {% if filtros.bimestre and filtros.bimestre|string == b|string %}selected{% endif %}>
+                                {{ b }}º bimestre
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn">
+                    🔍 Filtrar
+                </button>
+                <a href="{{ url_for('listar_planejamentos_gestor') }}" class="btn btn-secondary">
+                    Limpar filtros
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabela de planejamentos -->
+    {% if planejamentos %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Professor</th>
+                    <th>Disciplina</th>
+                    <th>Ano</th>
+                    <th>Bimestre</th>
+                    <th>Turmas</th>
+                    <th>Total Pontos</th>
+                    <th>Registrado em</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for p in planejamentos %}
+                <tr>
+                    <td class="col-prof">{{ p.professor_login|lower }}</td>
+                    <td>{{ p.disciplina }}</td>
+                    <td>{{ p.ano }}</td>
+                    <td>{{ p.bimestre }}º</td>
+
+                    <!-- COLUNA TURMAS COM MESMO ESTILO DO "MEUS PLANEJAMENTOS" -->
+                    <td class="td-turmas">
+                        {% if p.turmas_nomes %}
+                            <div class="turmas-wrap">
+                                {# cada turma vira um “chip” separado #}
+                                {% for nome_turma in p.turmas_nomes.split(',') %}
+                                    <span class="badge turma-badge">{{ nome_turma }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <span class="badge badge-muted">Sem turmas</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if p.total_pontos is not none %}
+                            {{ "%.1f"|format(p.total_pontos) }}
+                        {% else %}
+                            0,0
+                        {% endif %}
+                    </td>
+                    <td>{{ p.criado_em }}</td>
+                    <td class="actions-col">
+                        <a href="{{ url_for('detalhar_planejamento', planejamento_id=p.id) }}" class="btn">
+                            Abrir
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="table-hint">
+        Use a rolagem dentro da área da tabela para navegar por muitos planejamentos sem deixar a página muito longa.
+    </p>
+    {% else %}
+        <p class="no-data">Nenhum planejamento foi registrado até o momento.</p>
+    {% endif %}
+
+    <a href="{{ url_for('dashboard_moderador') }}" class="btn btn-secondary back-btn">⬅ Voltar</a>
+</div>
+
+<script>
+    function toggleFilters() {
+        const filtersArea = document.getElementById('filtersArea');
+        filtersArea.classList.toggle('filters-collapsed');
+    }
+</script>
+
+</body>
+</html>

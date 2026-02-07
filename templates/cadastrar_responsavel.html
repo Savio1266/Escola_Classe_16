@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Responsável – De Olho na Escola</title>
+
+    <!-- CSS global opcional -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Font Awesome (ícones) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Fonte Inter -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <style>
+        :root {
+            --bg-page: #edf5ff;
+            --primary: #0d9488;
+            --primary-soft: #ccfbf1;
+            --accent: #2563eb;
+            --accent-soft: #dbeafe;
+            --verde: #16a34a;
+            --rosa: #ec4899;
+            --card-bg: #ffffff;
+            --cinza-claro: #e5e7eb;
+            --text-main: #0f172a;
+            --text-muted: #6b7280;
+            --border-soft: #e5e7eb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(219,234,254,0.9), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(204,251,241,0.9), transparent 55%),
+                var(--bg-page);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px;
+        }
+
+        .shell {
+            width: 100%;
+            max-width: 620px;
+            border-radius: 26px;
+            background: #ffffff;
+            box-shadow: 0 22px 50px rgba(15,23,42,0.16);
+            border: 1px solid rgba(148,163,184,0.3);
+            padding: 20px 22px 18px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* CABEÇALHO */
+        .header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .logo-ring {
+            flex-shrink: 0;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            padding: 3px;
+            background:
+                conic-gradient(from 200deg,
+                               #0d9488,
+                               #22c55e,
+                               #38bdf8,
+                               #0d9488);
+            box-shadow: 0 0 26px rgba(34,197,94,0.45);
+        }
+
+        .logo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-inner img {
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .top-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--text-muted);
+        }
+
+        .header-text h1 {
+            font-size: 19px;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        .header-text h1 span { color: var(--primary); }
+
+        .header-text .sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .badge-step {
+            margin-top: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #f5f3ff;
+            color: #6d28d9;
+            border: 1px solid #ddd6fe;
+            width: fit-content;
+        }
+
+        .badge-step i { font-size: 13px; }
+
+        /* CARD DO FORMULÁRIO */
+        .form-card {
+            margin-top: 4px;
+            padding: 16px 14px 14px 14px;
+            border-radius: 18px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 14px 30px rgba(15,23,42,0.06);
+        }
+
+        .form-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .form-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        @media (min-width: 640px) {
+            form {
+                grid-template-columns: 1fr 1fr;
+                column-gap: 12px;
+            }
+            .full-row { grid-column: 1 / 3; }
+        }
+
+        .field-group { text-align: left; }
+
+        .field-label {
+            font-size: 12px;
+            color: var(--text-main);
+            margin-bottom: 3px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .field-wrapper { position: relative; }
+
+        .field-wrapper i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 8px 10px 8px 32px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(148,163,184,0.9);
+            background: #f9fafb;
+            color: var(--text-main);
+            box-sizing: border-box;
+        }
+
+        select { padding-right: 28px; }
+
+        input::placeholder { color: #9ca3af; }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(37,99,235,0.25);
+            background: #ffffff;
+        }
+
+        button[type="submit"] {
+            margin-top: 6px;
+            background: linear-gradient(120deg, var(--primary), #0f766e);
+            color: #ffffff;
+            font-size: 14px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 12px 26px rgba(13,148,136,0.28);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+            width: 100%;
+        }
+
+        button[type="submit"] i { font-size: 16px; }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(13,148,136,0.36);
+            opacity: 0.97;
+        }
+
+        .actions-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #f9fafb;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            border: 1px solid var(--border-soft);
+            transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .btn-secondary i { font-size: 13px; }
+
+        .btn-secondary:hover {
+            background: #eef2ff;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(148,163,184,0.28);
+        }
+
+        .helper-text {
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* ✅ TERMO */
+        .termo-card {
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            padding: 12px;
+            background: #ffffff;
+            box-shadow: 0 10px 22px rgba(15,23,42,0.04);
+        }
+
+        .termo-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .termo-title .left {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 13px;
+        }
+
+        .pill {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(37,99,235,0.25);
+            font-weight: 700;
+        }
+
+        .termo-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .termo-open {
+            font-size: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .termo-open:hover { text-decoration: underline; }
+
+        .termo-box {
+            max-height: 170px;
+            overflow: auto;
+            padding: 10px;
+            background: #ffffff;
+            border: 1px solid rgba(148,163,184,0.35);
+            border-radius: 12px;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+        }
+
+        .aceite-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-main);
+        }
+
+        .aceite-row input { margin-top: 2px; }
+
+        .muted {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        @media (max-width: 480px) {
+            .shell {
+                padding: 18px 16px 18px 16px;
+                border-radius: 22px;
+            }
+            .header-text h1 { font-size: 17px; }
+        }
+    </style>
+
+    <script>
+        function carregarAlunos() {
+            const turmaId = document.getElementById('turma').value;
+            const alunoSelect = document.getElementById('aluno');
+
+            alunoSelect.innerHTML = '<option value="">Selecione um aluno</option>';
+
+            if (!turmaId) return;
+
+            fetch(`/get_alunos/${turmaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(aluno => {
+                        const option = document.createElement('option');
+                        option.value = aluno.id;
+                        option.textContent = aluno.nome;
+                        alunoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar alunos:', error);
+                    alert("Não foi possível carregar os alunos dessa turma. Tente novamente.");
+                });
+        }
+
+        function beforeSubmit() {
+            const turma = document.getElementById('turma').value;
+            const aluno = document.getElementById('aluno').value;
+
+            if (!turma) {
+                alert("Selecione a turma.");
+                return false;
+            }
+
+            if (!aluno) {
+                alert("Selecione o aluno.");
+                return false;
+            }
+
+            // ✅ Termo obrigatório: se o termo não veio, bloqueia
+            const termoBox = document.getElementById("termoBox");
+            if (!termoBox) {
+                alert("Termo de uso indisponível. Contate a escola.");
+                return false;
+            }
+
+            const aceitou = document.getElementById("aceite_termo");
+            if (!aceitou || !aceitou.checked) {
+                alert("Para concluir o cadastro, você precisa aceitar o Termo de Uso.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+<div class="shell">
+    <div class="header">
+        <div class="logo-ring">
+            <div class="logo-inner">
+                <img src="/static/logo.jpg" alt="Logo ESCOLA CLASSE 16">
+            </div>
+        </div>
+        <div class="header-text">
+            <div class="top-label">Cadastro de responsável</div>
+            <h1>De Olho na Escola <span>Famílias</span></h1>
+            <div class="sub">Crie seu acesso para acompanhar a vida escolar do estudante.</div>
+            <div class="badge-step">
+                <i class="fas fa-user-plus"></i>
+                Passo 1 de 2 – Cadastro do responsável
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="form-title">Informações do responsável e do estudante</div>
+        <div class="form-desc">
+            Preencha os dados abaixo com atenção. Em caso de dúvidas, procure a equipe da escola.
+        </div>
+
+        <form action="{{ url_for('cadastrar_responsavel') }}" method="POST" onsubmit="return beforeSubmit();">
+            <!-- Login -->
+            <div class="field-group">
+                <label class="field-label" for="login">Login do Responsável</label>
+                <div class="field-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="login" name="login"
+                           placeholder="Ex: maria.silva" required>
+                </div>
+            </div>
+
+            <!-- Senha -->
+            <div class="field-group">
+                <label class="field-label" for="senha">Senha</label>
+                <div class="field-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="senha" name="senha"
+                           placeholder="Crie uma senha segura" required>
+                </div>
+            </div>
+
+            <!-- Telefone (linha inteira) -->
+            <div class="field-group full-row">
+                <label class="field-label" for="telefone">Telefone (WhatsApp)</label>
+                <div class="field-wrapper">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="telefone" name="telefone"
+                           placeholder="(61) 99999-9999" required>
+                </div>
+            </div>
+
+            <!-- Turma -->
+            <div class="field-group">
+                <label class="field-label" for="turma">Selecione a Turma</label>
+                <div class="field-wrapper">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <select id="turma" name="turma" onchange="carregarAlunos()" required>
+                        <option value="">Selecione uma turma</option>
+                        {% for turma in turmas %}
+                            <option value="{{ turma['id'] }}">{{ turma['nome'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Aluno -->
+            <div class="field-group">
+                <label class="field-label" for="aluno">Selecione o Aluno</label>
+                <div class="field-wrapper">
+                    <i class="fas fa-user-graduate"></i>
+                    <select id="aluno" name="aluno_id" required>
+                        <option value="">Selecione um aluno</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ✅ TERMO (OBRIGATÓRIO) -->
+            <div class="field-group full-row">
+                <div class="termo-card">
+                    <div class="termo-title">
+                        <div class="left">
+                            <i class="fas fa-file-signature" style="color: var(--accent);"></i>
+                            Termo de Uso
+                            <span class="pill">Obrigatório</span>
+                        </div>
+
+                        {% if termo %}
+                            <a class="termo-open" href="{{ url_for('termo.ver_termo', tipo='responsavel') }}" target="_blank" rel="noopener">
+                                <i class="fas fa-up-right-from-square"></i>
+                                Abrir em nova guia
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    {% if termo %}
+                        <div class="termo-meta">
+                            Tipo: {{ termo['tipo'] }} • Versão: {{ termo['versao'] }}
+                        </div>
+
+                        <div class="termo-box" id="termoBox">{{ termo['conteudo'] }}</div>
+
+                        <label class="aceite-row">
+                            <input type="checkbox" name="aceite_termo" id="aceite_termo" required>
+                            <span>Li e aceito o Termo de Uso para concluir o cadastro.</span>
+                        </label>
+
+                        <div class="muted">Sem o aceite, o cadastro não será concluído.</div>
+                    {% else %}
+                        <div class="muted" style="color:#b91c1c; font-size:12px;">
+                            Termo não encontrado/ativo. Contate a equipe da escola.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="field-group full-row">
+                <div class="actions-row">
+                    <button type="submit">
+                        <i class="fas fa-check-circle"></i>
+                        Concluir cadastro
+                    </button>
+
+                    <a href="{{ url_for('login_responsavel') }}" class="btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Já tenho conta – voltar ao login
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="helper-text">
+        Este acesso é exclusivo para mães, pais e responsáveis legais cadastrados no ESCOLA CLASSE 16.
+    </div>
+</div>
+</body>
+</html>

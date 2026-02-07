@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Lançamentos</title>
+</head>
+<body>
+    <h1>Lançamentos da Turma {{ turma.nome }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Prova</th>
+                <th>Pontos</th>
+                <th>Justificativa</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lancamento in lancamentos %}
+                <tr>
+                    <td>{{ lancamento.descricao }}</td>
+                    <td>{{ lancamento.pontos }}</td>
+                    <td>{{ lancamento.justificativa }}</td>
+                    <td>{{ lancamento.data }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('dashboard_professor') }}">Voltar</a>
+</body>
+</html>

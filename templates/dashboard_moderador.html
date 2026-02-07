@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gestão - De Olho na Escola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+
+            --bg-main: #f8f9fc;
+            --bg-card: #ffffff;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --text-white: #ffffff;
+
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* === LAYOUT PRINCIPAL === */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: var(--text-white);
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .school-name {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .user-info-sidebar {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-name i {
+            color: var(--primary-light);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-role {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--text-white);
+            margin-top: 8px;
+            width: fit-content;
+        }
+
+        /* === MENU === */
+        .sidebar-menu {
+            padding: 12px;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-light);
+            padding: 8px 12px;
+            margin-bottom: 4px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .menu-item:hover {
+            background: var(--sidebar-hover);
+            transform: translateX(4px);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-item i {
+            width: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px;
+        }
+
+        /* === PAGE HEADER === */
+        .page-header {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-light);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .page-title i {
+            color: var(--danger);
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .moderador-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .info-item i {
+            color: var(--danger);
+            width: 20px;
+            text-align: center;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .alert-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            color: #991b1b;
+            font-size: 13px;
+            margin-top: 16px;
+        }
+
+        .alert-box i {
+            font-size: 20px;
+            color: var(--danger);
+        }
+
+        /* === QUICK ACTIONS GRID === */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .action-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 80px;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.primary {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
+            color: var(--primary);
+        }
+
+        .card-icon.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            color: var(--success);
+        }
+
+        .card-icon.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+            color: var(--warning);
+        }
+
+        .card-icon.danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+            color: var(--danger);
+        }
+
+        .card-icon.info {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.05));
+            color: var(--info);
+        }
+
+        .card-icon.secondary {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+            color: var(--secondary);
+        }
+
+        .action-card:hover .card-icon.primary {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(99, 102, 241, 0.1));
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .action-card:hover .card-icon.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.1));
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .action-card:hover .card-icon.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(245, 158, 11, 0.1));
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .action-card:hover .card-icon.danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(239, 68, 68, 0.1));
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        .action-card:hover .card-icon.info {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(6, 182, 212, 0.1));
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+        }
+
+        .action-card:hover .card-icon.secondary {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1));
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .card-description {
+            font-size: 10px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        /* === SECTIONS === */
+        .sections-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sections-title i {
+            color: var(--primary);
+        }
+
+        .sections-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        }
+
+        .section-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .section-title-text h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .section-title-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .section-toggle {
+            color: var(--text-light);
+            transition: transform 0.3s;
+        }
+
+        .section-header.active .section-toggle {
+            transform: rotate(180deg);
+        }
+
+        .section-body {
+            padding: 20px;
+            display: none;
+        }
+
+        .section-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .section-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .section-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .section-item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-item-left i {
+            color: var(--primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-neutral {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-neutral:hover {
+            background: rgba(100, 116, 139, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* === ESTILO PARA OS LINKS DE ACESSO RÁPIDO === */
+        .quick-access-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.01));
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .quick-access-link:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.05));
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateX(4px);
+        }
+
+        .quick-access-link .fas.fa-chalkboard-teacher {
+            color: var(--primary);
+        }
+
+        .quick-access-link .fas.fa-calendar-alt {
+            color: var(--success);
+        }
+
+        .quick-access-link .fas.fa-exclamation-triangle {
+            color: var(--warning);
+        }
+
+        .quick-access-link .fas.fa-chart-line {
+            color: var(--secondary);
+        }
+
+        .quick-access-link .fas.fa-images {
+            color: var(--info);
+        }
+
+        .quick-access-link:hover .fas.fa-arrow-right {
+            color: var(--primary);
+            transform: translateX(3px);
+        }
+
+        .quick-access-link .fas.fa-arrow-right {
+            transition: all 0.3s;
+        }
+
+        /* === MOBILE MENU TOGGLE === */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: var(--shadow-xl);
+            z-index: 1001;
+            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .menu-toggle.active {
+            background: var(--danger);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar.active::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 280px;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: -1;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            .page-header {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .quick-actions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 8px;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .moderador-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 12px;
+            }
+
+            .page-header {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 20px;
+                gap: 8px;
+            }
+
+            .page-title i {
+                font-size: 20px;
+            }
+
+            .breadcrumb {
+                font-size: 12px;
+            }
+
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .action-card {
+                padding: 10px;
+                min-height: 75px;
+            }
+
+            .card-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+
+            .card-title {
+                font-size: 12px;
+            }
+
+            .card-description {
+                font-size: 9px;
+            }
+
+            .sidebar {
+                width: 260px;
+            }
+
+            .sidebar.active::before {
+                left: 260px;
+            }
+
+            .info-item {
+                font-size: 13px;
+            }
+
+            .section-header {
+                padding: 14px 16px;
+            }
+
+            .section-body {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 18px;
+            }
+
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-icon {
+                width: 34px;
+                height: 34px;
+                font-size: 16px;
+            }
+        }
+
+        /* SCROLLBAR */
+        @media (min-width: 769px) {
+            .sidebar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .sidebar::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 10px;
+            }
+
+            .sidebar::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 10px;
+            }
+
+            .sidebar::-webkit-scrollbar-thumb:hover {
+                background: rgba(0, 0, 0, 0.3);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo">
+                        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+                    </div>
+                    <div class="school-name">De Olho na Escola</div>
+                </div>
+
+                <div class="user-info-sidebar">
+                    <div class="user-name">
+                        <i class="fas fa-user-shield"></i>
+                        {{ session.get('usuario', 'Gestor') }}
+                    </div>
+                    <div class="user-role">
+                        <i class="fas fa-shield-alt"></i>
+                        {{ session.get('perfil', session.get('tipo', 'Gestão'))|capitalize }}
+                    </div>
+                    <div class="badge-role">
+                        <i class="fas fa-lock"></i>
+                        Acesso Restrito
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-title">Principal</div>
+                    <a href="{{ url_for('dashboard_moderador') }}" class="menu-item active">
+                        <i class="fas fa-home"></i>
+                        Página Inicial
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Cadastros Básicos</div>
+                    <a href="{{ url_for('cadastrar_turma') }}" class="menu-item">
+                        <i class="fas fa-school"></i>
+                        Cadastrar Turma
+                    </a>
+                    <a href="{{ url_for('cadastrar_aluno') }}" class="menu-item">
+                        <i class="fas fa-user-graduate"></i>
+                        Cadastrar Aluno
+                    </a>
+                    <a href="{{ url_for('transferir_aluno') }}" class="menu-item">
+                        <i class="fas fa-right-left"></i>
+                        Transferir Aluno
+                    </a>
+
+                    <a href="{{ url_for('sala_recursos') }}" class="menu-item">
+                        <i class="fas fa-universal-access"></i>
+                        Alunos da Sala de Recursos
+                    </a>
+
+                    <a href="{{ url_for('cadastrar_moderador') }}" class="menu-item">
+                        <i class="fas fa-user-shield"></i>
+                        Cadastrar Moderador
+                    </a>
+
+                    <a href="{{ url_for('checklist.checklist_moderador_home') }}" class="menu-item">
+                      <i class="fas fa-list-check"></i>
+                      Checklist Pedagógico
+                    </a>
+
+
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Pedagógico</div>
+                    <a href="{{ url_for('listar_planejamentos_gestor') }}" class="menu-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        Planejamentos
+                    </a>
+                    <a href="{{ url_for('listar_avaliacoes_gestor') }}" class="menu-item">
+                        <i class="fas fa-clipboard-check"></i>
+                        Avaliações
+                    </a>
+                    <a href="{{ url_for('conselho.conselho_moderador') }}" class="menu-item">
+                        <i class="fas fa-users"></i>
+                        Conselho de Classe
+                    </a>
+                    <a href="{{ url_for('visualizar_ocorrencias') }}" class="menu-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Ocorrências
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Comunicação</div>
+                    <a href="{{ url_for('listar_recados_aluno_gestor') }}" class="menu-item">
+                        <i class="fas fa-comment-dots"></i>
+                        Recados aos Alunos
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Atendimentos</div>
+                    <a href="{{ url_for('atendimentos_novo') }}" class="menu-item">
+                        <i class="fas fa-plus-circle"></i>
+                        Novo Atendimento
+                    </a>
+                    <a href="{{ url_for('atendimentos_historico') }}" class="menu-item">
+                        <i class="fas fa-history"></i>
+                        Histórico
+                    </a>
+                    <a href="{{ url_for('soe.soe_novo') }}" class="menu-item">
+                        <i class="fas fa-user-nurse"></i>
+                        Atendimento SOE
+                    </a>
+                    <a href="{{ url_for('soe.soe_historico') }}" class="menu-item">
+                        <i class="fas fa-clipboard-list"></i>
+                        Histórico SOE
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Eventos</div>
+                    <a href="{{ url_for('rotina.gestao_rotina') }}" class="menu-item">
+                        <i class="fas fa-calendar-check"></i>
+                        Gestão de Eventos
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Gestão de Pessoas</div>
+                    <a href="{{ url_for('visualizar_professores') }}" class="menu-item">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        Professores
+                    </a>
+                    <a href="{{ url_for('visualizar_responsaveis') }}" class="menu-item">
+                        <i class="fas fa-address-book"></i>
+                        Responsáveis
+                    </a>
+                    <a href="{{ url_for('visualizar_moderadores') }}" class="menu-item">
+                        <i class="fas fa-users-cog"></i>
+                        Moderadores
+                    </a>
+                    {% if session.get('usuario','')|upper == 'SAVIO' %}
+                    <a href="{{ url_for('soe_controle_acesso') }}" class="menu-item">
+                        <i class="fas fa-user-lock"></i>
+                        Controle Acesso SOE
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Ferramentas</div>
+                    <a href="{{ url_for('moderador_registrar_foto') }}" class="menu-item">
+                        <i class="fas fa-camera"></i>
+                        Registrar Fotos
+                    </a>
+                    <a href="{{ url_for('moderador_ver_carometro') }}" class="menu-item">
+                        <i class="fas fa-images"></i>
+                        Ver Carômetro
+                    </a>
+
+                    <a href="{{ url_for('registrar_atestado') }}" class="menu-item">
+                        <i class="fas fa-file-medical"></i>
+                        Registrar Atestado
+                    </a>
+                    <a href="{{ url_for('visualizar_atestados') }}" class="menu-item">
+                        <i class="fas fa-folder-open"></i>
+                        Ver Atestados
+                    </a>
+                    <a href="{{ url_for('gerar_lista_presenca') }}" class="menu-item">
+                        <i class="fas fa-clipboard-list"></i>
+                        Lista de Presença
+                    </a>
+                    <a href="{{ url_for('termo.moderador_aceites_termo') }}" class="menu-item">
+                        <i class="fas fa-file-signature"></i>
+                        Aceites do Termo
+                    </a>
+                    <a href="{{ url_for('gerar_pdf') }}" class="menu-item">
+                        <i class="fas fa-file-pdf"></i>
+                        Gerar Relatório PDF
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Sistema</div>
+                    <a href="{{ url_for('logs_acessos') }}" class="menu-item">
+                        <i class="fas fa-chart-line"></i>
+                        Logs de Acesso
+                    </a>
+                    <a href="{{ url_for('exclusao') }}" class="menu-item">
+                        <i class="fas fa-trash-alt"></i>
+                        Exclusões Avançadas
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="menu-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <div class="breadcrumb">
+                    <span>Início</span>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>Painel de Gestão</span>
+                </div>
+                <h1 class="page-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Painel de Gestão Escolar
+                </h1>
+                <p class="page-subtitle">
+                    De Olho na Escola - ESCOLA CLASSE 16 • Supervisão integrada de turmas, professores e registros.
+                </p>
+
+                <!-- INFORMAÇÕES DO MODERADOR -->
+                <div class="moderador-info">
+                    <div class="info-item">
+                        <i class="fas fa-user"></i>
+                        <span class="info-label">Usuário:</span>
+                        <span class="info-value">{{ session.get('usuario', 'Gestor') }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span class="info-label">Perfil:</span>
+                        <span class="info-value">{{ session.get('perfil', session.get('tipo', 'Gestão'))|capitalize }}</span>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Ambiente Restrito:</strong> Acesso exclusivo à equipe gestora. Use com responsabilidade e conforme protocolos estabelecidos.
+                    </div>
+                </div>
+
+                <!-- MENSAGEM INSPIRADORA DO PAULO FREIRE -->
+                <div style="margin-top: 16px; padding: 16px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.05)); border-left: 4px solid var(--primary); border-radius: 12px;">
+                    <div style="display: flex; align-items: start; gap: 12px;">
+                        <i class="fas fa-quote-left" style="color: var(--primary); font-size: 20px; margin-top: 4px; flex-shrink: 0;"></i>
+                        <div style="flex: 1;">
+                            <p id="frase-freire" style="font-size: 14px; color: var(--text-primary); font-style: italic; margin-bottom: 8px; line-height: 1.6;">
+                                <!-- Frase será inserida via JavaScript -->
+                            </p>
+                            <p style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                — Paulo Freire
+                            </p>
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.08);">
+                                <p style="font-size: 13px; color: var(--primary); font-weight: 600;">
+                                    <i class="fas fa-heart" style="color: #ef4444;"></i>
+                                    Olá, {{ session.get('usuario', 'Gestor') }}! Que seu trabalho hoje transforme vidas e construa futuros. ✨
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS - APENAS ATALHOS MAIS USADOS -->
+            <h2 class="sections-title">
+                <i class="fas fa-bolt"></i>
+                Atalhos Rápidos
+            </h2>
+
+            <div class="quick-actions-grid">
+                <a href="{{ url_for('cadastrar_turma') }}" class="action-card">
+                    <div class="card-header">
+                        <div class="card-icon primary">
+                            <i class="fas fa-school"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Cadastrar Turma</h3>
+                        <p class="card-description">Criar nova turma no sistema</p>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('cadastrar_aluno') }}" class="action-card">
+                    <div class="card-header">
+                        <div class="card-icon success">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Cadastrar Aluno</h3>
+                        <p class="card-description">Registrar novo estudante</p>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('transferir_aluno') }}" class="action-card">
+                    <div class="card-header">
+                        <div class="card-icon info">
+                            <i class="fas fa-right-left"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Transferir Aluno</h3>
+                        <p class="card-description">Mover aluno entre turmas</p>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('conselho.conselho_moderador') }}" class="action-card">
+                    <div class="card-header">
+                        <div class="card-icon secondary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Conselho de Classe</h3>
+                        <p class="card-description">Gerar documento oficial</p>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('gerar_lista_presenca') }}" class="action-card">
+                    <div class="card-header">
+                        <div class="card-icon warning">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Lista de Presença</h3>
+                        <p class="card-description">Gerar lista para impressão</p>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('gerar_pdf') }}" class="action-card">
+                    <div class="card-header">
+                        <div class="card-icon danger">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Gerar Relatório</h3>
+                        <p class="card-description">Emitir relatório em PDF</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- INFORMAÇÕES IMPORTANTES -->
+            <h2 class="sections-title" style="margin-top: 32px;">
+                <i class="fas fa-info-circle"></i>
+                Informações e Pendências
+            </h2>
+
+            <div class="sections-grid">
+                <!-- PROFESSORES PENDENTES (ÚNICO QUE FICA POIS É AÇÃO DIRETA) -->
+                {% if professores_pendentes %}
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection('pendentes')">
+                        <div class="section-header-left">
+                            <div class="section-icon card-icon warning">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                            <div class="section-title-text">
+                                <h3>Professores Pendentes de Aprovação</h3>
+                                <p>{{ professores_pendentes|length }} professor(es) aguardando aprovação</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="section-body" id="pendentes">
+                        <p class="section-description">
+                            Aprove ou rejeite os cadastros dos professores para liberar o acesso ao sistema.
+                        </p>
+                        <div class="section-items">
+                            {% for professor in professores_pendentes %}
+                            <div class="section-item">
+                                <div class="section-item-left">
+                                    <i class="fas fa-user"></i>
+                                    <span>{{ professor.login }}</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <form action="{{ url_for('aprovar_professor', professor_id=professor.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-check"></i> Aprovar
+                                        </button>
+                                    </form>
+                                    <form action="{{ url_for('rejeitar_professor', professor_id=professor.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-times"></i> Rejeitar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="section-card">
+                    <div style="padding: 24px; text-align: center;">
+                        <div style="font-size: 48px; color: var(--success); margin-bottom: 12px;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+                            Tudo em Dia!
+                        </h3>
+                        <p style="font-size: 14px; color: var(--text-secondary);">
+                            Não há professores pendentes de aprovação no momento.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- RESUMO RÁPIDO -->
+                <div class="section-card">
+                    <div style="padding: 20px;">
+                        <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-chart-simple" style="color: var(--primary);"></i>
+                            Acesso Rápido
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <a href="{{ url_for('visualizar_professores') }}" class="quick-access-link">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    <span style="font-size: 14px;">Ver Professores</span>
+                                </div>
+                                <i class="fas fa-arrow-right" style="color: var(--text-light); font-size: 12px;"></i>
+                            </a>
+
+                            <a href="{{ url_for('listar_planejamentos_gestor') }}" class="quick-access-link">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span style="font-size: 14px;">Acompanhar Planejamentos</span>
+                                </div>
+                                <i class="fas fa-arrow-right" style="color: var(--text-light); font-size: 12px;"></i>
+                            </a>
+
+                            <a href="{{ url_for('visualizar_ocorrencias') }}" class="quick-access-link">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span style="font-size: 14px;">Ver Ocorrências</span>
+                                </div>
+                                <i class="fas fa-arrow-right" style="color: var(--text-light); font-size: 12px;"></i>
+                            </a>
+
+                            <a href="{{ url_for('logs_acessos') }}" class="quick-access-link">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span style="font-size: 14px;">Logs de Acesso</span>
+                                </div>
+                                <i class="fas fa-arrow-right" style="color: var(--text-light); font-size: 12px;"></i>
+                            </a>
+
+                            <a href="{{ url_for('moderador_ver_carometro') }}" class="quick-access-link">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-images"></i>
+                                    <span style="font-size: 14px;">Ver Carômetro</span>
+                                </div>
+                                <i class="fas fa-arrow-right" style="color: var(--text-light); font-size: 12px;"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MOBILE MENU TOGGLE -->
+    <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        // ========== FRASES DO PAULO FREIRE ==========
+        const frasesFreire = [
+            "Ensinar não é transferir conhecimento, mas criar as possibilidades para a sua própria produção ou a sua construção.",
+            "Ninguém educa ninguém, ninguém educa a si mesmo, os homens se educam entre si, mediatizados pelo mundo.",
+            "Educação não transforma o mundo. Educação muda pessoas. Pessoas transformam o mundo.",
+            "É fundamental diminuir a distância entre o que se diz e o que se faz, de tal forma que, num dado momento, a tua fala seja a tua prática.",
+            "Não há saber mais ou saber menos: há saberes diferentes.",
+            "O educador que aliena a ignorância, se mantém em posições fixas, invariáveis. Será sempre o que sabe, enquanto os educandos serão sempre os que não sabem.",
+            "A educação é um ato de amor, por isso, um ato de coragem. Não pode temer o debate. A análise da realidade. Não pode fugir à discussão criadora, sob pena de ser uma farsa.",
+            "A alegria não chega apenas no encontro do achado, mas faz parte do processo da busca. E ensinar e aprender não podem dar-se fora da procura, fora da boniteza e da alegria.",
+            "Quando a educação não é libertadora, o sonho do oprimido é ser o opressor.",
+            "Todos nós sabemos alguma coisa. Todos nós ignoramos alguma coisa. Por isso, aprendemos sempre."
+        ];
+
+        // Selecionar uma frase aleatória
+        function exibirFraseAleatoria() {
+            const fraseElement = document.getElementById('frase-freire');
+            const fraseAleatoria = frasesFreire[Math.floor(Math.random() * frasesFreire.length)];
+            fraseElement.textContent = `"${fraseAleatoria}"`;
+        }
+
+        // Executar quando a página carregar
+        document.addEventListener('DOMContentLoaded', exibirFraseAleatoria);
+
+        // ========== TOGGLE SECTION ==========
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const header = section.previousElementSibling;
+
+            if (section.style.display === 'block') {
+                section.style.display = 'none';
+                header.classList.remove('active');
+            } else {
+                // Fechar todas as outras seções
+                document.querySelectorAll('.section-body').forEach(s => s.style.display = 'none');
+                document.querySelectorAll('.section-header').forEach(h => h.classList.remove('active'));
+
+                // Abrir a seção clicada
+                section.style.display = 'block';
+                header.classList.add('active');
+            }
+        }
+
+        // ========== SIDEBAR TOGGLE (MOBILE) ==========
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menu-toggle');
+            sidebar.classList.toggle('active');
+            toggle.classList.toggle('active');
+
+            const icon = toggle.querySelector('i');
+            if (sidebar.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+                if (window.innerWidth <= 1024) {
+                    document.body.style.overflow = 'hidden';
+                }
+            } else {
+                icon.className = 'fas fa-bars';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Fechar sidebar ao clicar em um link (mobile)
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('sidebar');
+                const toggle = document.getElementById('menu-toggle');
+                if (sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    toggle.classList.remove('active');
+                    toggle.querySelector('i').className = 'fas fa-bars';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+
+        // Fechar sidebar ao clicar fora
+        window.onclick = function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menu-toggle');
+            if (window.innerWidth <= 1024 &&
+                sidebar.classList.contains('active') &&
+                !sidebar.contains(event.target) &&
+                !toggle.contains(event.target)) {
+                closeSidebarOnMobile();
+            }
+        }
+
+        // Adicionar evento aos links do menu
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuLinks = document.querySelectorAll('.menu-item');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', closeSidebarOnMobile);
+            });
+        });
+    </script>
+</body>
+</html>

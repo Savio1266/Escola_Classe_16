@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - API Calendário</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .section {
+            background: #252526;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #3e3e42;
+        }
+        h2 {
+            color: #4ec9b0;
+            margin-top: 0;
+        }
+        pre {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid #3e3e42;
+        }
+        .btn {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #1177bb;
+        }
+        .success {
+            color: #4ec9b0;
+        }
+        .error {
+            color: #f48771;
+        }
+        .warning {
+            color: #dcdcaa;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug - API Calendário Professor</h1>
+    
+    <div class="section">
+        <h2>1. Teste da API</h2>
+        <button class="btn" onclick="testarAPI()">🚀 Buscar Eventos (Janeiro 2026)</button>
+        <div id="resultado-api"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. Estrutura dos Dados Recebidos</h2>
+        <div id="estrutura-dados"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Validação de Datas</h2>
+        <div id="validacao-datas"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. Diagnóstico</h2>
+        <div id="diagnostico"></div>
+    </div>
+
+    <script>
+        async function testarAPI() {
+            const resultadoDiv = document.getElementById('resultado-api');
+            const estruturaDiv = document.getElementById('estrutura-dados');
+            const validacaoDiv = document.getElementById('validacao-datas');
+            const diagnosticoDiv = document.getElementById('diagnostico');
+            
+            resultadoDiv.innerHTML = '<p class="warning">⏳ Carregando...</p>';
+            
+            try {
+                // Testar API
+                const mes = 1;  // Janeiro
+                const ano = 2026;
+                const url = `/api/calendario/eventos?mes=${mes}&ano=${ano}`;
+                
+                console.log('Chamando API:', url);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                console.log('Resposta da API:', data);
+                
+                // Exibir resposta bruta
+                resultadoDiv.innerHTML = `
+                    <p class="success">✅ API respondeu com sucesso!</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+                // Analisar estrutura
+                if (data.ok && Array.isArray(data.eventos)) {
+                    estruturaDiv.innerHTML = `
+                        <p class="success">✅ Total de eventos: ${data.eventos.length}</p>
+                        <p><strong>Tipos encontrados:</strong></p>
+                        <ul>
+                            <li>Avaliações: ${data.eventos.filter(e => e.tipo === 'avaliacao').length}</li>
+                            <li>Planejamentos: ${data.eventos.filter(e => e.tipo === 'planejamento').length}</li>
+                        </ul>
+                        ${data.eventos.length > 0 ? `
+                            <p><strong>Exemplo de evento:</strong></p>
+                            <pre>${JSON.stringify(data.eventos[0], null, 2)}</pre>
+                        ` : '<p class="error">❌ Nenhum evento encontrado</p>'}
+                    `;
+                    
+                    // Validar datas
+                    const datasInvalidas = [];
+                    const datasValidas = [];
+                    
+                    data.eventos.forEach((evento, index) => {
+                        const temData = evento.data || evento.data_inicio;
+                        
+                        if (!temData) {
+                            datasInvalidas.push({
+                                index,
+                                titulo: evento.titulo,
+                                problema: 'Sem data definida'
+                            });
+                        } else {
+                            // Validar formato
+                            const regex = /^\d{4}-\d{2}-\d{2}$/;
+                            if (!regex.test(temData)) {
+                                datasInvalidas.push({
+                                    index,
+                                    titulo: evento.titulo,
+                                    data: temData,
+                                    problema: 'Formato de data inválido (esperado: YYYY-MM-DD)'
+                                });
+                            } else {
+                                datasValidas.push({
+                                    index,
+                                    titulo: evento.titulo,
+                                    data: temData,
+                                    tipo: evento.tipo
+                                });
+                            }
+                        }
+                    });
+                    
+                    validacaoDiv.innerHTML = `
+                        <p><strong>Datas Válidas:</strong> ${datasValidas.length}</p>
+                        ${datasValidas.length > 0 ? `
+                            <ul>
+                                ${datasValidas.map(d => `
+                                    <li class="success">
+                                        ✅ [${d.tipo}] ${d.titulo} - ${d.data}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        ` : ''}
+                        
+                        <p><strong>Datas Inválidas:</strong> ${datasInvalidas.length}</p>
+                        ${datasInvalidas.length > 0 ? `
+                            <ul>
+                                ${datasInvalidas.map(d => `
+                                    <li class="error">
+                                        ❌ ${d.titulo} - ${d.problema}
+                                        ${d.data ? ` (valor: ${d.data})` : ''}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        ` : ''}
+                    `;
+                    
+                    // Diagnóstico
+                    let diagnostico = '<h3>Análise:</h3><ul>';
+                    
+                    if (data.eventos.length === 0) {
+                        diagnostico += `
+                            <li class="error">❌ <strong>Problema:</strong> Não há eventos cadastrados para Janeiro/2026</li>
+                            <li class="warning">💡 <strong>Solução:</strong> Verifique se as avaliações e planejamentos estão com datas em Janeiro/2026</li>
+                        `;
+                    } else if (datasInvalidas.length > 0) {
+                        diagnostico += `
+                            <li class="error">❌ <strong>Problema:</strong> ${datasInvalidas.length} evento(s) com datas inválidas</li>
+                            <li class="warning">💡 <strong>Solução:</strong> Verifique o formato das datas no banco de dados (deve ser YYYY-MM-DD)</li>
+                        `;
+                    } else if (datasValidas.length > 0) {
+                        diagnostico += `
+                            <li class="success">✅ <strong>API funcionando corretamente!</strong></li>
+                            <li class="success">✅ ${datasValidas.length} evento(s) válido(s) em Janeiro/2026</li>
+                            <li class="warning">💡 Se ainda não aparecem no calendário, o problema está no JavaScript que renderiza</li>
+                        `;
+                    }
+                    
+                    diagnostico += '</ul>';
+                    
+                    // Adicionar exemplo de busca de eventos
+                    if (datasValidas.length > 0) {
+                        const exemploData = datasValidas[0].data;
+                        const eventosNaData = data.eventos.filter(e => {
+                            const dataEvento = e.data || e.data_inicio;
+                            return dataEvento === exemploData;
+                        });
+                        
+                        diagnostico += `
+                            <h3>Teste de Busca por Data:</h3>
+                            <p>Data testada: <code>${exemploData}</code></p>
+                            <p>Eventos encontrados: ${eventosNaData.length}</p>
+                            <pre>${JSON.stringify(eventosNaData, null, 2)}</pre>
+                        `;
+                    }
+                    
+                    diagnosticoDiv.innerHTML = diagnostico;
+                    
+                } else {
+                    estruturaDiv.innerHTML = `
+                        <p class="error">❌ Resposta da API não contém 'ok: true' ou 'eventos' não é um array</p>
+                    `;
+                    diagnosticoDiv.innerHTML = `
+                        <p class="error">❌ <strong>Erro crítico:</strong> API não retornou dados no formato esperado</p>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Erro ao testar API:', error);
+                resultadoDiv.innerHTML = `
+                    <p class="error">❌ Erro ao chamar API:</p>
+                    <pre>${error.toString()}</pre>
+                `;
+                diagnosticoDiv.innerHTML = `
+                    <p class="error">❌ <strong>Erro de conexão:</strong> Não foi possível conectar à API</p>
+                    <p class="warning">Verifique se você está autenticado como professor</p>
+                `;
+            }
+        }
+        
+        // Executar automaticamente ao carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(testarAPI, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Recados por Aluno</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS principal do sistema -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Ícones -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007bff, #6c757d);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 1000px;
+            margin: 25px auto;
+            padding: 20px 25px 25px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        h1 {
+            font-size: 22px;
+            text-align: center;
+            margin: 0 0 5px 0;
+            color: #007bff;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .filters-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 18px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .filters-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        label {
+            font-size: 13px;
+            color: #555;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        select {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .table-wrapper {
+            max-height: 430px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #007bff;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        th, td {
+            padding: 8px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        .col-data {
+            width: 110px;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .col-turma {
+            width: 120px;
+            white-space: nowrap;
+        }
+
+        .col-aluno {
+            width: 180px;
+        }
+
+        .col-recado {
+            width: 100%;
+            max-width: 360px;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            color: #fff;
+            background: #17a2b8;
+            margin-left: 4px;
+        }
+
+        .badge-status-lido {
+            background: #28a745;
+        }
+
+        .badge-status-novo {
+            background: #ffc107;
+            color: #856404;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 16px;
+            font-size: 13px;
+            color: #777;
+        }
+
+        footer {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        @media (max-width: 760px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 6px 6px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Meus Recados por Aluno</h1>
+    <div class="subtitle">
+        Recados registrados por você para os responsáveis dos estudantes
+    </div>
+
+    <!-- Caixa de filtros -->
+    <div class="filters-box">
+        <div class="filters-title">
+            <i class="fas fa-filter"></i> Filtros de pesquisa
+        </div>
+        <form method="get" action="{{ url_for('listar_recados_aluno') }}" id="form-filtros">
+            <div class="filters-grid">
+
+                <!-- Filtro por Turma -->
+                <div>
+                    <label for="turma_id">Turma</label>
+                    {% set turma_sel = turma_selecionada %}
+                    <select name="turma_id" id="turma_id">
+                        <option value="">Todas as turmas</option>
+                        {% for turma in turmas or [] %}
+                            <option value="{{ turma.id }}"
+                                {% if turma_sel and turma_sel|string == turma.id|string %}selected{% endif %}>
+                                {{ turma.nome }}{% if turma.turno %} ({{ turma.turno }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Filtro por Aluno -->
+                <div>
+                    <label for="aluno_id">Aluno</label>
+                    {% set aluno_sel = aluno_selecionado %}
+                    <select name="aluno_id" id="aluno_id">
+                        <option value="">Todos os alunos</option>
+                        {% if alunos %}
+                            {% for aluno in alunos %}
+                                <option value="{{ aluno.id }}"
+                                    {% if aluno_sel and aluno_sel|string == aluno.id|string %}selected{% endif %}>
+                                    {{ aluno.nome }}
+                                </option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <!-- Botões -->
+                <div style="margin-top:4px;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('listar_recados_aluno') }}"
+                       class="btn btn-secondary btn-small" style="margin-left: 6px;">
+                        <i class="fas fa-eraser"></i> Limpar
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabela de recados -->
+    <div class="table-wrapper">
+        {% if recados and recados|length > 0 %}
+            <table>
+                <thead>
+                <tr>
+                    <th class="col-data">Data</th>
+                    <th class="col-turma">Turma</th>
+                    <th class="col-aluno">Aluno</th>
+                    <th>Status</th>
+                    <th class="col-recado">Recado</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for recado in recados %}
+                    <tr>
+                        <td class="col-data">
+                            {% if recado['data_criacao'] %}
+                                {{ recado['data_criacao'][:10] }} {{ recado['data_criacao'][11:16] }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="col-turma">
+                            {{ recado['turma_nome'] or '-' }}
+                        </td>
+                        <td class="col-aluno">
+                            {{ recado['aluno_nome'] or '-' }}
+                        </td>
+                        <td>
+                            {% if recado['visualizado'] %}
+                                <span class="badge badge-status-lido">Visto</span>
+                            {% else %}
+                                <span class="badge badge-status-novo">Não visto</span>
+                            {% endif %}
+                        </td>
+                        <td class="col-recado">
+                            {{ recado['conteudo'] or '' }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-data">
+                Nenhum recado encontrado para os filtros selecionados.
+            </div>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 12px;">
+        <a href="{{ url_for('dashboard_professor') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar ao Painel do Professor
+        </a>
+    </div>
+
+    <footer>
+        Visualização dos recados lançados pelo professor – De Olho na Escola • ESCOLA CLASSE 16.
+    </footer>
+</div>
+
+<script>
+    const turmaSelect = document.getElementById('turma_id');
+    const alunoSelect = document.getElementById('aluno_id');
+
+    // Quando mudar a turma: limpar alunos se não usar AJAX de carregamento
+    turmaSelect.addEventListener('change', function () {
+        document.getElementById('form-filtros').submit();
+    });
+</script>
+</body>
+</html>

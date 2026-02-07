@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Avaliações Registradas - Gestor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --bg-main: #f3f4f6;
+            --card-bg: #ffffff;
+            --card-border: rgba(148,163,184,0.5);
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --accent-soft: rgba(37,99,235,0.08);
+            --text-main: #0f172a;
+            --text-soft: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 18px;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(191,219,254,0.7), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(187,247,208,0.7), transparent 55%),
+                var(--bg-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow:
+                0 18px 40px rgba(15,23,42,0.08),
+                0 0 0 1px rgba(148,163,184,0.15);
+            padding: 20px 20px 26px 20px;
+        }
+
+        /* TOPO */
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .header h2 {
+            margin: 0 0 4px 0;
+            font-size: 22px;
+            letter-spacing: .04em;
+            color: #1d4ed8;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-soft);
+        }
+
+        /* CAIXA DE FILTROS */
+        .filter-box {
+            margin-top: 14px;
+            margin-bottom: 18px;
+            background: #f8fafc;
+            border-radius: 16px;
+            border: 1px solid rgba(148,163,184,0.5);
+            padding: 12px 12px 10px 12px;
+        }
+
+        .filter-header {
+            margin-bottom: 8px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .filter-subtitle {
+            font-size: 11px;
+            color: var(--text-soft);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 8px 10px;
+            margin-top: 8px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: var(--text-soft);
+            font-weight: 600;
+        }
+
+        .filter-group select {
+            padding: 7px 9px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 13px;
+            background: #ffffff;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .filter-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(37,99,235,0.25);
+        }
+
+        .filter-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        /* BOTÕES */
+        .btn {
+            border-radius: 999px;
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(37,99,235,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 26px rgba(37,99,235,0.4);
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: var(--text-main);
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(148,163,184,0.3);
+        }
+
+        .back-btn {
+            margin-top: 18px;
+        }
+
+        /* TABELA */
+        .table-wrapper {
+            margin-top: 6px;
+            border-radius: 14px;
+            border: 1px solid rgba(148,163,184,0.6);
+            background: #ffffff;
+            overflow-x: auto; /* scroll horizontal no celular */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 700px;  /* evita esmagar demais em telas pequenas */
+        }
+
+        thead {
+            background: #e5edf9;
+        }
+
+        th {
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #475569;
+            font-weight: 600;
+            border-bottom: 1px solid #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        tbody tr:hover td {
+            background: #eff6ff;
+        }
+
+        td {
+            padding: 9px 8px;
+            font-size: 13px;
+            text-align: center;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-soft);
+            font-size: 14px;
+            padding: 16px 10px;
+        }
+
+        .btn-table {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 999px;
+            border: 1px solid #cbd5e1;
+            background: #e0f2fe;
+            color: #0369a1;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-table:hover {
+            background: #bae6fd;
+        }
+
+        /* RODAPÉ */
+        .footer {
+            text-align: right;
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--text-soft);
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 1024px) {
+            body {
+                padding: 14px;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 18px 16px 22px 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                display: block;
+            }
+
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+                padding: 14px 10px 18px 10px;
+            }
+
+            .header h2 {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+
+            .filter-actions {
+                justify-content: center;
+            }
+
+            .btn,
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            table {
+                font-size: 12px;
+                min-width: 620px;
+            }
+
+            th, td {
+                padding: 8px 6px;
+            }
+
+            .back-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px 6px 16px 6px;
+            }
+
+            .header h2 {
+                font-size: 18px;
+            }
+
+            .footer {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- TOPO -->
+    <div class="header">
+        <h2>AVALIAÇÕES BIMESTRAIS REGISTRADAS</h2>
+        <p class="subtitle">
+            Visão geral das avaliações lançadas pelos professores, com filtros por docente, turma, disciplina e bimestre.
+        </p>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filter-box">
+        <div class="filter-header">
+            <div class="filter-title">Filtros de pesquisa</div>
+            <div class="filter-subtitle">
+                Refine os resultados selecionando um professor, turma, disciplina ou bimestre.
+            </div>
+        </div>
+
+        <form method="get" class="filters-grid" action="{{ url_for('listar_avaliacoes_gestor') }}">
+            <div class="filter-group">
+                <label for="professor_id">Professor</label>
+                <select name="professor_id" id="professor_id">
+                    <option value="">Todos</option>
+                    {% for prof in professores %}
+                        <option value="{{ prof.id }}"
+                            {% if filtros.professor_id is not none and filtros.professor_id == prof.id %}
+                                selected
+                            {% endif %}>
+                            {{ prof.login }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="turma_id">Turma</label>
+                <select name="turma_id" id="turma_id">
+                    <option value="">Todas</option>
+                    {% for turma in turmas %}
+                        <option value="{{ turma.id }}"
+                            {% if filtros.turma_id is not none and filtros.turma_id == turma.id %}
+                                selected
+                            {% endif %}>
+                            {{ turma.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="disciplina">Disciplina</label>
+                <select name="disciplina" id="disciplina">
+                    <option value="">Todas</option>
+                    {% for disc in disciplinas %}
+                        <option value="{{ disc }}"
+                            {% if filtros.disciplina and filtros.disciplina == disc %}
+                                selected
+                            {% endif %}>
+                            {{ disc }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="bimestre">Bimestre</label>
+                <select name="bimestre" id="bimestre">
+                    <option value="">Todos</option>
+                    {% for num in range(1,5) %}
+                        <option value="{{ num }}"
+                            {% if filtros.bimestre is not none and filtros.bimestre == num %}
+                                selected
+                            {% endif %}>
+                            {{ num }}º
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{{ url_for('listar_avaliacoes_gestor') }}" class="btn btn-secondary">
+                    Limpar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-wrapper">
+        {% if avaliacoes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Professor</th>
+                        <th>Bimestre</th>
+                        <th>Disciplina</th>
+                        <th>Turmas</th>
+                        <th>Data</th>
+                        <th>Visualizar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in avaliacoes %}
+                    <tr>
+                        <td>{{ a.professor_login }}</td>
+                        <td>{{ a.bimestre }}º</td>
+                        <td>{{ a.disciplina }}</td>
+                        <td>{{ a.turma_nome }}</td>
+                        <td>{{ a.data_avaliacao_formatada }}</td>
+                        <td>
+                            <a href="{{ url_for('visualizar_avaliacao', id=a.id) }}" class="btn-table">
+                                Abrir
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-data">Nenhuma avaliação foi registrada ainda.</p>
+        {% endif %}
+    </div>
+
+    <div class="filter-actions">
+        <a href="{{ url_for('dashboard_moderador') }}" class="btn btn-secondary back-btn">
+            ⬅ Voltar ao Painel
+        </a>
+    </div>
+
+    <div class="footer">
+        Monitoramento centralizado das avaliações bimestrais – De Olho na Escola.
+    </div>
+</div>
+
+</body>
+</html>

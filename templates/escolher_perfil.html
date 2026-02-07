@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escolher Perfil – De Olho na Escola</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <style>
+        :root {
+            --bg-page: #e7f0ff;
+            --primary: #2563eb;
+            --teal: #0d9488;
+            --card-bg: #ffffff;
+            --border-soft: #d4d4dd;
+            --text-main: #0f172a;
+            --text-muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(219,234,254,0.95), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(204,251,241,0.9), transparent 55%),
+                var(--bg-page);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            border-radius: 26px;
+            box-shadow: 0 22px 50px rgba(15,23,42,0.14);
+            border: 1px solid rgba(148,163,184,0.3);
+            padding: 40px 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-ring {
+            width: 90px;
+            height: 90px;
+            border-radius: 999px;
+            background: conic-gradient(from 200deg, #0d9488, #22c55e, #38bdf8, #0d9488);
+            padding: 4px;
+            box-shadow: 0 0 26px rgba(37,99,235,0.3);
+            margin: 0 auto 20px;
+        }
+
+        .logo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-inner img {
+            width: 90%;
+            height: 90%;
+            border-radius: 999px;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin: 0 0 8px 0;
+            color: var(--text-main);
+        }
+
+        h1 span {
+            color: var(--teal);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .welcome-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #4ade80;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .welcome-badge i {
+            color: #16a34a;
+        }
+
+        .instruction {
+            text-align: center;
+            font-size: 16px;
+            color: var(--text-main);
+            margin: 30px 0 40px 0;
+            font-weight: 500;
+        }
+
+        .perfis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .perfil-card {
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+            border: 2px solid var(--border-soft);
+            border-radius: 20px;
+            padding: 30px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .perfil-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--teal));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .perfil-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(15,23,42,0.15);
+            border-color: var(--teal);
+        }
+
+        .perfil-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .perfil-card input[type="radio"] {
+            display: none;
+        }
+
+        .perfil-card input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+        }
+
+        .perfil-card input[type="radio"]:checked + label::before {
+            transform: scaleX(1);
+        }
+
+        .perfil-card input[type="radio"]:checked + label .icon-circle {
+            background: linear-gradient(120deg, var(--teal), #0f766e);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(13,148,136,0.35);
+        }
+
+        .perfil-label {
+            cursor: pointer;
+            display: block;
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            color: var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .perfil-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .perfil-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .features-list {
+            margin-top: 16px;
+            padding: 0;
+            list-style: none;
+            text-align: left;
+        }
+
+        .features-list li {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .features-list li i {
+            color: var(--teal);
+            font-size: 10px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(120deg, var(--teal), #0f766e);
+            color: #ffffff;
+            font-size: 16px;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 12px 26px rgba(13,148,136,0.28);
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(13,148,136,0.36);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f9fafb;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            border: 1px solid var(--border-soft);
+            transition: all 0.15s ease;
+            margin-top: 16px;
+        }
+
+        .btn-logout:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #991b1b;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .perfis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-ring">
+                <div class="logo-inner">
+                    <img src="/static/logo.jpg" alt="Logo ESCOLA CLASSE 16">
+                </div>
+            </div>
+            
+            <h1>De Olho na Escola <span>ESCOLA CLASSE 16</span></h1>
+            <div class="subtitle">ESCOLA CLASSE 16</div>
+            
+            <div class="welcome-badge">
+                <i class="fas fa-user-check"></i>
+                Bem-vindo(a), {{ session.usuario }}
+            </div>
+        </div>
+
+        <div class="instruction">
+            Você tem acesso a múltiplos perfis. Escolha como deseja entrar:
+        </div>
+
+        <form method="POST">
+            <div class="perfis-grid">
+                <!-- PERFIL MODERADOR -->
+                <div class="perfil-card">
+                    <input type="radio" name="perfil" value="moderador" id="perfil-moderador" required>
+                    <label for="perfil-moderador" class="perfil-label">
+                        <div class="icon-circle">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="perfil-title">Gestão Escolar</div>
+                        <div class="perfil-desc">
+                            Acesso completo como direção ou coordenação pedagógica
+                        </div>
+                        <ul class="features-list">
+                            <li><i class="fas fa-check-circle"></i> Gerenciar professores e turmas</li>
+                            <li><i class="fas fa-check-circle"></i> Visualizar relatórios gerais</li>
+                            <li><i class="fas fa-check-circle"></i> Registrar atendimentos</li>
+                            <li><i class="fas fa-check-circle"></i> Controle total do sistema</li>
+                        </ul>
+                    </label>
+                </div>
+
+                <!-- PERFIL PROFESSOR -->
+                <div class="perfil-card">
+                    <input type="radio" name="perfil" value="professor" id="perfil-professor" required>
+                    <label for="perfil-professor" class="perfil-label">
+                        <div class="icon-circle">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="perfil-title">Professor(a)</div>
+                        <div class="perfil-desc">
+                            Acesso pedagógico para gestão de suas turmas e atividades
+                        </div>
+                        <ul class="features-list">
+                            <li><i class="fas fa-check-circle"></i> Gerenciar suas turmas</li>
+                            <li><i class="fas fa-check-circle"></i> Criar planejamentos</li>
+                            <li><i class="fas fa-check-circle"></i> Enviar recados aos responsáveis</li>
+                            <li><i class="fas fa-check-circle"></i> Registrar avaliações</li>
+                        </ul>
+                    </label>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Acessar Perfil Selecionado
+                </button>
+                
+                <br>
+                
+                <a href="/logout" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cancelar e sair
+                </a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

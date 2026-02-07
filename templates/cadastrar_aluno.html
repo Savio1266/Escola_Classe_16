@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Cadastrar Alunos</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007bff, #6c757d);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px 28px;
+            width: 100%;
+            max-width: 520px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        select, input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 11px;
+            font-size: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        select:focus, input[type="text"]:focus, input[type="file"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 6px rgba(0,123,255,0.4);
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #555;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 10px;
+            line-height: 1.35;
+        }
+
+        .aluno-group {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 4px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .aluno-group input {
+            flex-grow: 1;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            font-size: 14px;
+            padding: 7px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .remove-btn:hover { opacity: 0.8; }
+
+        .btn-add {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .btn-add:hover { background: #138496; }
+
+        .btn-submit {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-submit:hover { background: #218838; }
+
+        .btn-secondary {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: #6c757d;
+            color: white;
+            padding: 10px 18px;
+            font-size: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 8px;
+        }
+
+        .btn-secondary:hover { background: #5a6268; }
+
+        @media (max-width: 480px) {
+            .aluno-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .remove-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Cadastrar Estudantes</h1>
+
+    <!-- IMPORTANTE: enctype para upload de PDF -->
+    <form action="{{ url_for('cadastrar_aluno') }}" method="POST" id="alunoForm" enctype="multipart/form-data">
+
+        <label for="turma_id">Turma</label>
+        <select name="turma_id" id="turma_id" required>
+            <option value="" disabled selected>Selecione a turma</option>
+            {% for turma in turmas %}
+                <option value="{{ turma.id }}">{{ turma.nome }} ({{ turma.turno }})</option>
+            {% endfor %}
+        </select>
+
+        <div class="hint">
+            <b>Importar por PDF (opcional):</b><br>
+            Você pode anexar o PDF de enturmação para cadastrar vários estudantes de uma vez.<br>
+            <b>O sistema vai extrair apenas os nomes</b> (código, telefone e outros campos serão ignorados).
+        </div>
+
+        <label for="pdf_alunos">Anexar PDF (opcional)</label>
+        <input type="file" name="pdf_alunos" id="pdf_alunos" accept="application/pdf">
+
+        <label>Nome dos Estudantes (opcional, caso queira digitar também)</label>
+        <div id="alunosContainer">
+            <div class="aluno-group">
+                <input type="text" name="nomes[]" placeholder="Nome completo do estudante">
+            </div>
+        </div>
+
+        <button type="button" id="addAlunoBtn" class="btn-add">
+            Adicionar Estudante
+        </button>
+
+        <button type="submit" class="btn-submit">
+            Salvar / Importar
+        </button>
+    </form>
+
+    <a href="{{ url_for('dashboard_moderador') }}" class="btn-secondary">
+        Voltar
+    </a>
+</div>
+
+<script>
+    document.getElementById('addAlunoBtn').addEventListener('click', () => {
+        const container = document.getElementById('alunosContainer');
+        const field = document.createElement('div');
+        field.classList.add('aluno-group');
+        field.innerHTML = `
+            <input type="text" name="nomes[]" placeholder="Nome completo do estudante">
+            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remover</button>
+        `;
+        container.appendChild(field);
+    });
+</script>
+</body>
+</html>

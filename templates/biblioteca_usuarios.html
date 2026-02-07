@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliotecários – Biblioteca ESCOLA CLASSE 16</title>
+
+    <!-- CSS global do sistema -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Fonte -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <style>
+        :root {
+            --bg: #020817;
+            --card-bg: #ffffff;
+            --primary: #15803d;
+            --primary-soft: rgba(34,197,94,0.12);
+            --border-soft: rgba(148,163,184,0.35);
+            --text-main: #0f172a;
+            --text-muted: #6b7280;
+            --danger: #dc2626;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #bbf7d0, #0f172a);
+            padding: 16px;
+        }
+
+        .shell {
+            width: 100%;
+            max-width: 1180px;
+            border-radius: 26px;
+            background: #ffffff;
+            box-shadow: 0 22px 50px rgba(15,23,42,0.18);
+            display: grid;
+            grid-template-columns: minmax(0, 1.0fr) minmax(0, 1.45fr);
+            overflow: hidden;
+            border: 1px solid var(--border-soft);
+        }
+
+        .left-panel {
+            padding: 26px 24px 22px 26px;
+            border-right: 1px solid var(--border-soft);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: radial-gradient(circle at top left, #dcfce7, #e0f2fe);
+        }
+
+        .logo-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-wrapper {
+            width: 90px;
+            height: 90px;
+            border-radius: 999px;
+            border: 3px solid rgba(22,163,74,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            box-shadow: 0 14px 30px rgba(34,197,94,0.35);
+        }
+
+        .logo-wrapper img {
+            max-width: 70px;
+            border-radius: 999px;
+        }
+
+        .school-name h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #0f172a;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .school-name .subtitle {
+            font-size: 0.7rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #4b5563;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .pill {
+            font-size: 0.72rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(34,197,94,0.08);
+            color: #166534;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pill i { font-size: 0.7rem; }
+
+        .info-box {
+            margin-top: 24px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(15,23,42,0.03);
+            border: 1px dashed rgba(148,163,184,0.7);
+            font-size: 0.78rem;
+            color: #111827;
+        }
+
+        .info-box strong { color: #15803d; }
+
+        .right-panel {
+            padding: 24px 26px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: #f9fafb;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .top-title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .top-title h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--text-main);
+        }
+
+        .top-title span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .top-actions a {
+            font-size: 0.78rem;
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ffffff;
+        }
+
+        .top-actions a i { font-size: 0.8rem; }
+
+        .card {
+            border-radius: 18px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            padding: 16px 18px 18px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title h3 {
+            margin: 0;
+            font-size: 0.98rem;
+            color: var(--text-main);
+        }
+
+        .card-title i { color: #15803d; }
+
+        .card-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding-left: 0;
+            margin: 4px 0 8px;
+        }
+
+        .flash-messages li {
+            font-size: 0.8rem;
+            color: #b91c1c;
+        }
+
+        .table-wrapper {
+            max-height: 360px;
+            overflow-y: auto;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        thead {
+            background: #f3f4f6;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        th, td {
+            padding: 7px 9px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.76rem;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+        }
+
+        .status-pendente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-aprovado {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-reprovado {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            border: none;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: #ffffff;
+        }
+
+        .btn-reject {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .btn-delete {
+            background: #dc2626;
+            color: #ffffff;
+        }
+
+        .badge-fixed {
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: rgba(37,99,235,0.12);
+            color: #1d4ed8;
+            font-size: 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @media (max-width: 980px) {
+            .shell { grid-template-columns: minmax(0, 1fr); }
+            .left-panel { display: none; }
+            .right-panel { padding: 20px 16px 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="shell">
+    <!-- LADO ESQUERDO -->
+    <div class="left-panel">
+        <div>
+            <div class="logo-card">
+                <div class="logo-wrapper">
+                    <!-- Logo da escola -->
+                    <img src="/static/logo.jpg" alt="Logo ESCOLA CLASSE 16">
+                </div>
+                <div class="school-name">
+                    <h1>Biblioteca ESCOLA CLASSE 16</h1>
+                    <div class="subtitle">Gestão de bibliotecários</div>
+                </div>
+            </div>
+
+            <div class="pill-row">
+                <span class="pill"><i class="fas fa-user-shield"></i> Controle pelo moderador</span>
+                <span class="pill"><i class="fas fa-book-reader"></i> Acesso seguro à biblioteca</span>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Orientação rápida</strong><br>
+            Nesta tela o(a) moderador(a) aprova ou reprova os cadastros
+            de bibliotecários. Somente perfis aprovados poderão registrar
+            empréstimos e devoluções.
+        </div>
+    </div>
+
+    <!-- LADO DIREITO -->
+    <div class="right-panel">
+
+        <div class="top-bar">
+            <div class="top-title">
+                <h2>Bibliotecários cadastrados</h2>
+                <span>Gerencie quem pode acessar o módulo da Biblioteca.</span>
+            </div>
+            <div class="top-actions">
+                <a href="/dashboard_moderador">
+                    <i class="fas fa-arrow-left"></i> Voltar ao painel
+                </a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for msg in messages %}
+                    <li>{{ msg }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-users-cog"></i>
+                    <h3>Lista de bibliotecários</h3>
+                </div>
+                <div class="card-sub">
+                    Pedidos pendentes aparecem primeiro. Use os botões para aprovar, reprovar ou excluir.
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Login</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if bibliotecarios and bibliotecarios|length > 0 %}
+                        {% for b in bibliotecarios %}
+                            <tr>
+                                <td>
+                                    {{ b.nome }}
+                                    {% if b.login == 'SAVIO' %}
+                                        <span class="badge-fixed">
+                                            <i class="fas fa-star"></i> Moderador fixo
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ b.login }}</td>
+                                <td>{{ b.telefone or '-' }}</td>
+                                <td>
+                                    {% if b.status == 'pendente' %}
+                                        <span class="status-pill status-pendente">
+                                            <i class="fas fa-hourglass-half"></i> Pendente
+                                        </span>
+                                    {% elif b.status == 'aprovado' %}
+                                        <span class="status-pill status-aprovado">
+                                            <i class="fas fa-check-circle"></i> Aprovado
+                                        </span>
+                                    {% else %}
+                                        <span class="status-pill status-reprovado">
+                                            <i class="fas fa-times-circle"></i> Reprovado
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="actions">
+                                        {% if b.status == 'pendente' %}
+                                            <form method="POST"
+                                                  action="{{ url_for('biblioteca.atualizar_status_bibliotecario', bib_id=b.id, acao='aprovar') }}">
+                                                <button type="submit" class="btn-small btn-approve">
+                                                    <i class="fas fa-check"></i> Aprovar
+                                                </button>
+                                            </form>
+
+                                            <form method="POST"
+                                                  action="{{ url_for('biblioteca.atualizar_status_bibliotecario', bib_id=b.id, acao='reprovar') }}">
+                                                <button type="submit" class="btn-small btn-reject">
+                                                    <i class="fas fa-times"></i> Reprovar
+                                                </button>
+                                            </form>
+                                        {% endif %}
+
+                                        {% if b.login != 'SAVIO' %}
+                                            <form method="POST"
+                                                  action="{{ url_for('biblioteca.atualizar_status_bibliotecario', bib_id=b.id, acao='excluir') }}"
+                                                  onsubmit="return confirm('Tem certeza que deseja excluir este bibliotecário?');">
+                                                <button type="submit" class="btn-small btn-delete">
+                                                    <i class="fas fa-trash"></i> Excluir
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" style="font-size:0.8rem; color:var(--text-muted); text-align:center;">
+                                Ainda não há bibliotecários cadastrados.
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

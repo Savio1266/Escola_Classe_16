@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conselho – {{ ainfo.nome }}</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#0b1726;
+      --card: rgba(255,255,255,.08);
+      --border: rgba(148,163,184,.22);
+      --text:#e5e7eb;
+      --muted:#a7b3c6;
+      --primary:#38bdf8;
+      --primary-soft: rgba(56,189,248,.16);
+      --success:#22c55e;
+      --warning:#f59e0b;
+    }
+    body{ margin:0; background:var(--bg); color:var(--text); font-family: Arial, sans-serif; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:18px 14px 40px; }
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+      padding:14px; border-radius:16px;
+      background:linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.85));
+      border:1px solid rgba(148,163,184,.18);
+    }
+    .top h1{ margin:0; font-size:18px; }
+    .muted{ color:var(--muted); }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      margin-top:14px;
+    }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .select{
+      background:rgba(255,255,255,.08); color:var(--text);
+      border:1px solid rgba(148,163,184,.22); border-radius:999px;
+      padding:8px 12px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+    }
+    .btn{
+      border:none; cursor:pointer; padding:9px 14px; border-radius:999px;
+      background:var(--primary-soft); color:var(--text);
+      border:1px solid rgba(56,189,248,.35);
+      text-decoration:none; display:inline-flex; gap:8px; align-items:center;
+    }
+    .btn:hover{ filter:brightness(1.08); }
+    .btn-back{ background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.22); }
+    .btn-green{ border-color:rgba(34,197,94,.35); background:rgba(34,197,94,.12); }
+    .btn-warning{ border-color:rgba(245,158,11,.40); background:rgba(245,158,11,.12); }
+    .grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; margin-top:10px; }
+    @media(max-width:860px){ .grid{ grid-template-columns:1fr; } }
+    .item{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px; border-radius:14px;
+      border:1px solid rgba(148,163,184,.20);
+      background:rgba(255,255,255,.06);
+    }
+    .item input{ transform: scale(1.1); margin-top:3px; }
+    textarea{
+      width:100%;
+      min-height:110px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(148,163,184,.22);
+      border-radius:14px;
+      padding:10px;
+      color:var(--text);
+      outline:none;
+      resize:vertical;
+    }
+    label{ font-size:13px; color:#cbd5e1; }
+    .navbtns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1><i class="fas fa-user-graduate"></i> {{ ainfo.nome }}</h1>
+        <div class="muted" style="margin-top:6px;">
+          Turma: <strong>{{ tinfo.nome }}</strong> •
+          Bimestre: <strong>{{ bimestre }}</strong> •
+          Disciplina: <strong>{{ disciplina }}</strong>
+        </div>
+      </div>
+
+      <div class="row">
+        <a class="btn btn-back" href="{{ url_for('conselho.professor_turma', turma_id=tinfo.id, bimestre=bimestre, disciplina=disciplina) }}">
+          <i class="fas fa-arrow-left"></i> Voltar para lista
+        </a>
+      </div>
+    </div>
+
+    <form class="card" method="POST">
+      <!-- Mantém disciplina fixa: professor só tem 1 -->
+      <input type="hidden" name="disciplina" value="{{ disciplina }}">
+
+      <div class="row" style="justify-content:space-between;">
+        <div class="row">
+          <label style="margin-right:8px;">Bimestre</label>
+          <select name="bimestre" class="select" onchange="this.form.submit()">
+            {% for b in bimestres %}
+              <option value="{{ b }}" {% if b == bimestre %}selected{% endif %}>{{ b }}</option>
+            {% endfor %}
+          </select>
+
+          <span class="pill" title="Disciplina fixa do seu cadastro">
+            <i class="fas fa-lock"></i> Disciplina: <strong>{{ disciplina }}</strong>
+          </span>
+        </div>
+
+        <div class="row">
+          <button class="btn btn-green" type="submit" name="acao" value="salvar">
+            <i class="fas fa-save"></i> Salvar
+          </button>
+
+          <button class="btn btn-warning" type="button" onclick="window.location.reload()">
+            <i class="fas fa-rotate-left"></i> Desfazer alterações
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <strong>Itens marcáveis (viram “X” no Word apenas se marcados)</strong>
+        <div class="grid">
+          {% for it in itens %}
+            <label class="item">
+              <input type="checkbox" name="itens" value="{{ it.key }}" {% if it.key in selected %}checked{% endif %}>
+              <div>
+                <div style="font-weight:700;">{{ it.label }}</div>
+                <div class="muted" style="margin-top:4px; font-size:12px;">
+                  Marcando aqui, entra como “X” no bloco da disciplina.
+                </div>
+              </div>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <strong>Campos textuais</strong>
+        <div class="grid">
+          {% for f in text_fields %}
+            <div>
+              <label>{{ f.label }}</label>
+              <textarea name="{{ f.key }}" placeholder="Digite aqui...">{{ textos.get(f.key, '') }}</textarea>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="navbtns">
+        {% if prev_id %}
+          <button class="btn" type="submit" name="nav" value="prev">
+            <i class="fas fa-chevron-left"></i> Anterior
+          </button>
+        {% endif %}
+
+        {% if next_id %}
+          <button class="btn" type="submit" name="nav" value="next">
+            Próximo <i class="fas fa-chevron-right"></i>
+          </button>
+        {% endif %}
+
+        <a class="btn btn-back" href="{{ url_for('conselho.professor_turma', turma_id=tinfo.id, bimestre=bimestre, disciplina=disciplina) }}">
+          <i class="fas fa-list"></i> Voltar para lista
+        </a>
+      </div>
+
+    </form>
+  </div>
+</body>
+</html>

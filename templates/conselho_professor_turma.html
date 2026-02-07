@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Alunos da Turma – Conselho</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg-1:#020617;
+      --bg-2:#020617;
+      --card:rgba(255,255,255,.08);
+      --border:rgba(148,163,184,.22);
+      --text:#e5e7eb;
+      --muted:#a7b3c6;
+      --primary:#38bdf8;
+      --primary-soft:rgba(56,189,248,.18);
+      --success:#22c55e;
+      --warning:#f59e0b;
+      --danger:#ef4444;
+      --shadow:0 20px 40px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      padding:18px;
+      background:
+        radial-gradient(900px 420px at 10% 10%, rgba(56,189,248,.14), transparent 55%),
+        radial-gradient(900px 420px at 92% 20%, rgba(99,102,241,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    }
+
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:16px 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    h2{
+      margin:0;
+      font-size:20px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    h2 i{ color:var(--primary); }
+
+    .subtitle{
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .pill{
+      margin-top:8px;
+      display:inline-flex;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(255,255,255,.06);
+    }
+
+    .rowbtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      text-decoration:none;
+      font-size:12px;
+    }
+
+    .btn:hover{ background:rgba(255,255,255,.16); }
+
+    .btn-primary{
+      background:var(--primary-soft);
+      border-color:rgba(56,189,248,.45);
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+    }
+
+    th,td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(148,163,184,.16);
+      font-size:13px;
+      text-align:left;
+    }
+
+    th{
+      font-size:12px;
+      text-transform:uppercase;
+      color:#cbd5f5;
+      background:rgba(255,255,255,.06);
+    }
+
+    .status{
+      display:inline-flex;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(148,163,184,.18);
+    }
+
+    .ok{
+      color:#bbf7d0;
+      background:rgba(34,197,94,.12);
+      border-color:rgba(34,197,94,.30);
+    }
+
+    .pend{
+      color:#fde68a;
+      background:rgba(245,158,11,.12);
+      border-color:rgba(245,158,11,.30);
+    }
+
+    .chips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(255,255,255,.06);
+    }
+
+    .chip.ok{ color:#bbf7d0; }
+    .chip.pend{ color:#fde68a; }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .table-wrap{
+      overflow:auto;
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="card top">
+    <div>
+      <h2><i class="fa-solid fa-users"></i> Alunos da Turma</h2>
+      <p class="subtitle">
+        Turma: <b>{{ turma_nome }}</b> • {{ bimestre }}º bimestre / {{ ano }}
+      </p>
+
+      <div class="pill">
+        <i class="fa-solid fa-list-check"></i>
+        Status por disciplina
+      </div>
+    </div>
+
+    <div class="rowbtns">
+      <a class="btn" href="{{ url_for('conselho.conselho_professor_visualizar', bimestre=bimestre, ano=ano) }}">
+        <i class="fa-solid fa-arrow-left"></i> Minhas Turmas
+      </a>
+      <a class="btn" href="{{ url_for('dashboard_professor') }}">
+        <i class="fa-solid fa-house"></i> Painel
+      </a>
+    </div>
+  </div>
+
+  <!-- TABELA -->
+  <div class="card table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Aluno</th>
+          <th>Disciplinas</th>
+          <th>Geral</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for it in itens %}
+        <tr>
+          <td>
+            <b>{{ it.aluno_nome }}</b><br>
+            <small style="color:var(--muted)">ID {{ it.aluno_id }}</small>
+          </td>
+
+          <td>
+            <div class="chips">
+              {% for d in disciplinas %}
+                {% if it.status_por_disc.get(d) %}
+                  <span class="chip ok"><i class="fa-solid fa-check"></i> {{ d }}</span>
+                {% else %}
+                  <span class="chip pend"><i class="fa-solid fa-triangle-exclamation"></i> {{ d }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </td>
+
+          <td>
+            {% if it.ok %}
+              <span class="status ok">OK ({{ it.qtd }}/{{ it.total }})</span>
+            {% else %}
+              <span class="status pend">Pendente ({{ it.qtd }}/{{ it.total }})</span>
+            {% endif %}
+          </td>
+
+          <td>
+            <div class="actions">
+              {% for d in disciplinas %}
+              <a class="btn btn-primary"
+                 href="{{ url_for('conselho.conselho_professor',
+                                  turma_id=turma_id,
+                                  aluno_id=it.aluno_id,
+                                  disciplina_abrev=d,
+                                  bimestre=bimestre,
+                                  ano=ano) }}">
+                <i class="fa-solid fa-pen-to-square"></i> {{ d }}
+              </a>
+              {% endfor %}
+
+              <a class="btn"
+                 href="{{ url_for('conselho.conselho_professor_ver',
+                                  turma_id=turma_id,
+                                  aluno_id=it.aluno_id,
+                                  bimestre=bimestre,
+                                  ano=ano) }}">
+                <i class="fa-solid fa-eye"></i> Ver
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+
+        {% if itens|length == 0 %}
+        <tr>
+          <td colspan="4" style="color:var(--muted);padding:16px;">
+            Nenhum aluno encontrado nesta turma.
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Moderador</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        :root {
+            --azul-primario: #0d6efd;
+            --azul-escuro: #003566;
+            --cinza-card: #f9fafb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            background:
+                radial-gradient(circle at top left, rgba(13,110,253,0.35), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(108,117,125,0.35), transparent 55%),
+                #0b1726;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+            padding: 22px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: #eff6ff;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 0;
+            color: var(--azul-escuro);
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #374151;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px 12px 10px 32px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 13px;
+            background: var(--cinza-card);
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--azul-primario);
+            box-shadow: 0 0 0 1px rgba(37,99,235,0.25);
+            background: #ffffff;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #ffffff;
+            background: linear-gradient(120deg, var(--azul-primario), #2563eb);
+            box-shadow: 0 10px 22px rgba(37,99,235,0.45);
+            margin-top: 6px;
+        }
+
+        .footer-link {
+            margin-top: 14px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .footer-link a {
+            color: var(--azul-primario);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="badge">
+            <i class="fas fa-user-shield"></i>
+            Cadastro de Moderador
+        </div>
+        <h1>Novo moderador</h1>
+        <p class="subtitle">
+            Defina login, senha e o perfil de atuação no sistema.
+        </p>
+    </div>
+
+    <form action="{{ url_for('cadastrar_moderador') }}" method="POST">
+
+        <div class="form-group">
+            <label for="login">Login</label>
+            <div class="input-wrapper">
+                <i class="fas fa-user"></i>
+                <input type="text" id="login" name="login"
+                       placeholder="Ex.: coordenacao.ESCOLA CLASSE 16" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="senha">Senha</label>
+            <div class="input-wrapper">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="senha" name="senha"
+                       placeholder="Digite uma senha forte" required>
+                <button type="button" class="toggle-password" onclick="togglePassword()">
+                    <i class="fas fa-eye" id="senhaIcone"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PERFIL -->
+        <div class="form-group">
+            <label for="tipo">Perfil do moderador</label>
+            <div class="input-wrapper">
+                <i class="fas fa-user-tag"></i>
+                <select id="tipo" name="tipo" required>
+                    <option value="diretor">Direção</option>
+                    <option value="coordenador" selected>Coordenação</option>
+                    <option value="supervisor">Supervisor</option>
+                    <option value="orientador">Orientador</option>
+                    <option value="apoio_coordenacao">Apoio à Coordenação</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-check"></i>
+            Cadastrar moderador
+        </button>
+    </form>
+
+    <div class="footer-link">
+        <a href="{{ url_for('dashboard_moderador') }}">
+            <i class="fas fa-arrow-left"></i> Voltar para o Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+    function togglePassword() {
+        const input = document.getElementById('senha');
+        const icon = document.getElementById('senhaIcone');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+</script>
+
+</body>
+</html>

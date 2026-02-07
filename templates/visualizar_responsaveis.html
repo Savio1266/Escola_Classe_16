@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsáveis Cadastrados</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        :root{
+            --bg-1:#f6f8fc;
+            --bg-2:#eef2ff;
+
+            --card:#ffffff;
+            --border:#e6eaf2;
+
+            --text:#0f172a;
+            --muted:#64748b;
+
+            --primary:#2563eb;
+            --primary-soft: rgba(37,99,235,.10);
+
+            --shadow: 0 18px 45px rgba(15,23,42,.08);
+            --shadow-soft: 0 6px 16px rgba(15,23,42,.06);
+
+            --radius: 18px;
+        }
+
+        *{ box-sizing:border-box; }
+        html, body { height: 100%; }
+
+        body{
+            margin:0;
+            font-family: Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(900px 420px at 12% 10%, rgba(37,99,235,.12), transparent 55%),
+                radial-gradient(900px 420px at 92% 18%, rgba(99,102,241,.10), transparent 55%),
+                linear-gradient(180deg, var(--bg-1), var(--bg-2));
+            padding: 18px;
+            display:flex;
+            justify-content:center;
+            align-items:flex-start;
+        }
+
+        .wrap{
+            width:100%;
+            max-width: 980px;
+        }
+
+        .card{
+            background: rgba(255,255,255,.88);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            overflow:hidden;
+        }
+
+        /* HEADER */
+        .header{
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap: 12px;
+        }
+
+        .titlebox{
+            display:flex;
+            flex-direction:column;
+            gap: 4px;
+            min-width:0;
+        }
+
+        .badge{
+            display:inline-flex;
+            align-items:center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(37,99,235,.18);
+            background: rgba(37,99,235,.08);
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+
+        h2{
+            margin:0;
+            font-size: 18px;
+            line-height:1.2;
+            white-space: nowrap;
+            overflow:hidden;
+            text-overflow: ellipsis;
+        }
+
+        .subtitle{
+            margin:0;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* AÇÕES TOPO */
+        .top-actions{
+            display:flex;
+            gap: 10px;
+            align-items:center;
+            flex-shrink:0;
+        }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            cursor:pointer;
+            text-decoration:none;
+            font-size: 12px;
+            transition: transform .12s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+            user-select:none;
+        }
+
+        .btn-primary{
+            background: var(--primary);
+            color:#fff;
+            box-shadow: 0 10px 20px rgba(37,99,235,.22);
+        }
+        .btn-primary:hover{
+            transform: translateY(-1px);
+            box-shadow: 0 14px 24px rgba(37,99,235,.28);
+        }
+
+        .btn-soft{
+            background: rgba(15,23,42,.06);
+            border-color: rgba(15,23,42,.10);
+            color: #0b1220;
+        }
+        .btn-soft:hover{
+            background: rgba(15,23,42,.09);
+            transform: translateY(-1px);
+        }
+
+        /* FILTRO */
+        .filters{
+            padding: 14px 18px;
+            display:flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items:flex-end;
+        }
+
+        .field{
+            display:flex;
+            flex-direction:column;
+            gap: 6px;
+            min-width: 240px;
+            flex: 1;
+        }
+
+        label{
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        select{
+            width:100%;
+            padding: 10px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: 13px;
+            outline:none;
+        }
+        select:focus{
+            border-color: rgba(37,99,235,.40);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+        }
+
+        /* TABELA */
+        .table-wrap{
+            padding: 0 18px 18px 18px;
+        }
+
+        .table-shell{
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow:hidden;
+            background:#fff;
+        }
+
+        table{
+            width:100%;
+            border-collapse: collapse;
+        }
+
+        thead th{
+            background: rgba(37,99,235,.10);
+            color: #0b1220;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: .02em;
+            text-align:left;
+            padding: 12px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody td{
+            padding: 12px 12px;
+            font-size: 13px;
+            color: #0b1220;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tbody tr:hover{
+            background: rgba(37,99,235,.06);
+        }
+
+        tbody tr:last-child td{
+            border-bottom:none;
+        }
+
+        /* COLUNAS (para ficar bem organizado) */
+        .col-resp{ width: 38%; }
+        .col-whats{ width: 22%; }
+        .col-aluno{ width: 40%; }
+
+        /* VAZIO */
+        .empty{
+            padding: 18px;
+            margin: 0 18px 18px 18px;
+            border: 1px dashed rgba(15,23,42,.18);
+            border-radius: 14px;
+            color: var(--muted);
+            background: rgba(255,255,255,.70);
+            text-align:center;
+            font-size: 13px;
+        }
+
+        /* RODAPÉ */
+        .footer{
+            padding: 14px 18px 18px 18px;
+            border-top: 1px solid var(--border);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap: 10px;
+            background: linear-gradient(180deg, rgba(255,255,255,.70), rgba(255,255,255,.92));
+        }
+
+        .footnote{
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 760px){
+            body{ padding: 12px; }
+            .header{
+                flex-direction: column;
+                align-items:flex-start;
+            }
+            .top-actions{ width:100%; justify-content:flex-start; }
+            .field{ min-width: 100%; }
+            thead th{ font-size: 12px; }
+            tbody td{ font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+    <div class="card">
+
+        <!-- TOPO -->
+        <div class="header">
+            <div class="titlebox">
+                <div class="badge">Gestão • Consulta</div>
+                <h2>Responsáveis Cadastrados</h2>
+                <p class="subtitle">Filtre por turma e consulte os responsáveis vinculados aos estudantes.</p>
+            </div>
+
+            <div class="top-actions">
+                <a href="{{ url_for('dashboard_moderador') }}" class="btn btn-soft">
+                    ← Voltar
+                </a>
+            </div>
+        </div>
+
+        <!-- FILTRO -->
+        <form action="{{ url_for('visualizar_responsaveis') }}" method="GET" class="filters">
+            <div class="field">
+                <label for="turma_id">Filtrar por Turma</label>
+                <select id="turma_id" name="turma_id">
+                    {% for turma in turmas %}
+                        <option value="{{ turma[0] }}">{{ turma[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <span>Filtrar</span>
+            </button>
+        </form>
+
+        <!-- TABELA -->
+        {% if responsaveis %}
+            <div class="table-wrap">
+                <div class="table-shell">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="col-resp">Responsável</th>
+                            <th class="col-whats">WhatsApp</th>
+                            <th class="col-aluno">Aluno</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for r in responsaveis %}
+                            <tr>
+                                <td>{{ r[1] }}</td>
+                                <td>{{ r[2] }}</td>
+                                <td>{{ r[3] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <p class="empty">Nenhum responsável encontrado para o filtro selecionado.</p>
+        {% endif %}
+
+        <!-- RODAPÉ -->
+        <div class="footer">
+            <div class="footnote">ESCOLA CLASSE 16 • De Olho na Escola</div>
+            <a href="{{ url_for('dashboard_moderador') }}" class="btn btn-soft">Voltar ao painel</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

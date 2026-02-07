@@ -1,0 +1,13 @@
+import sys
+import os
+
+# Adicione o caminho do projeto ao sys.path
+project_path = '/home/Wellton/site_cef07'
+if project_path not in sys.path:
+    sys.path.append(project_path)
+
+# Importa a aplicação Flask
+try:
+    from app import app as application
+except ImportError as e:
+    raise ImportError(f"Erro ao importar o app: {e}")

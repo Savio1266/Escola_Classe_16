@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Minhas Turmas – Conselho</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg-1:#020617;
+      --bg-2:#020617;
+
+      --card:rgba(255,255,255,.08);
+      --border:rgba(148,163,184,.22);
+
+      --text:#e5e7eb;
+      --muted:#a7b3c6;
+
+      --primary:#38bdf8;
+      --primary-soft:rgba(56,189,248,.18);
+
+      --success:#22c55e;
+      --warning:#f59e0b;
+
+      --shadow:0 20px 40px rgba(0,0,0,.35);
+      --shadow-soft:0 14px 28px rgba(0,0,0,.18);
+      --radius:22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body { height:100%; }
+
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      padding:18px;
+      background:
+        radial-gradient(900px 420px at 10% 10%, rgba(56,189,248,.14), transparent 55%),
+        radial-gradient(900px 420px at 92% 20%, rgba(99,102,241,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:1100px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:16px 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    /* HEADER */
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .title h2{
+      margin:0;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .title h2 i{ color: var(--primary); }
+
+    .subtitle{
+      margin:6px 0 0 0;
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.4;
+      max-width: 760px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(255,255,255,.06);
+      margin-top:10px;
+      width:fit-content;
+    }
+
+    /* FILTERS */
+    .filters{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+      margin-top:12px;
+    }
+    .field{
+      min-width: 160px;
+    }
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    select, input{
+      width:100%;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.25);
+      background: rgba(2,6,23,.55);
+      color: var(--text);
+      outline:none;
+    }
+    select option{
+      background:#0b1220;
+      color:#e5e7eb;
+    }
+
+    /* BUTTONS */
+    .rowbtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      text-decoration:none;
+      font-size:12px;
+      cursor:pointer;
+      transition: transform .12s ease, background .18s ease, border-color .18s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    .btn:hover{
+      background:rgba(255,255,255,.14);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary{
+      background: var(--primary-soft);
+      border-color: rgba(56,189,248,.40);
+      color:#e0f2fe;
+    }
+    .btn-primary:hover{
+      background: rgba(56,189,248,.28);
+    }
+
+    .btn-soft{
+      background: rgba(148,163,184,.12);
+    }
+
+    /* TABLE */
+    .table-wrap{
+      border:1px solid rgba(148,163,184,.20);
+      border-radius:18px;
+      overflow:hidden;
+      background: rgba(255,255,255,.04);
+    }
+
+    .table-scroll{
+      overflow:auto;
+      max-width:100%;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width: 760px;
+    }
+
+    th, td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(148,163,184,.16);
+      text-align:left;
+      font-size:13px;
+      vertical-align: top;
+    }
+
+    th{
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      color:#cbd5f5;
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(6px);
+    }
+
+    tr:hover td{
+      background:rgba(255,255,255,.04);
+    }
+
+    .status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(148,163,184,.18);
+      background: rgba(255,255,255,.06);
+      width: fit-content;
+    }
+
+    .status.ok{
+      border-color: rgba(34,197,94,.28);
+      background: rgba(34,197,94,.12);
+      color:#bbf7d0;
+    }
+
+    .status.pend{
+      border-color: rgba(245,158,11,.28);
+      background: rgba(245,158,11,.12);
+      color:#fde68a;
+    }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+    }
+
+    @media (max-width:760px){
+      body{ padding:12px; }
+      .rowbtns{ width:100%; }
+      .btn{ width:100%; }
+      table{ min-width: 680px; }
+      .field{ min-width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- HEADER -->
+    <div class="card top">
+      <div class="title">
+        <h2><i class="fa-solid fa-chalkboard-user"></i> Progresso por Turma</h2>
+        <p class="subtitle">
+          Escolha o <b>bimestre</b> e o <b>ano</b> e acompanhe o andamento do Conselho Coletivo por turma.
+        </p>
+        <div class="pill">
+          <i class="fa-solid fa-clipboard-check"></i>
+          Conselho Coletivo (Professor)
+        </div>
+
+        <!-- ✅ FILTROS BIMESTRE / ANO -->
+        <form class="filters" method="GET" action="{{ url_for('conselho.conselho_professor_visualizar') }}">
+          <div class="field">
+            <label>Bimestre</label>
+            <select name="bimestre">
+              {% for b in [1,2,3,4] %}
+                <option value="{{ b }}" {% if bimestre|int == b %}selected{% endif %}>{{ b }}º</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Ano</label>
+            <input type="number" name="ano" value="{{ ano }}" min="2020" max="2100">
+          </div>
+
+          <div class="field" style="min-width: 180px;">
+            <label>&nbsp;</label>
+            <button class="btn btn-primary" type="submit">
+              <i class="fa-solid fa-filter"></i> Aplicar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="rowbtns">
+        <a class="btn btn-soft" href="{{ url_for('dashboard_professor') }}">
+          <i class="fa-solid fa-house"></i> Painel do Professor
+        </a>
+      </div>
+    </div>
+
+    <!-- TABELA -->
+    <div class="card">
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Turma</th>
+                <th>Progresso</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for t in progresso_turmas %}
+                {% set completo = (t.total and t.feitos >= t.total) %}
+                <tr>
+                  <td><b>{{ t.turma_nome }}</b></td>
+
+                  <td>
+                    {% if completo %}
+                      <span class="status ok">
+                        <i class="fa-solid fa-check"></i>
+                        OK ({{ t.feitos }}/{{ t.total }})
+                      </span>
+                    {% else %}
+                      <span class="status pend">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Pendente ({{ t.feitos }}/{{ t.total }})
+                      </span>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    <div class="actions">
+                      <!-- ✅ LEVA BIMESTRE/ANO PARA A LISTA DE ALUNOS -->
+                      <a class="btn btn-primary"
+                         href="{{ url_for('conselho.conselho_professor_turma',
+                                          turma_id=t.turma_id,
+                                          bimestre=bimestre,
+                                          ano=ano) }}">
+                        <i class="fa-solid fa-users"></i> Ver alunos
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+
+              {% if progresso_turmas|length == 0 %}
+                <tr>
+                  <td colspan="3" style="color:var(--muted); padding:16px;">
+                    Nenhuma turma vinculada encontrada.
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

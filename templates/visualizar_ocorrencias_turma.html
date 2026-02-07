@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocorrências da Turma {{ turma[0] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <style>
+        :root {
+            --primary: #1d4ed8;         /* Azul principal */
+            --primary-light: #dbeafe;   /* Azul pastel */
+            --primary-soft: #eff6ff;    /* Azul muito suave */
+            --text-main: #1e293b;       /* Cinza-azulado */
+            --text-muted: #64748b;      /* Cinza claro */
+            --border: #e2e8f0;          /* Cinza claro */
+            --bg-page: #f8fafc;         /* Fundo geral */
+            --bg-card: #ffffff;         /* Fundo do card */
+            --table-hover: #eff6ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Inter", system-ui, sans-serif;
+            background: var(--bg-page);
+            padding: 24px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        /* CARD PRINCIPAL */
+        .card {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .tag {
+            padding: 6px 14px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            border: 1px solid var(--primary-light);
+        }
+
+        .btn {
+            margin-top: 8px;
+            padding: 10px 18px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+
+        .btn:hover {
+            background: #143cc7;
+        }
+
+        /* TABELA */
+        .table-wrapper {
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        thead {
+            background: var(--primary-soft);
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: var(--table-hover);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 650px) {
+            body { padding: 12px; }
+
+            .card { padding: 16px; }
+
+            h1 { font-size: 1.2rem; }
+
+            th, td { padding: 10px; font-size: 0.85rem; }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+
+</head>
+<body>
+<div class="container">
+    <div class="card">
+
+        <!-- CABEÇALHO -->
+        <div class="header">
+            <div>
+                <h1>
+                    <span class="badge">📘</span>
+                    Ocorrências — Turma {{ turma[0] }}
+                </h1>
+                <p class="subtitle">Veja todas as ocorrências registradas para esta turma.</p>
+            </div>
+
+            <span class="tag">Turma: {{ turma[0] }}</span>
+        </div>
+
+        <!-- TABELA -->
+        <div class="table-wrapper">
+            {% if ocorrencias and ocorrencias|length > 0 %}
+            <table>
+                <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Aluno</th>
+                    <th>Tipo</th>
+                    <th>Motivo</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for ocorrencia in ocorrencias %}
+                    <tr>
+                        <td>{{ ocorrencia[0] }}</td>
+                        <td>{{ ocorrencia[1] }}</td>
+                        <td>{{ ocorrencia[2] }}</td>
+                        <td>{{ ocorrencia[3] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div class="empty">Nenhuma ocorrência registrada até o momento.</div>
+            {% endif %}
+        </div>
+
+        <!-- BOTÃO VOLTAR -->
+        <a href="{{ url_for('visualizar_ocorrencias_turmas') }}" class="btn">
+            ← Voltar à lista de turmas
+        </a>
+
+    </div>
+</div>
+</body>
+</html>

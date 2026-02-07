@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Novo Atendimento – ESCOLA CLASSE 16</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body{ background:#f3f4f6; }
+    .page-wrap{ max-width: 1080px; margin: 0 auto; padding: 18px 14px; }
+    .card{ border-radius: 16px; }
+    .input-group .btn{ white-space: nowrap; }
+    .badge-soft{ background:#eef2ff; color:#334155; border:1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1 class="h4 mb-0">
+        <i class="fa-solid fa-handshake-angle me-2"></i>Novo Atendimento
+      </h1>
+      <a href="{{ url_for('atendimentos_historico') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="fa-solid fa-table-list me-1"></i> Histórico
+      </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+
+        <form method="post" action="{{ url_for('atendimentos_novo') }}" class="needs-validation" novalidate>
+
+          <div class="row g-3 mb-1">
+            <div class="col-md-6">
+              <label class="form-label">Protocolo (opcional, mas único)</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="protocolo" id="protocolo" placeholder="Ex.: ESCOLA CLASSE 16-20250912-0001" maxlength="40">
+                <button class="btn btn-outline-secondary" type="button" id="btn-gerar-protocolo">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar
+                </button>
+                <button class="btn btn-outline-primary" type="button" id="btn-checar-protocolo">
+                  <i class="fa-solid fa-magnifying-glass"></i> Checar
+                </button>
+              </div>
+              <div class="form-text" id="hint-protocolo">Deixe em branco para não usar. Se preencher, não pode repetir.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Responsável presente no atendimento</label>
+              <input type="text" class="form-control" name="responsavel_nome" required placeholder="Digite o nome completo do(a) responsável">
+              <div class="invalid-feedback">Informe o nome do(a) responsável.</div>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label">Parentesco</label>
+              <select class="form-select" name="responsavel_parentesco" required>
+                <option value="" selected disabled>Selecione</option>
+                <option>Pai</option>
+                <option>Mãe</option>
+                <option>Avó</option>
+                <option>Avô</option>
+                <option>Tio(a)</option>
+                <option>Irmão(ã)</option>
+                <option>Responsável legal</option>
+                <option>Outro</option>
+              </select>
+              <div class="invalid-feedback">Informe o parentesco.</div>
+            </div>
+          </div>
+
+          <h2 class="h6 text-uppercase text-secondary mt-3 mb-3">Identificação</h2>
+
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label">Turno</label>
+              <select id="turno" class="form-select" required>
+                <option value="" selected disabled>Selecione</option>
+                {% for t in turnos %}
+                  <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+              </select>
+              <div class="invalid-feedback">Selecione o turno.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Turma</label>
+              <select id="turma" name="turma_id" class="form-select" required>
+                <option value="" selected disabled>Selecione o turno primeiro</option>
+              </select>
+              <div class="invalid-feedback">Selecione a turma.</div>
+            </div>
+
+            <div class="col-md-5">
+              <label class="form-label">Aluno(a)</label>
+              <select id="aluno" name="aluno_id" class="form-select" required>
+                <option value="" selected disabled>Selecione a turma primeiro</option>
+              </select>
+              <div class="invalid-feedback">Selecione o(a) aluno(a).</div>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <label class="form-label">Quem registrou o atendimento</label>
+              <input type="text" class="form-control" name="registrador_nome" required placeholder="Seu nome">
+              <div class="invalid-feedback">Informe seu nome (registrador).</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Cargo / Função</label>
+              <input type="text" class="form-control" name="registrador_cargo" required placeholder="Ex.: Direção, Vice-direção, Supervisão, Coordenação...">
+              <div class="invalid-feedback">Informe seu cargo/função.</div>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" id="envolve_professor" name="envolve_professor">
+                <label class="form-check-label" for="envolve_professor">Atendimento envolve professor?</label>
+              </div>
+              <input type="text" class="form-control mt-2 d-none" id="professor_nome" name="professor_nome" placeholder="Nome do(a) professor(a) envolvido(a)">
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <h2 class="h6 text-uppercase text-secondary mb-3">Data e Hora</h2>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label">Data do atendimento</label>
+              <input type="date" class="form-control" name="data_atendimento" required>
+              <div class="invalid-feedback">Informe a data do atendimento.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Hora do atendimento</label>
+              <input type="time" class="form-control" name="hora_atendimento">
+              <div class="form-text">Opcional.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Assunto (resumo)</label>
+              <input type="text" class="form-control" name="assunto" placeholder="Ex.: Acompanhamento pedagógico, comportamento, comunicação com família...">
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <h2 class="h6 text-uppercase text-secondary mb-3">Relato e Combinados</h2>
+          <div class="mb-3">
+            <label class="form-label">Relato detalhado</label>
+            <textarea class="form-control" name="relato" rows="6" required placeholder="Descreva os fatos, escuta das partes, decisões e encaminhamentos..."></textarea>
+            <div class="invalid-feedback">Insira o relato do atendimento.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Combinados do atendimento</label>
+            <textarea class="form-control" name="combinados" rows="4" placeholder="Registre os acordos, responsabilidades e prazos combinados..."></textarea>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="retorno_previsto" name="retorno_previsto">
+                <label class="form-check-label" for="retorno_previsto">Haverá retorno?</label>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div id="grp-retorno" class="row g-2 d-none">
+                <div class="col-md-6">
+                  <label class="form-label">Data e hora do retorno</label>
+                  <input type="datetime-local" class="form-control" id="retorno_em" name="retorno_em">
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                  <div class="form-text">Após o retorno, marque como realizado na edição (futuro).</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-1">
+            <div class="col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="reuniao_agendada" name="reuniao_agendada">
+                <label class="form-check-label" for="reuniao_agendada">Agendar reunião com responsáveis?</label>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div id="grp-reuniao" class="row g-2 d-none">
+                <div class="col-md-6">
+                  <label class="form-label">Data e hora da reunião</label>
+                  <input type="datetime-local" class="form-control" id="reuniao_data" name="reuniao_data">
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                  <div class="form-text">A confirmação/realização poderá ser atualizada depois.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('dashboard_moderador') }}" class="btn btn-outline-secondary">
+              <i class="fa-solid fa-arrow-left-long me-1"></i> Cancelar
+            </a>
+            <button class="btn btn-primary">
+              <i class="fa-solid fa-floppy-disk me-1"></i> Salvar atendimento
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+  (function () {
+    'use strict';
+    document.querySelectorAll('.needs-validation').forEach(form => {
+      form.addEventListener('submit', e => {
+        if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+
+  const inpProto = document.getElementById('protocolo');
+  const hintProto = document.getElementById('hint-protocolo');
+
+  document.getElementById('btn-gerar-protocolo').addEventListener('click', () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const da = String(d.getDate()).padStart(2,'0');
+    const r = Math.floor(Math.random()*9999).toString().padStart(4,'0');
+    inpProto.value = `ESCOLA CLASSE 16-${y}${m}${da}-${r}`;
+    hintProto.className = 'form-text';
+    hintProto.textContent = 'Sugestão gerada. Clique em "Checar" para verificar disponibilidade.';
+  });
+
+  document.getElementById('btn-checar-protocolo').addEventListener('click', async () => {
+    const v = (inpProto.value || '').trim();
+    if(!v){
+      hintProto.className = 'form-text text-danger';
+      hintProto.textContent = 'Informe um protocolo para checar.';
+      return;
+    }
+    try{
+      const res = await fetch(`{{ url_for('api_check_protocolo') }}?protocolo=${encodeURIComponent(v)}`);
+      const data = await res.json();
+      if(data.ok){
+        hintProto.className = 'form-text text-success';
+        hintProto.textContent = 'Disponível! Você pode usar este protocolo.';
+      }else{
+        hintProto.className = 'form-text text-danger';
+        hintProto.textContent = 'Já existe um atendimento com esse protocolo. Gere outro.';
+      }
+    }catch(e){
+      hintProto.className = 'form-text text-danger';
+      hintProto.textContent = 'Não foi possível checar agora.';
+    }
+  });
+
+  const chkProf = document.getElementById('envolve_professor');
+  const inpProf = document.getElementById('professor_nome');
+  chkProf.addEventListener('change', () => {
+    inpProf.classList.toggle('d-none', !chkProf.checked);
+    if (!chkProf.checked) inpProf.value = '';
+  });
+
+  const chkRet = document.getElementById('retorno_previsto');
+  const grpRet = document.getElementById('grp-retorno');
+  chkRet.addEventListener('change', () => {
+    grpRet.classList.toggle('d-none', !chkRet.checked);
+    if (!chkRet.checked) document.getElementById('retorno_em').value = '';
+  });
+
+  const chkReu = document.getElementById('reuniao_agendada');
+  const grpReu = document.getElementById('grp-reuniao');
+  chkReu.addEventListener('change', () => {
+    grpReu.classList.toggle('d-none', !chkReu.checked);
+    if (!chkReu.checked) document.getElementById('reuniao_data').value = '';
+  });
+
+  const selTurno = document.getElementById('turno');
+  const selTurma = document.getElementById('turma');
+  const selAluno = document.getElementById('aluno');
+
+  selTurno.addEventListener('change', async () => {
+    const turno = selTurno.value;
+    selTurma.innerHTML = '<option value="" selected disabled>Carregando...</option>';
+    selAluno.innerHTML = '<option value="" selected disabled>Selecione a turma primeiro</option>';
+
+    try {
+      const res = await fetch(`{{ url_for('api_turmas') }}?turno=${encodeURIComponent(turno)}`);
+      const turmas = await res.json();
+      selTurma.innerHTML = '<option value="" selected disabled>Selecione</option>';
+      turmas.forEach(t => selTurma.insertAdjacentHTML('beforeend', `<option value="${t.id}">${t.nome} – ${t.turno}</option>`));
+    } catch (e) {
+      selTurma.innerHTML = '<option value="" selected disabled>Erro ao carregar</option>';
+      console.error(e);
+    }
+  });
+
+  selTurma.addEventListener('change', async () => {
+    const turmaId = selTurma.value;
+    selAluno.innerHTML = '<option value="" selected disabled>Carregando...</option>';
+    try {
+      const res = await fetch(`{{ url_for('api_alunos') }}?turma_id=${encodeURIComponent(turmaId)}`);
+      const alunos = await res.json();
+      selAluno.innerHTML = '<option value="" selected disabled>Selecione</option>';
+      alunos.forEach(a => selAluno.insertAdjacentHTML('beforeend', `<option value="${a.id}">${a.nome}</option>`));
+    } catch (e) {
+      selAluno.innerHTML = '<option value="" selected disabled>Erro ao carregar</option>';
+      console.error(e);
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conselho – Moderador</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg:#0b1726;
+      --card: rgba(255,255,255,.08);
+      --border: rgba(148,163,184,.22);
+      --text:#e5e7eb;
+      --muted:#a7b3c6;
+      --primary:#38bdf8;
+      --primary-soft: rgba(56,189,248,.16);
+      --success:#22c55e;
+      --warning:#f59e0b;
+      --danger:#ef4444;
+    }
+    body{ margin:0; background:var(--bg); color:var(--text); font-family: Arial, sans-serif; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:18px 14px 40px; }
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+      padding:14px; border-radius:16px;
+      background:linear-gradient(135deg, rgba(15,23,42,.95), rgba(30,64,175,.85));
+      border:1px solid rgba(148,163,184,.18);
+    }
+    .top h1{ margin:0; font-size:18px; }
+    .muted{ color:var(--muted); }
+    .filters{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .select{
+      background:rgba(255,255,255,.08); color:var(--text);
+      border:1px solid rgba(148,163,184,.22); border-radius:999px;
+      padding:8px 12px;
+    }
+    .btn{
+      border:none; cursor:pointer; padding:9px 14px; border-radius:999px;
+      background:var(--primary-soft); color:var(--text);
+      border:1px solid rgba(56,189,248,.35);
+      text-decoration:none; display:inline-flex; gap:8px; align-items:center;
+    }
+    .btn:hover{ filter:brightness(1.08); }
+    .btn-back{ background:rgba(255,255,255,.06); border:1px solid rgba(148,163,184,.22); }
+    .grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; margin-top:14px; }
+    @media(max-width:860px){ .grid{ grid-template-columns:1fr; } }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+    }
+    .row{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; }
+    .pill{
+      padding:6px 10px; border-radius:999px; font-size:12px;
+      border:1px solid rgba(148,163,184,.22); background:rgba(255,255,255,.06);
+      color:var(--muted);
+    }
+    .ok{ border-color:rgba(34,197,94,.45); background:rgba(34,197,94,.12); color:#d1fae5; }
+    .pend{ border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.10); color:#fde68a; }
+    .chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .chip{
+      border-radius:999px; padding:6px 10px; font-size:12px;
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(255,255,255,.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1><i class="fas fa-clipboard-check"></i> Conselho de Classe – Painel do Moderador</h1>
+        <div class="muted" style="margin-top:6px;">Status só fica <strong>OK</strong> quando todas as disciplinas esperadas fecharem todos os alunos.</div>
+      </div>
+
+      <form class="filters" method="GET" action="{{ url_for('conselho.moderador_index') }}">
+        <select name="bimestre" class="select">
+          {% for b in bimestres %}
+            <option value="{{ b }}" {% if b == bimestre %}selected{% endif %}>{{ b }} bimestre</option>
+          {% endfor %}
+        </select>
+
+        <select name="turma_id" class="select">
+          <option value="">Todas as turmas</option>
+          {% for t in turmas %}
+            <option value="{{ t.id }}" {% if turma_id and turma_id == t.id %}selected{% endif %}>{{ t.nome }} ({{ t.turno }})</option>
+          {% endfor %}
+        </select>
+
+        <button class="btn" type="submit"><i class="fas fa-filter"></i> Aplicar</button>
+        <a class="btn btn-back" href="{{ url_for('dashboard_moderador') }}"><i class="fas fa-arrow-left"></i> Voltar</a>
+      </form>
+    </div>
+
+    <div class="grid">
+      {% for c in cards %}
+        <div class="card">
+          <div class="row">
+            <div style="font-weight:700;">
+              <i class="fas fa-users"></i> {{ c.turma.nome }} <span class="muted">({{ c.turma.turno }})</span>
+            </div>
+
+            {% if c.status.ok_all %}
+              <span class="pill ok"><i class="fas fa-check-circle"></i> OK</span>
+            {% else %}
+              <span class="pill pend"><i class="fas fa-clock"></i> Pendente</span>
+            {% endif %}
+          </div>
+
+          <div class="chips">
+            {% if c.status.detalhes %}
+              {% for d in c.status.detalhes %}
+                <span class="chip {% if d.ok %}ok{% else %}pend{% endif %}">
+                  <strong>{{ d.disciplina }}</strong> — {{ d.preenchidos }}/{{ d.total }}
+                </span>
+              {% endfor %}
+            {% else %}
+              <span class="chip pend">Sem disciplinas vinculadas à turma</span>
+            {% endif %}
+          </div>
+
+          <div style="margin-top:12px;">
+            <a class="btn" href="{{ url_for('conselho.moderador_turma', turma_id=c.turma.id, bimestre=bimestre) }}">
+              <i class="fas fa-eye"></i> Abrir turma
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</body>
+</html>

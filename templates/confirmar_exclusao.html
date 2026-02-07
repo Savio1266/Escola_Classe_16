@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Exclusão - Gincana</title>
+</head>
+<body>
+    <h1>Confirmar Exclusão</h1>
+    <p>Tem certeza de que deseja excluir a prova "{{ prova.descricao }}"?</p>
+
+    <form action="{{ url_for('excluir_prova', prova_id=prova.id) }}" method="POST">
+        <button type="submit">Excluir</button>
+    </form>
+
+    <a href="{{ url_for('dashboard_moderador') }}">Cancelar</a>
+</body>
+</html>
